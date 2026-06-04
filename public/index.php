@@ -18,11 +18,27 @@ try {
     /** @var Application $app */
     $app = require_once __DIR__.'/../bootstrap/app.php';
 
-    $app->handleRequest(Request::capture());
+    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+    $request = Illuminate\Http\Request::capture();
+
+    try {
+        $response = $kernel->handle($request);
+        $response->send();
+        $kernel->terminate($request, $response);
+    } catch (\Throwable $e) {
+        header('HTTP/1.1 500 Internal Server Error');
+        header('Content-Type: text/html; charset=utf-8');
+        echo '<h1>Original Bootstrap/Runtime Error</h1>';
+        echo '<p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
+        echo '<p><strong>Class:</strong> ' . get_class($e) . '</p>';
+        echo '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . '</p>';
+        echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+        exit;
+    }
 } catch (\Throwable $e) {
     header('HTTP/1.1 500 Internal Server Error');
     header('Content-Type: text/html; charset=utf-8');
-    echo '<h1>Fatal Bootstrap Error</h1>';
+    echo '<h1>Fatal Bootstrap Error (Outer)</h1>';
     echo '<p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
     echo '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . '</p>';
     echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
