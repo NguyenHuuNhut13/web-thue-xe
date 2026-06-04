@@ -78,7 +78,20 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return $val;
         };
-        config(['database' => $resolveValue(config('database'))]);
+        
+        $dbConfig = $resolveValue(config('database'));
+        
+        // Ensure username has the tenant identifier if connecting to Supabase pooler
+        if (isset($dbConfig['connections']['pgsql']['host']) && 
+            strpos($dbConfig['connections']['pgsql']['host'], 'pooler.supabase.com') !== false) {
+            
+            $username = $dbConfig['connections']['pgsql']['username'] ?? '';
+            if ($username && strpos($username, '.') === false) {
+                $dbConfig['connections']['pgsql']['username'] = $username . '.nybdguceocdzeqlaubjp';
+            }
+        }
+        
+        config(['database' => $dbConfig]);
 
         if (config('app.env') === 'production' || env('VERCEL')) {
             // Set view compiled path to /tmp/views on Vercel
