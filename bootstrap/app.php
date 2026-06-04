@@ -78,7 +78,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 }
                 // Automatically convert direct Supabase host (IPv6 only) to IPv4 pooler host on Vercel
                 if (strpos($val, 'db.nybdguceocdzeqlaubjp.supabase.co') !== false) {
-                    return 'aws-0-ap-southeast-1.pooler.supabase.com';
+                    return 'aws-1-ap-southeast-1.pooler.supabase.com';
                 }
             }
             return $val;
@@ -90,8 +90,8 @@ return Application::configure(basePath: dirname(__DIR__))
         if (isset($dbConfig['connections']['pgsql']['host']) && 
             strpos($dbConfig['connections']['pgsql']['host'], 'pooler.supabase.com') !== false) {
             
-            // Set port to 6543 (Transaction Mode) for Vercel/Serverless
-            $dbConfig['connections']['pgsql']['port'] = 6543;
+            // Set port to 5432 (Session Mode) which supports Laravel prepared statements
+            $dbConfig['connections']['pgsql']['port'] = 5432;
             
             // Force sslmode to require for SNI routing support on Vercel
             $dbConfig['connections']['pgsql']['sslmode'] = 'require';
