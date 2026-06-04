@@ -85,6 +85,9 @@ return Application::configure(basePath: dirname(__DIR__))
         if (isset($dbConfig['connections']['pgsql']['host']) && 
             strpos($dbConfig['connections']['pgsql']['host'], 'pooler.supabase.com') !== false) {
             
+            // Set port to 6543 (Transaction Mode) for Vercel/Serverless
+            $dbConfig['connections']['pgsql']['port'] = 6543;
+            
             $username = $dbConfig['connections']['pgsql']['username'] ?? '';
             if ($username && strpos($username, '.') === false) {
                 $dbConfig['connections']['pgsql']['username'] = $username . '.nybdguceocdzeqlaubjp';
