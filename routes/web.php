@@ -25,3 +25,16 @@ Route::get('/blogs/{slug}', [BlogController::class, 'show'])->name('blogs.show')
 // Contact routes
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
+// Temporary route for Vercel database migration and seeding
+Route::get('/run-migrations-nks', function () {
+    try {
+        \Artisan::call('migrate:fresh', [
+            '--force' => true,
+            '--seed' => true,
+        ]);
+        return 'Tạo bảng và nạp dữ liệu Supabase thành công!<br><pre>' . \Artisan::output() . '</pre>';
+    } catch (\Exception $e) {
+        return 'Lỗi: ' . $e->getMessage();
+    }
+});
