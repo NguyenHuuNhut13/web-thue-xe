@@ -14,7 +14,16 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->report(function (\Throwable $e) {
+            header('HTTP/1.1 500 Internal Server Error');
+            header('Content-Type: text/html; charset=utf-8');
+            echo '<h1>Intercepted Original Exception</h1>';
+            echo '<p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
+            echo '<p><strong>Class:</strong> ' . get_class($e) . '</p>';
+            echo '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . '</p>';
+            echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+            exit;
+        });
     })
     ->booting(function () {
         if (config('app.env') === 'production' || env('VERCEL')) {
