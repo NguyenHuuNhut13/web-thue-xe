@@ -43,6 +43,7 @@
     "env": {
         "VIEW_COMPILED_PATH": "/tmp/views",
         "SESSION_DRIVER": "cookie",
+        "CACHE_STORE": "array",
         "LOG_CHANNEL": "stderr"
     }
 }
