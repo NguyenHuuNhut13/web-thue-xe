@@ -2,8 +2,8 @@
     "version": 2,
     "outputDirectory": "public",
     "functions": {
-        "api/*.php": {
-            "runtime": "vercel-php@0.6.2"
+        "api/index.php": {
+            "runtime": "vercel-php@0.8.0"
         }
     },
     "routes": [
@@ -39,5 +39,10 @@
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
-    ]
+    ],
+    "env": {
+        "VIEW_COMPILED_PATH": "/tmp/views",
+        "SESSION_DRIVER": "cookie",
+        "LOG_CHANNEL": "stderr"
+    }
 }
