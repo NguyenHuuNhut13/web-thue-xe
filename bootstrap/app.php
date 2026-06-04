@@ -26,6 +26,42 @@ return Application::configure(basePath: dirname(__DIR__))
         });
     })
     ->booting(function () {
+        // Resolve nested environment variables if any (e.g. DB_HOST=${POSTGRES_HOST})
+        foreach ($_ENV as $key => $value) {
+            if (is_string($value) && strpos($value, '$') !== false) {
+                $resolved = preg_replace_callback('/\${([^}]+)}/', function ($m) {
+                    return $_ENV[$m[1]] ?? $_SERVER[$m[1]] ?? '';
+                }, $value);
+                $_ENV[$key] = $resolved;
+                putenv("$key=$resolved");
+            }
+        }
+        foreach ($_SERVER as $key => $value) {
+            if (is_string($value) && strpos($value, '$') !== false) {
+                $resolved = preg_replace_callback('/\${([^}]+)}/', function ($m) {
+                    return $_ENV[$m[1]] ?? $_SERVER[$m[1]] ?? '';
+                }, $value);
+                $_SERVER[$key] = $resolved;
+            }
+        }
+
+        // Recursively resolve any ${VAR} in the database configuration
+        $resolveValue = function ($val) use (&$resolveValue) {
+            if (is_array($val)) {
+                foreach ($val as $k => $v) {
+                    $val[$k] = $resolveValue($v);
+                }
+                return $val;
+            }
+            if (is_string($val) && strpos($val, '$') !== false) {
+                return preg_replace_callback('/\${([^}]+)}/', function ($m) {
+                    return $_ENV[$m[1]] ?? $_SERVER[$m[1]] ?? '';
+                }, $val);
+            }
+            return $val;
+        };
+        config(['database' => $resolveValue(config('database'))]);
+
         if (config('app.env') === 'production' || env('VERCEL')) {
             // Set view compiled path to /tmp/views on Vercel
             $viewCompiledPath = '/tmp/views';
