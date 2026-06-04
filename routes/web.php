@@ -38,3 +38,21 @@ Route::get('/run-migrations-nks', function () {
         return 'Lỗi: ' . $e->getMessage();
     }
 });
+
+// Serve storage files from /tmp on Vercel
+if (env('VERCEL')) {
+    Route::get('/storage/{path}', function ($path) {
+        if (str_contains($path, '..')) {
+            abort(403);
+        }
+        
+        $fullPath = '/tmp/storage/app/public/' . $path;
+        
+        if (!file_exists($fullPath)) {
+            abort(404);
+        }
+        
+        return response()->file($fullPath);
+    })->where('path', '.*');
+}
+

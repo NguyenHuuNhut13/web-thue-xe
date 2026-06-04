@@ -119,6 +119,20 @@ return Application::configure(basePath: dirname(__DIR__))
                 mkdir($sessionPath, 0755, true);
             }
             config(['session.files' => $sessionPath]);
+
+            // Set storage paths to /tmp on Vercel
+            $localRoot = '/tmp/storage/app/private';
+            $publicRoot = '/tmp/storage/app/public';
+            if (!is_dir($localRoot)) {
+                mkdir($localRoot, 0755, true);
+            }
+            if (!is_dir($publicRoot)) {
+                mkdir($publicRoot, 0755, true);
+            }
+            config([
+                'filesystems.disks.local.root' => $localRoot,
+                'filesystems.disks.public.root' => $publicRoot,
+            ]);
         }
     })
     ->create();
