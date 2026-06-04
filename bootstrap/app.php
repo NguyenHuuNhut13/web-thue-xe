@@ -53,10 +53,16 @@ return Application::configure(basePath: dirname(__DIR__))
                 }
                 return $val;
             }
-            if (is_string($val) && strpos($val, '$') !== false) {
-                return preg_replace_callback('/\${([^}]+)}/', function ($m) {
-                    return $_ENV[$m[1]] ?? $_SERVER[$m[1]] ?? '';
-                }, $val);
+            if (is_string($val)) {
+                if (strpos($val, '$') !== false) {
+                    $val = preg_replace_callback('/\${([^}]+)}/', function ($m) {
+                        return $_ENV[$m[1]] ?? $_SERVER[$m[1]] ?? '';
+                    }, $val);
+                }
+                // Automatically convert direct Supabase host (IPv6 only) to IPv4 pooler host on Vercel
+                if (strpos($val, 'db.nybdguceocdzeqlaubjp.supabase.co') !== false) {
+                    return 'aws-0-ap-southeast-1.pooler.supabase.com';
+                }
             }
             return $val;
         };
