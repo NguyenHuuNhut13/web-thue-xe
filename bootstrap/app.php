@@ -21,6 +21,18 @@ return Application::configure(basePath: dirname(__DIR__))
             echo '<p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
             echo '<p><strong>Class:</strong> ' . get_class($e) . '</p>';
             echo '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . '</p>';
+            
+            // Debug connection info
+            echo '<h2>Resolved DB Config:</h2>';
+            echo '<pre>';
+            $config = config('database.connections.pgsql');
+            // Hide password for safety
+            if (isset($config['password'])) {
+                $config['password'] = str_repeat('*', strlen($config['password']));
+            }
+            print_r($config);
+            echo '</pre>';
+            
             echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
             exit;
         });
