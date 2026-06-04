@@ -76,8 +76,9 @@ return Application::configure(basePath: dirname(__DIR__))
                         return $_ENV[$m[1]] ?? $_SERVER[$m[1]] ?? '';
                     }, $val);
                 }
-                // Automatically convert direct Supabase host (IPv6 only) to IPv4 pooler host on Vercel
-                if (strpos($val, 'db.nybdguceocdzeqlaubjp.supabase.co') !== false) {
+                // Automatically convert direct Supabase host (IPv6 only) or incorrect pooler host to correct IPv4 pooler host on Vercel
+                if (strpos($val, 'db.nybdguceocdzeqlaubjp.supabase.co') !== false || 
+                    strpos($val, 'aws-0-ap-southeast-1.pooler.supabase.com') !== false) {
                     return 'aws-1-ap-southeast-1.pooler.supabase.com';
                 }
             }
