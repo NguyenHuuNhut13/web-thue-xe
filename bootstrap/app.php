@@ -26,9 +26,14 @@ return Application::configure(basePath: dirname(__DIR__))
             echo '<h2>Resolved DB Config:</h2>';
             echo '<pre>';
             $config = config('database.connections.pgsql');
-            // Hide password for safety
+            // Hide password for safety but show length and hint for debugging
             if (isset($config['password'])) {
-                $config['password'] = str_repeat('*', strlen($config['password']));
+                $len = strlen($config['password']);
+                if ($len > 6) {
+                    $config['password'] = substr($config['password'], 0, 3) . '...' . substr($config['password'], -3) . ' (length: ' . $len . ')';
+                } else {
+                    $config['password'] = str_repeat('*', $len);
+                }
             }
             print_r($config);
             echo '</pre>';
