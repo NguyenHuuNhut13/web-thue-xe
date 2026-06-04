@@ -75,6 +75,9 @@
                                 <a href="/member" class="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                                     <i class="fa-solid fa-user text-slate-400 w-5"></i> Quản lý tài khoản
                                 </a>
+                                <a href="{{ auth()->user()->role === 'admin' ? '/admin/profile' : '/member/profile' }}" class="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                                    <i class="fa-solid fa-user-gear text-slate-400 w-5"></i> Hồ sơ & Ảnh đại diện
+                                </a>
                                 <a href="{{ route('cars.favorites') }}" class="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                                     <i class="fa-solid fa-heart text-slate-400 w-5"></i> Xe yêu thích
                                 </a>
@@ -140,6 +143,7 @@
                         </div>
                     </div>
                     <a href="/member" class="block py-2 text-sm font-medium text-slate-600 hover:text-brand"><i class="fa-solid fa-user w-6"></i> Quản lý tài khoản</a>
+                    <a href="{{ auth()->user()->role === 'admin' ? '/admin/profile' : '/member/profile' }}" class="block py-2 text-sm font-medium text-slate-600 hover:text-brand"><i class="fa-solid fa-user-gear w-6"></i> Hồ sơ & Ảnh đại diện</a>
                     <a href="{{ route('cars.favorites') }}" class="block py-2 text-sm font-medium text-slate-600 hover:text-brand"><i class="fa-solid fa-heart w-6"></i> Xe yêu thích</a>
                     <a href="/member/cars" class="block py-2 text-sm font-medium text-slate-600 hover:text-brand"><i class="fa-solid fa-car w-6"></i> Xe của tôi</a>
                     <a href="/member/bookings" class="block py-2 text-sm font-medium text-slate-600 hover:text-brand"><i class="fa-solid fa-receipt w-6"></i> Đơn đặt xe</a>
