@@ -1,0 +1,17 @@
+/node_modules
+/vendor
+/storage/app/public/cars/*
+/storage/app/public/avatars/*
+/database/database.sqlite
+.git
+.env
+.vercel
+/tests
+/bootstrap/cache/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+check_type.php
+check_drilldown.php
+check_widgets.php
