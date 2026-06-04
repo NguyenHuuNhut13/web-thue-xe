@@ -93,6 +93,9 @@ return Application::configure(basePath: dirname(__DIR__))
             // Set port to 6543 (Transaction Mode) for Vercel/Serverless
             $dbConfig['connections']['pgsql']['port'] = 6543;
             
+            // Force sslmode to require for SNI routing support on Vercel
+            $dbConfig['connections']['pgsql']['sslmode'] = 'require';
+            
             $username = $dbConfig['connections']['pgsql']['username'] ?? '';
             if ($username && strpos($username, '.') === false) {
                 $dbConfig['connections']['pgsql']['username'] = $username . '.nybdguceocdzeqlaubjp';
