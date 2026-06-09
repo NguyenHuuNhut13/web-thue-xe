@@ -9,7 +9,7 @@ class BlogController extends Controller
 {
     public function index()
     {
-        $blogs = Blog::where('status', 'published')
+        $blogs = Blog::with(['author'])->where('status', 'published')
             ->orderBy('created_at', 'desc')
             ->paginate(6);
 
@@ -18,11 +18,11 @@ class BlogController extends Controller
 
     public function show($slug)
     {
-        $blog = Blog::where('slug', $slug)
+        $blog = Blog::with(['author'])->where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();
 
-        $recentBlogs = Blog::where('status', 'published')
+        $recentBlogs = Blog::with(['author'])->where('status', 'published')
             ->where('id', '!=', $blog->id)
             ->orderBy('created_at', 'desc')
             ->limit(3)

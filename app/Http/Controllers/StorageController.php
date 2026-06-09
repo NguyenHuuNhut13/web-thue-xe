@@ -21,7 +21,9 @@ class StorageController extends Controller
         }
 
         // 1. First check if the file exists on the local physical public storage disk
-        $localPath = storage_path('app/public/' . $path);
+        $localRoot = config('filesystems.disks.public.root');
+        $localPath = ($localRoot ? rtrim($localRoot, '/') : storage_path('app/public')) . '/' . $path;
+        
         if (file_exists($localPath)) {
             return response()->file($localPath);
         }
@@ -34,6 +36,17 @@ class StorageController extends Controller
 
         $content = base64_decode($file->content);
         $mimeType = $file->mime_type ?? 'application/octet-stream';
+
+        // 3. Cache the file locally for future high-speed requests
+        try {
+            $dir = dirname($localPath);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            file_put_contents($localPath, $content);
+        } catch (\Throwable $e) {
+            // Silently ignore local write cache failures
+        }
 
         // Return the file content with appropriate headers
         return response($content)

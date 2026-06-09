@@ -35,6 +35,21 @@ class DatabaseAdapter implements FilesystemAdapter
                 'created_at' => now(),
             ]
         );
+
+        // Also cache locally on the writeable disk if possible for high-speed serving
+        try {
+            $localRoot = config('filesystems.disks.public.root');
+            if ($localRoot) {
+                $localPath = rtrim($localRoot, '/') . '/' . $path;
+                $dir = dirname($localPath);
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                file_put_contents($localPath, $contents);
+            }
+        } catch (\Throwable $e) {
+            // Silently ignore local write errors
+        }
     }
 
     public function writeStream(string $path, $contents, Config $config): void

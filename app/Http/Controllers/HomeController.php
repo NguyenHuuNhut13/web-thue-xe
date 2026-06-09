@@ -15,7 +15,7 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
-        $latestBlogs = Blog::where('status', 'published')
+        $latestBlogs = Blog::with(['author'])->where('status', 'published')
             ->orderBy('created_at', 'desc')
             ->limit(3)
             ->get();
