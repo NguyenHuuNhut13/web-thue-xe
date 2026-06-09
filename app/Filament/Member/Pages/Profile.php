@@ -18,9 +18,9 @@ class Profile extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
-    protected static ?string $navigationLabel = 'Hồ sơ & Ảnh đại diện';
+    protected static ?string $navigationLabel = 'Hồ sơ';
 
-    protected static ?string $title = 'Hồ sơ & Ảnh đại diện';
+    protected static ?string $title = 'Hồ sơ';
 
     protected static ?string $slug = 'profile';
 
