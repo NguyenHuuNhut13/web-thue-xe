@@ -119,10 +119,10 @@ class UsersTable
                     ])
                     ->modalSubmitActionLabel('Lưu thay đổi')
                     ->modalCancelActionLabel('Đóng')
-                    ->mutateFormDataBeforeSave(fn (array $data, $record): array => [
+                    ->using(fn ($record, array $data) => $record->update([
                         'role'   => $data['role'],
                         'status' => $data['status'],
-                    ]),
+                    ])),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
