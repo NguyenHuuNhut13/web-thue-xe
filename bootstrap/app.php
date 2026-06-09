@@ -57,6 +57,23 @@ return Application::configure(basePath: dirname(__DIR__))
             echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
             exit;
         });
+
+        // Global exception renderer to log all exceptions (including validation, CSRF, HTTP errors) to database
+        $exceptions->render(function (\Throwable $e) {
+            try {
+                \Illuminate\Support\Facades\DB::statement('CREATE TABLE IF NOT EXISTS vercel_errors (id SERIAL PRIMARY KEY, class VARCHAR(255), message TEXT, file TEXT, line INTEGER, trace TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+                \Illuminate\Support\Facades\DB::insert('INSERT INTO vercel_errors (class, message, file, line, trace) VALUES (?, ?, ?, ?, ?)', [
+                    get_class($e),
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine(),
+                    $e->getTraceAsString()
+                ]);
+            } catch (\Throwable $dbEx) {
+                // Ignore database logging exceptions to prevent loops
+            }
+            return null; // Continue with default rendering
+        });
     })
     ->booting(function () {
         // Resolve nested environment variables if any (e.g. DB_HOST=${POSTGRES_HOST})
