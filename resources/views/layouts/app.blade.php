@@ -67,12 +67,7 @@
                             </button>
                             <!-- Dropdown -->
                             <div x-show="open" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-1 z-50">
-                                @if(auth()->user()->role === 'admin')
-                                    <a href="/admin" class="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
-                                        <i class="fa-solid fa-lock text-slate-400 w-5"></i> Admin Dashboard
-                                    </a>
-                                @endif
-                                <a href="/member" class="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                                <a href="{{ auth()->user()->role === 'admin' ? '/admin' : '/member' }}" class="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                                     <i class="fa-solid fa-user text-slate-400 w-5"></i> Trang quản lý
                                 </a>
                                 <a href="{{ route('cars.favorites') }}" class="flex items-center px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
@@ -139,7 +134,7 @@
                             <div class="text-xs text-slate-400">{{ auth()->user()->email }}</div>
                         </div>
                     </div>
-                    <a href="/member" class="block py-2 text-sm font-medium text-slate-600 hover:text-brand"><i class="fa-solid fa-user w-6"></i> Trang quản lý</a>
+                    <a href="{{ auth()->user()->role === 'admin' ? '/admin' : '/member' }}" class="block py-2 text-sm font-medium text-slate-600 hover:text-brand"><i class="fa-solid fa-user w-6"></i> Trang quản lý</a>
                     <a href="{{ route('cars.favorites') }}" class="block py-2 text-sm font-medium text-slate-600 hover:text-brand"><i class="fa-solid fa-heart w-6"></i> Xe yêu thích</a>
                     <a href="/member/cars" class="block py-2 text-sm font-medium text-slate-600 hover:text-brand"><i class="fa-solid fa-car w-6"></i> Xe của tôi</a>
                     <a href="/member/bookings" class="block py-2 text-sm font-medium text-slate-600 hover:text-brand"><i class="fa-solid fa-receipt w-6"></i> Đơn đặt xe</a>
