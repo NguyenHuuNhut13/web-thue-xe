@@ -150,6 +150,11 @@ class DatabaseAdapter implements FilesystemAdapter
         }
     }
 
+    public function getUrl(string $path): string
+    {
+        return url('storage/' . $path);
+    }
+
     protected function detectMimeType(string $path, string $contents): string
     {
         $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
