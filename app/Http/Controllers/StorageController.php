@@ -15,6 +15,14 @@ class StorageController extends Controller
      */
     public function serve(string $path)
     {
+        return response()->json([
+            'debug' => true,
+            'path' => $path,
+            'local_exists' => file_exists(storage_path('app/public/' . $path)),
+            'db_exists' => DB::table('stored_files')->where('path', $path)->exists(),
+            'db_first' => DB::table('stored_files')->where('path', $path)->select('path', 'mime_type', 'size')->first(),
+        ]);
+
         // Prevent path traversal attacks
         if (str_contains($path, '..')) {
             abort(403);
