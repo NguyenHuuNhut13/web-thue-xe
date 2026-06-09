@@ -80,10 +80,13 @@
 @endsection
 
 @section('content')
-    <div class="flex h-[calc(100vh-80px)] overflow-hidden relative">
+    <div class="flex h-[calc(100vh-80px)] overflow-hidden relative" x-data="{ panelOpen: false }">
         
-        <!-- Left Panel: Cars List -->
-        <div class="w-full md:w-[420px] bg-white border-r border-slate-100 shadow-xl flex flex-col z-20 h-full">
+        <!-- Left Panel: Cars List (hidden by default on mobile, shown on md+) -->
+        <div class="absolute inset-y-0 left-0 z-30 w-full md:w-[420px] bg-white border-r border-slate-100 shadow-xl flex flex-col h-full
+                    transition-transform duration-300 ease-in-out
+                    md:relative md:translate-x-0"
+             :class="panelOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
             
             <!-- List Header -->
             <div class="p-6 border-b border-slate-100">
@@ -91,9 +94,17 @@
                     <h1 class="text-xl font-black text-slate-900 flex items-center">
                         <i class="fa-solid fa-map-location-dot text-brand mr-2"></i> Bản đồ tìm xe
                     </h1>
-                    <span class="text-xs font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
-                        {{ $cars->count() }} xe hoạt động
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
+                            {{ $cars->count() }} xe hoạt động
+                        </span>
+                        <!-- Close button - mobile only -->
+                        <button @click="panelOpen = false"
+                                class="md:hidden flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+                                title="Đóng danh sách">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Quick Filter indicator -->
@@ -106,6 +117,7 @@
             <div class="flex-grow overflow-y-auto divide-y divide-slate-100 p-4 space-y-4">
                 @forelse($cars as $car)
                     <div class="bg-slate-50 hover:bg-slate-100/60 p-4 rounded-2xl border border-slate-100 hover:border-brand/20 transition-all duration-300 cursor-pointer flex gap-4"
+                         @click="panelOpen = false"
                          onclick="focusCar({{ $car->longitude }}, {{ $car->latitude }}, {{ $car->id }})">
                         <!-- Car Image -->
                         <div class="w-24 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-slate-200">
@@ -150,6 +162,34 @@
 
         <!-- Right Panel: Full Screen Map -->
         <div id="map" class="flex-grow h-full w-full z-10"></div>
+
+        <!-- Floating Toggle Button - mobile only -->
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 md:hidden">
+            <button @click="panelOpen = !panelOpen"
+                    class="flex items-center gap-2 px-5 py-3 rounded-full shadow-2xl font-bold text-sm transition-all duration-200 active:scale-95"
+                    :class="panelOpen
+                        ? 'bg-white text-slate-700 border border-slate-200'
+                        : 'bg-brand text-white shadow-brand/30'">
+                <template x-if="!panelOpen">
+                    <span><i class="fa-solid fa-list-ul mr-1.5"></i> Xem danh sách xe</span>
+                </template>
+                <template x-if="panelOpen">
+                    <span><i class="fa-solid fa-map mr-1.5"></i> Xem bản đồ</span>
+                </template>
+            </button>
+        </div>
+
+        <!-- Backdrop overlay when panel is open on mobile -->
+        <div x-show="panelOpen"
+             @click="panelOpen = false"
+             x-transition:enter="transition-opacity duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="absolute inset-0 bg-black/40 z-20 md:hidden">
+        </div>
     </div>
 @endsection
 
