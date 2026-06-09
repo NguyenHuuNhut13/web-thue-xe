@@ -119,6 +119,9 @@ Route::get('/test-write-nks', function () {
         'is_writable_local' => is_writable(config('filesystems.disks.local.root') ?: '') ? 'yes' : 'no',
         'is_dir_public' => is_dir(config('filesystems.disks.public.root') ?: '') ? 'yes' : 'no',
         'is_writable_public' => is_writable(config('filesystems.disks.public.root') ?: '') ? 'yes' : 'no',
+        'upload_max_filesize' => ini_get('upload_max_filesize'),
+        'post_max_size' => ini_get('post_max_size'),
+        'memory_limit' => ini_get('memory_limit'),
     ];
 
     return response()->json($results);
