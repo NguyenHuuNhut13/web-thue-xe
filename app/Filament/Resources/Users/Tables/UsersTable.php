@@ -82,31 +82,47 @@ class UsersTable
             ])
             ->recordActions([
                 EditAction::make()
-                    ->label('Xem chi tiết')
-                    ->icon('heroicon-o-eye')
-                    ->modalHeading('Thông tin thành viên')
+                    ->label('Quản lý')
+                    ->icon('heroicon-o-user-circle')
+                    ->modalHeading('Quản lý thành viên')
                     ->form([
-                        TextInput::make('name')->label('Họ và tên')->disabled(),
-                        TextInput::make('email')->label('Email')->disabled(),
-                        TextInput::make('phone')->label('Số điện thoại')->disabled(),
-                        TextInput::make('zalo')->label('Zalo')->disabled(),
+                        TextInput::make('name')
+                            ->label('Họ và tên')
+                            ->disabled(),
+                        TextInput::make('email')
+                            ->label('Địa chỉ Email')
+                            ->disabled(),
+                        TextInput::make('phone')
+                            ->label('Số điện thoại')
+                            ->disabled()
+                            ->placeholder('Chưa cập nhật'),
+                        TextInput::make('zalo')
+                            ->label('Zalo')
+                            ->disabled()
+                            ->placeholder('Chưa cập nhật'),
                         Select::make('role')
                             ->label('Vai trò')
                             ->options([
-                                'admin' => 'Administrator',
-                                'member' => 'Thành viên',
+                                'admin' => '🔐 Administrator (Quản trị viên)',
+                                'member' => '👤 Member (Thành viên)',
                             ])
-                            ->disabled(),
+                            ->required()
+                            ->helperText('Thay đổi vai trò sẽ ảnh hưởng đến quyền truy cập hệ thống.'),
                         Select::make('status')
-                            ->label('Trạng thái')
+                            ->label('Trạng thái tài khoản')
                             ->options([
-                                'active' => 'Hoạt động',
-                                'blocked' => 'Đã khóa',
+                                'active'  => '✅ Hoạt động',
+                                'blocked' => '🔒 Khóa tài khoản',
                             ])
-                            ->disabled(),
+                            ->required()
+                            ->helperText('Tài khoản bị khóa sẽ không thể đăng nhập.'),
                     ])
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Đóng'),
+                    ->modalSubmitActionLabel('Lưu thay đổi')
+                    ->modalCancelActionLabel('Đóng')
+                    ->mutateFormDataBeforeSave(fn (array $data, $record): array => [
+                        'role'   => $data['role'],
+                        'status' => $data['status'],
+                    ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
