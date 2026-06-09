@@ -76,11 +76,15 @@
             background-color: #005a91;
             box-shadow: 0 0 0 8px rgba(0, 90, 145, 0.3), 0 6px 16px rgba(0, 0, 0, 0.2);
         }
+        /* Safe area support for bottom floating button */
+        .btn-floating-map {
+            bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4rem));
+        }
     </style>
 @endsection
 
 @section('content')
-    <div class="flex h-[calc(100vh-80px)] overflow-hidden relative" x-data="{ panelOpen: false }">
+    <div class="flex h-[calc(100dvh-80px)] overflow-hidden relative" x-data="{ panelOpen: false }">
         
         <!-- Left Panel: Cars List (hidden by default on mobile, shown on md+) -->
         <div class="absolute inset-y-0 left-0 z-30 w-full md:w-[420px] bg-white border-r border-slate-100 shadow-xl flex flex-col h-full
@@ -164,7 +168,7 @@
         <div id="map" class="flex-grow h-full w-full z-10"></div>
 
         <!-- Floating Toggle Button - mobile only -->
-        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 md:hidden">
+        <div class="btn-floating-map absolute left-1/2 -translate-x-1/2 z-40 md:hidden">
             <button @click="panelOpen = !panelOpen"
                     class="flex items-center gap-2 px-5 py-3 rounded-full shadow-2xl font-bold text-sm transition-all duration-200 active:scale-95"
                     :class="panelOpen
