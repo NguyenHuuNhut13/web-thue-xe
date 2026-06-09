@@ -46,7 +46,11 @@ class Profile extends Page implements HasForms
                     ->label('Địa chỉ Email')
                     ->email()
                     ->required()
-                    ->unique(table: 'users', column: 'email', ignoreRecord: true)
+                    ->unique(
+                        table: 'users',
+                        column: 'email',
+                        ignorable: fn () => auth()->user()
+                    )
                     ->placeholder('Ví dụ: nhut@example.com'),
 
                 TextInput::make('phone')
