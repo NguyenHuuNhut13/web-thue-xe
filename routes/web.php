@@ -81,3 +81,46 @@ Route::get('/view-errors-nks', function () {
     }
 });
 
+// Diagnostic route to test storage disk writes
+Route::get('/test-write-nks', function () {
+    $results = [];
+    
+    // Test 1: Write to local disk via Storage facade
+    try {
+        \Illuminate\Support\Facades\Storage::disk('local')->put('test.txt', 'Hello Local Disk');
+        $results['storage_local'] = 'SUCCESS: ' . \Illuminate\Support\Facades\Storage::disk('local')->get('test.txt');
+    } catch (\Throwable $e) {
+        $results['storage_local'] = 'FAIL: ' . $e->getMessage();
+    }
+    
+    // Test 2: Write to public disk via Storage facade
+    try {
+        \Illuminate\Support\Facades\Storage::disk('public')->put('test.txt', 'Hello Public Disk');
+        $results['storage_public'] = 'SUCCESS: ' . \Illuminate\Support\Facades\Storage::disk('public')->get('test.txt');
+    } catch (\Throwable $e) {
+        $results['storage_public'] = 'FAIL: ' . $e->getMessage();
+    }
+
+    // Test 3: Raw file_put_contents to /tmp
+    try {
+        $path = '/tmp/raw_test.txt';
+        file_put_contents($path, 'Hello Raw /tmp');
+        $results['raw_tmp'] = 'SUCCESS: ' . file_get_contents($path);
+    } catch (\Throwable $e) {
+        $results['raw_tmp'] = 'FAIL: ' . $e->getMessage();
+    }
+
+    // Test 4: Check directory permissions and paths
+    $results['paths'] = [
+        'local_root' => config('filesystems.disks.local.root'),
+        'public_root' => config('filesystems.disks.public.root'),
+        'is_vercel' => env('VERCEL') ? 'yes' : 'no',
+        'is_dir_local' => is_dir(config('filesystems.disks.local.root') ?: '') ? 'yes' : 'no',
+        'is_writable_local' => is_writable(config('filesystems.disks.local.root') ?: '') ? 'yes' : 'no',
+        'is_dir_public' => is_dir(config('filesystems.disks.public.root') ?: '') ? 'yes' : 'no',
+        'is_writable_public' => is_writable(config('filesystems.disks.public.root') ?: '') ? 'yes' : 'no',
+    ];
+
+    return response()->json($results);
+});
+
