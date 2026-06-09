@@ -92,5 +92,14 @@ Route::get('/test-storage', function () {
     }
 });
 
+// Test route to check actual configuration values on Vercel
+Route::get('/test-config', function () {
+    return [
+        'default_disk' => config('filesystems.default'),
+        'local' => config('filesystems.disks.local'),
+        'public' => config('filesystems.disks.public'),
+    ];
+});
+
 
 
