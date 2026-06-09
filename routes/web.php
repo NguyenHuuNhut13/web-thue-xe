@@ -56,50 +56,7 @@ Route::get('/storage/{path}', [App\Http\Controllers\StorageController::class, 's
     ->where('path', '.*')
     ->name('storage.serve');
 
-// Test route for the custom database storage driver
-Route::get('/test-storage', function () {
-    try {
-        $path = 'test-' . time() . '.txt';
-        $content = 'Hello World at ' . now()->toDateTimeString();
-        
-        \Illuminate\Support\Facades\Storage::disk('public')->put($path, $content);
-        
-        $existsInStorage = \Illuminate\Support\Facades\Storage::disk('public')->exists($path);
-        $readFromStorage = \Illuminate\Support\Facades\Storage::disk('public')->get($path);
-        
-        $dbRecord = \Illuminate\Support\Facades\DB::table('stored_files')->where('path', $path)->first();
-        
-        \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
-        
-        $existsAfterDelete = \Illuminate\Support\Facades\Storage::disk('public')->exists($path);
-        $dbRecordAfterDelete = \Illuminate\Support\Facades\DB::table('stored_files')->where('path', $path)->first();
-        
-        return [
-            'success' => true,
-            'written_path' => $path,
-            'exists_in_storage' => $existsInStorage,
-            'read_content' => $readFromStorage,
-            'db_record' => $dbRecord,
-            'exists_after_delete' => $existsAfterDelete,
-            'db_record_after_delete' => $dbRecordAfterDelete,
-        ];
-    } catch (\Exception $e) {
-        return [
-            'success' => false,
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-        ];
-    }
-});
 
-// Test route to check actual configuration values on Vercel
-Route::get('/test-config', function () {
-    return [
-        'default_disk' => config('filesystems.default'),
-        'local' => config('filesystems.disks.local'),
-        'public' => config('filesystems.disks.public'),
-    ];
-});
 
 
 
