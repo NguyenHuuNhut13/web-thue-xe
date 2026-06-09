@@ -22,5 +22,14 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') === 'production' || env('VERCEL') || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             \URL::forceScheme('https');
         }
+
+        \Illuminate\Support\Facades\Storage::extend('database', function ($app, $config) {
+            $adapter = new \App\Filesystem\DatabaseAdapter();
+            return new \Illuminate\Filesystem\FilesystemAdapter(
+                new \League\Flysystem\Filesystem($adapter, $config),
+                $adapter,
+                $config
+            );
+        });
     }
 }
