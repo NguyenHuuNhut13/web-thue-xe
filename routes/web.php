@@ -58,9 +58,26 @@ if (env('VERCEL')) {
 
 // Diagnostic route to view Vercel errors
 Route::get('/view-errors-nks', function () {
-    if (!file_exists('/tmp/laravel_errors.log')) {
-        return 'No errors logged yet.';
+    try {
+        if (!\Schema::hasTable('vercel_errors')) {
+            return 'Table vercel_errors does not exist yet.';
+        }
+        $errors = \DB::select('SELECT * FROM vercel_errors ORDER BY created_at DESC LIMIT 50');
+        if (empty($errors)) {
+            return 'No errors logged in the database yet.';
+        }
+        
+        $output = "";
+        foreach ($errors as $err) {
+            $output .= "=== ERROR #" . $err->id . " (" . $err->created_at . ") ===\n";
+            $output .= "Class: " . $err->class . "\n";
+            $output .= "Message: " . $err->message . "\n";
+            $output .= "File: " . $err->file . ":" . $err->line . "\n";
+            $output .= "Trace:\n" . $err->trace . "\n\n";
+        }
+        return response($output, 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+    } catch (\Throwable $e) {
+        return 'Failed to query errors: ' . $e->getMessage();
     }
-    return response(file_get_contents('/tmp/laravel_errors.log'), 200, ['Content-Type' => 'text/plain']);
 });
 

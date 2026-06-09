@@ -18,6 +18,19 @@ return Application::configure(basePath: dirname(__DIR__))
             $logMsg = date('[Y-m-d H:i:s]') . ' ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString() . "\n\n";
             @file_put_contents('/tmp/laravel_errors.log', $logMsg, FILE_APPEND);
 
+            try {
+                \Illuminate\Support\Facades\DB::statement('CREATE TABLE IF NOT EXISTS vercel_errors (id SERIAL PRIMARY KEY, class VARCHAR(255), message TEXT, file TEXT, line INTEGER, trace TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+                \Illuminate\Support\Facades\DB::insert('INSERT INTO vercel_errors (class, message, file, line, trace) VALUES (?, ?, ?, ?, ?)', [
+                    get_class($e),
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine(),
+                    $e->getTraceAsString()
+                ]);
+            } catch (\Throwable $dbEx) {
+                // Ignore database logging exceptions to prevent loops
+            }
+
             header('HTTP/1.1 500 Internal Server Error');
             header('Content-Type: text/html; charset=utf-8');
             echo '<h1>Intercepted Original Exception</h1>';
