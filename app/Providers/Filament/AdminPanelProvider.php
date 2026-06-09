@@ -31,7 +31,6 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(fn () => view('filament.logo'))
             ->font('Outfit')
             ->sidebarCollapsibleOnDesktop()
-            ->profile(\App\Filament\Pages\EditProfile::class)
             ->navigationItems([
                 \Filament\Navigation\NavigationItem::make('Quay lại Trang chủ')
                     ->url('/')
@@ -39,6 +38,10 @@ class AdminPanelProvider extends PanelProvider
                     ->sort(-1),
             ])
             ->userMenuItems([
+                'profile' => \Filament\Navigation\MenuItem::make()
+                    ->label('Hồ sơ cá nhân')
+                    ->url(fn (): string => \App\Filament\Pages\Profile::getUrl())
+                    ->icon('heroicon-o-user-circle'),
                 'home' => \Filament\Navigation\MenuItem::make()
                     ->label('Trang chủ NKS')
                     ->url('/')
