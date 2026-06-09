@@ -4,7 +4,9 @@ namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
@@ -79,7 +81,32 @@ class UsersTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
+                EditAction::make()
+                    ->label('Xem chi tiết')
+                    ->icon('heroicon-o-eye')
+                    ->modalHeading('Thông tin thành viên')
+                    ->form([
+                        TextInput::make('name')->label('Họ và tên')->disabled(),
+                        TextInput::make('email')->label('Email')->disabled(),
+                        TextInput::make('phone')->label('Số điện thoại')->disabled(),
+                        TextInput::make('zalo')->label('Zalo')->disabled(),
+                        Select::make('role')
+                            ->label('Vai trò')
+                            ->options([
+                                'admin' => 'Administrator',
+                                'member' => 'Thành viên',
+                            ])
+                            ->disabled(),
+                        Select::make('status')
+                            ->label('Trạng thái')
+                            ->options([
+                                'active' => 'Hoạt động',
+                                'blocked' => 'Đã khóa',
+                            ])
+                            ->disabled(),
+                    ])
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Đóng'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
