@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->report(function (\Throwable $e) {
+            $logMsg = date('[Y-m-d H:i:s]') . ' ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString() . "\n\n";
+            @file_put_contents('/tmp/laravel_errors.log', $logMsg, FILE_APPEND);
+
             header('HTTP/1.1 500 Internal Server Error');
             header('Content-Type: text/html; charset=utf-8');
             echo '<h1>Intercepted Original Exception</h1>';

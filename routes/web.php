@@ -56,3 +56,11 @@ if (env('VERCEL')) {
     })->where('path', '.*');
 }
 
+// Diagnostic route to view Vercel errors
+Route::get('/view-errors-nks', function () {
+    if (!file_exists('/tmp/laravel_errors.log')) {
+        return 'No errors logged yet.';
+    }
+    return response(file_get_contents('/tmp/laravel_errors.log'), 200, ['Content-Type' => 'text/plain']);
+});
+
