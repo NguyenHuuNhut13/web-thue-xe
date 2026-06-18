@@ -259,25 +259,86 @@
                         <form action="{{ route('cars.book', $car->id) }}" method="POST" class="space-y-4">
                             @csrf
                             
-                            <!-- Start Date -->
-                            <div class="flex flex-col">
-                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Ngày nhận xe</label>
-                                <input type="date" name="start_date" x-model="startDate" min="{{ date('Y-m-d') }}" required
-                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold">
+                            <!-- Date fields side-by-side -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="flex flex-col">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Ngày nhận xe</label>
+                                    <input type="date" name="start_date" x-model="startDate" min="{{ date('Y-m-d') }}" required
+                                           class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold">
+                                </div>
+                                <div class="flex flex-col">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Ngày trả xe</label>
+                                    <input type="date" name="end_date" x-model="endDate" :min="startDate || '{{ date('Y-m-d') }}'" required
+                                           class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold">
+                                </div>
                             </div>
 
-                            <!-- End Date -->
-                            <div class="flex flex-col">
-                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Ngày trả xe</label>
-                                <input type="date" name="end_date" x-model="endDate" :min="startDate || '{{ date('Y-m-d') }}'" required
-                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold">
+                            <!-- Lộ trình -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="flex flex-col">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Điểm đi</label>
+                                    <input type="text" name="pickup_location" placeholder="Ví dụ: Quận 1" required
+                                           class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold">
+                                </div>
+                                <div class="flex flex-col">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Điểm đến</label>
+                                    <input type="text" name="dropoff_location" placeholder="Ví dụ: Vũng Tàu" required
+                                           class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold">
+                                </div>
+                            </div>
+
+                            <!-- Dịch vụ tài xế -->
+                            <div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                <div class="flex items-center space-x-2.5">
+                                    <div class="bg-blue-50 text-brand p-1.5 rounded-lg flex items-center justify-center">
+                                        <i class="fa-solid fa-user-tie text-xs"></i>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700">Thuê kèm tài xế</span>
+                                        <span class="text-[9px] text-slate-400 font-medium">Lái xe an toàn suốt hành trình</span>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="has_driver" value="1" class="sr-only peer">
+                                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:width-4 after:w-4 after:transition-all peer-checked:bg-brand"></div>
+                                </label>
+                            </div>
+
+                            <!-- Thông tin khách hàng -->
+                            <div class="border-t border-slate-100 pt-3.5 space-y-3">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Thông tin liên hệ</span>
+                                
+                                <div class="flex flex-col">
+                                    <label class="text-[9px] font-bold text-slate-500 mb-1">Họ và tên</label>
+                                    <input type="text" name="customer_name" required 
+                                           value="{{ auth()->check() ? auth()->user()->name : '' }}"
+                                           placeholder="Nhập họ và tên"
+                                           class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="flex flex-col">
+                                        <label class="text-[9px] font-bold text-slate-500 mb-1">Số điện thoại</label>
+                                        <input type="tel" name="customer_phone" required
+                                               value="{{ auth()->check() ? auth()->user()->phone : '' }}"
+                                               placeholder="Nhập số điện thoại"
+                                               class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold">
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label class="text-[9px] font-bold text-slate-500 mb-1">Email</label>
+                                        <input type="email" name="customer_email" required
+                                               value="{{ auth()->check() ? auth()->user()->email : '' }}"
+                                               placeholder="Nhập địa chỉ email"
+                                               class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold">
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Notes -->
                             <div class="flex flex-col">
-                                <label class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Ghi chú gửi chủ xe</label>
-                                <textarea name="notes" placeholder="Lời nhắn, lịch trình, yêu cầu giao nhận xe..." rows="3"
-                                          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold"></textarea>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Ghi chú gửi chủ xe</label>
+                                <textarea name="notes" placeholder="Lời nhắn, lịch trình, yêu cầu giao nhận xe..." rows="2"
+                                          class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand text-xs font-semibold"></textarea>
                             </div>
 
                             <!-- Live Price Calculation display -->

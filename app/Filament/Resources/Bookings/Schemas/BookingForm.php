@@ -6,6 +6,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class BookingForm
@@ -21,9 +22,22 @@ class BookingForm
                     ->required(),
 
                 Select::make('user_id')
-                    ->label('Khách thuê')
+                    ->label('Khách thuê (Tài khoản)')
                     ->relationship('user', 'name')
                     ->searchable()
+                    ->required(),
+
+                TextInput::make('customer_name')
+                    ->label('Họ tên khách hàng')
+                    ->required(),
+
+                TextInput::make('customer_phone')
+                    ->label('Số điện thoại liên hệ')
+                    ->required(),
+
+                TextInput::make('customer_email')
+                    ->label('Email liên hệ')
+                    ->email()
                     ->required(),
 
                 DatePicker::make('start_date')
@@ -33,6 +47,18 @@ class BookingForm
                 DatePicker::make('end_date')
                     ->label('Ngày kết thúc')
                     ->required(),
+
+                TextInput::make('pickup_location')
+                    ->label('Điểm đi (Đón)')
+                    ->required(),
+
+                TextInput::make('dropoff_location')
+                    ->label('Điểm đến (Trả)')
+                    ->required(),
+
+                Toggle::make('has_driver')
+                    ->label('Có kèm tài xế')
+                    ->default(false),
 
                 TextInput::make('total_price')
                     ->label('Tổng số tiền')

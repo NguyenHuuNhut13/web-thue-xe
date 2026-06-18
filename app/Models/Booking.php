@@ -17,6 +17,12 @@ class Booking extends Model
         'total_price',
         'status',
         'notes',
+        'pickup_location',
+        'dropoff_location',
+        'has_driver',
+        'customer_name',
+        'customer_phone',
+        'customer_email',
     ];
 
     protected function casts(): array
@@ -25,6 +31,7 @@ class Booking extends Model
             'start_date' => 'date',
             'end_date' => 'date',
             'total_price' => 'decimal:2',
+            'has_driver' => 'boolean',
         ];
     }
 

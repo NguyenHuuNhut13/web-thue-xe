@@ -19,10 +19,30 @@ class BookingsTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('user.name')
+                TextColumn::make('customer_name')
                     ->label('Khách thuê')
                     ->searchable()
                     ->sortable(),
+
+                TextColumn::make('customer_phone')
+                    ->label('SĐT khách')
+                    ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('pickup_location')
+                    ->label('Điểm đi')
+                    ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('dropoff_location')
+                    ->label('Điểm đến')
+                    ->searchable()
+                    ->toggleable(),
+
+                \Filament\Tables\Columns\IconColumn::make('has_driver')
+                    ->label('Có tài xế')
+                    ->boolean()
+                    ->toggleable(),
 
                 TextColumn::make('car.owner.name')
                     ->label('Chủ xe')

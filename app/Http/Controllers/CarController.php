@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Car;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingAdminNotification;
+use App\Mail\BookingCustomerNotification;
 
 class CarController extends Controller
 {
@@ -167,6 +170,12 @@ class CarController extends Controller
         $request->validate([
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
+            'pickup_location' => 'required|string|max:255',
+            'dropoff_location' => 'required|string|max:255',
+            'has_driver' => 'boolean|nullable',
+            'customer_name' => 'required|string|max:255',
+            'customer_phone' => 'required|string|max:50',
+            'customer_email' => 'required|email|max:255',
             'notes' => 'nullable|string|max:1000',
         ]);
 
@@ -181,7 +190,7 @@ class CarController extends Controller
 
         $totalPrice = $car->price_per_day * $days;
 
-        Booking::create([
+        $booking = Booking::create([
             'car_id' => $car->id,
             'user_id' => auth()->id(),
             'start_date' => $request->start_date,
@@ -189,7 +198,29 @@ class CarController extends Controller
             'total_price' => $totalPrice,
             'status' => 'pending',
             'notes' => $request->notes,
+            'pickup_location' => $request->pickup_location,
+            'dropoff_location' => $request->dropoff_location,
+            'has_driver' => $request->has('has_driver'),
+            'customer_name' => $request->customer_name,
+            'customer_phone' => $request->customer_phone,
+            'customer_email' => $request->customer_email,
         ]);
+
+        // Gửi email thông báo cho Admin
+        try {
+            $adminEmail = env('TEST_ADMIN_EMAIL', 'admin@nks.vn');
+            Mail::to($adminEmail)->send(new BookingAdminNotification($booking));
+        } catch (\Exception $e) {
+            \Log::error('Lỗi gửi email cho Admin: ' . $e->getMessage());
+        }
+
+        // Gửi email thông báo cho Khách hàng
+        try {
+            $customerEmail = env('TEST_CUSTOMER_EMAIL', $booking->customer_email);
+            Mail::to($customerEmail)->send(new BookingCustomerNotification($booking));
+        } catch (\Exception $e) {
+            \Log::error('Lỗi gửi email cho Khách hàng: ' . $e->getMessage());
+        }
 
         return redirect()->back()->with('success', 'Yêu cầu đặt xe thành công! Chủ xe sẽ sớm liên hệ với bạn qua số điện thoại/Zalo để xác nhận.');
     }

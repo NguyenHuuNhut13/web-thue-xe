@@ -6,6 +6,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class BookingForm
@@ -22,8 +23,26 @@ class BookingForm
                     ->dehydrated(),
 
                 Select::make('user_id')
-                    ->label('Khách thuê')
+                    ->label('Tài khoản đặt')
                     ->relationship('user', 'name')
+                    ->required()
+                    ->disabled()
+                    ->dehydrated(),
+
+                TextInput::make('customer_name')
+                    ->label('Họ tên khách thuê')
+                    ->required()
+                    ->disabled()
+                    ->dehydrated(),
+
+                TextInput::make('customer_phone')
+                    ->label('Số điện thoại liên hệ')
+                    ->required()
+                    ->disabled()
+                    ->dehydrated(),
+
+                TextInput::make('customer_email')
+                    ->label('Email liên hệ')
                     ->required()
                     ->disabled()
                     ->dehydrated(),
@@ -37,6 +56,23 @@ class BookingForm
                 DatePicker::make('end_date')
                     ->label('Ngày kết thúc')
                     ->required()
+                    ->disabled()
+                    ->dehydrated(),
+
+                TextInput::make('pickup_location')
+                    ->label('Điểm đi (Đón)')
+                    ->required()
+                    ->disabled()
+                    ->dehydrated(),
+
+                TextInput::make('dropoff_location')
+                    ->label('Điểm đến (Trả)')
+                    ->required()
+                    ->disabled()
+                    ->dehydrated(),
+
+                Toggle::make('has_driver')
+                    ->label('Có tài xế kèm theo')
                     ->disabled()
                     ->dehydrated(),
 

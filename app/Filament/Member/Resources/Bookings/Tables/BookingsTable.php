@@ -26,10 +26,30 @@ class BookingsTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('user.name')
+                TextColumn::make('customer_name')
                     ->label('Khách thuê')
                     ->searchable()
                     ->sortable(),
+
+                TextColumn::make('customer_phone')
+                    ->label('SĐT khách')
+                    ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('pickup_location')
+                    ->label('Điểm đi')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('dropoff_location')
+                    ->label('Điểm đến')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                \Filament\Tables\Columns\IconColumn::make('has_driver')
+                    ->label('Có tài xế')
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('start_date')
                     ->label('Từ ngày')
