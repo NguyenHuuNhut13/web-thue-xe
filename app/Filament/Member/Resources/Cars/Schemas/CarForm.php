@@ -7,6 +7,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Set;
 use Illuminate\Support\Str;
@@ -145,6 +146,11 @@ class CarForm
                     ->label('Mô tả chi tiết trang bị & tình trạng xe')
                     ->placeholder('Mô tả chi tiết về xe, các tính năng đặc biệt (cảm biến, camera hành trình, định vị GPS, v.v.)...')
                     ->columnSpanFull(),
+
+                Toggle::make('has_driver')
+                    ->label('Cho thuê xe có kèm tài xế')
+                    ->default(false)
+                    ->helperText('Bật nếu xe này bạn cho thuê có tài xế kèm theo, tắt nếu là xe tự lái.'),
 
                 TextInput::make('status')
                     ->label('Trạng thái duyệt')

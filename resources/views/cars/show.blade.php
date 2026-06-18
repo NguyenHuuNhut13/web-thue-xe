@@ -94,6 +94,15 @@
                     <div class="flex items-center space-x-2.5">
                         <span class="text-xs font-bold text-brand uppercase tracking-widest bg-blue-50 px-2.5 py-1 rounded-md">{{ $car->brand }}</span>
                         <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">Đời {{ $car->year }}</span>
+                        @if($car->has_driver)
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md flex items-center gap-1">
+                                <i class="fa-solid fa-user-tie"></i> Có tài xế
+                            </span>
+                        @else
+                            <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md flex items-center gap-1">
+                                <i class="fa-solid fa-car"></i> Xe tự lái
+                            </span>
+                        @endif
                     </div>
                     <h1 class="text-3xl font-extrabold text-slate-900 mt-2.5">{{ $car->title }}</h1>
                     
@@ -245,6 +254,10 @@
                             <p class="text-2xl font-black text-brand mt-0.5">
                                 {{ number_format($car->price_per_day, 0, ',', '.') }}đ <span class="text-xs text-slate-400 font-normal">/ ngày</span>
                             </p>
+                            <span class="text-[10px] font-bold mt-1 inline-flex items-center gap-1 {{ $car->has_driver ? 'text-emerald-600' : 'text-slate-500' }}">
+                                <i class="fa-solid {{ $car->has_driver ? 'fa-user-tie' : 'fa-car' }}"></i>
+                                {{ $car->has_driver ? 'Cho thuê kèm tài xế' : 'Cho thuê xe tự lái' }}
+                            </span>
                         </div>
                         
                         <!-- Favorite Button (AJAX) -->
@@ -287,22 +300,7 @@
                                 </div>
                             </div>
 
-                            <!-- Dịch vụ tài xế -->
-                            <div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
-                                <div class="flex items-center space-x-2.5">
-                                    <div class="bg-blue-50 text-brand p-1.5 rounded-lg flex items-center justify-center">
-                                        <i class="fa-solid fa-user-tie text-xs"></i>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <span class="text-xs font-bold text-slate-700">Thuê kèm tài xế</span>
-                                        <span class="text-[9px] text-slate-400 font-medium">Lái xe an toàn suốt hành trình</span>
-                                    </div>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="has_driver" value="1" class="sr-only peer">
-                                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:width-4 after:w-4 after:transition-all peer-checked:bg-brand"></div>
-                                </label>
-                            </div>
+
 
                             <!-- Thông tin khách hàng -->
                             <div class="border-t border-slate-100 pt-3.5 space-y-3">

@@ -30,6 +30,7 @@ class Car extends Model
         'latitude',
         'longitude',
         'status',
+        'has_driver',
     ];
 
     protected function casts(): array
@@ -39,6 +40,7 @@ class Car extends Model
             'price_per_day' => 'decimal:2',
             'latitude' => 'double',
             'longitude' => 'double',
+            'has_driver' => 'boolean',
         ];
     }
 

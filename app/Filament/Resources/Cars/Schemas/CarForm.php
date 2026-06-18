@@ -7,6 +7,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Set;
 use Illuminate\Support\Str;
@@ -150,6 +151,11 @@ class CarForm
                 Textarea::make('description')
                     ->label('Mô tả chi tiết trang bị & tình trạng xe')
                     ->columnSpanFull(),
+
+                Toggle::make('has_driver')
+                    ->label('Xe có kèm tài xế')
+                    ->default(false)
+                    ->helperText('Bật nếu xe này cho thuê bắt buộc có kèm tài xế (xe có lái).'),
 
                 Select::make('status')
                     ->label('Trạng thái duyệt xe')
