@@ -207,7 +207,7 @@ class CarController extends Controller
 
         // Gửi email thông báo cho Admin
         try {
-            $adminEmail = env('TEST_ADMIN_EMAIL', 'admin@nks.vn');
+            $adminEmail = env('TEST_ADMIN_EMAIL', env('ADMIN_EMAIL', 'admin@nks.vn'));
             Mail::to($adminEmail)->send(new BookingAdminNotification($booking));
         } catch (\Exception $e) {
             \Log::error('Lỗi gửi email cho Admin: ' . $e->getMessage());
