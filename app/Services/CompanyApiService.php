@@ -18,11 +18,12 @@ class CompanyApiService
         
         $request = Http::asJson();
         if ($token) {
-            $request = $request->withToken($token);
+            // Nhận diện API công ty yêu cầu nhận token qua trường access_token ở body
+            $data['access_token'] = $token;
         }
 
         Log::info("Company API Request: POST {$url}", [
-            'payload' => collect($data)->except(['password', 'old_password', 'new_password', 'password_confirmation'])->toArray(),
+            'payload' => collect($data)->except(['password', 'old_password', 'new_password', 'password_confirmation', 'access_token'])->toArray(),
             'has_token' => !empty($token)
         ]);
 
@@ -130,7 +131,7 @@ class CompanyApiService
 
             return [
                 'success' => false,
-                'message' => $response->json()['message'] ?? 'Cập nhật thông tin thất bại.'
+                'message' => $response->json()['error'] ?? $response->json()['message'] ?? 'Cập nhật thông tin thất bại.'
             ];
         } catch (\Exception $e) {
             return [
@@ -162,7 +163,7 @@ class CompanyApiService
 
             return [
                 'success' => false,
-                'message' => $response->json()['message'] ?? 'Đổi mật khẩu thất bại. Vui lòng kiểm tra lại mật khẩu cũ.'
+                'message' => $response->json()['error'] ?? $response->json()['message'] ?? 'Đổi mật khẩu thất bại. Vui lòng kiểm tra lại mật khẩu cũ.'
             ];
         } catch (\Exception $e) {
             return [
@@ -182,10 +183,11 @@ class CompanyApiService
             
             Log::info("Company API Request: Upload Avatar POST {$url}", ['path' => $avatarPath]);
 
-            // Sử dụng Attach multipart để tải file lên API công ty
-            $response = Http::withToken($token)
-                ->attach('avatar', file_get_contents($avatarPath), basename($avatarPath))
-                ->post($url);
+            // Gửi access_token kèm theo dưới dạng field trong multipart form-data
+            $response = Http::attach('avatar', file_get_contents($avatarPath), basename($avatarPath))
+                ->post($url, [
+                    'access_token' => $token
+                ]);
 
             Log::info("Company API Response Upload Avatar: {$response->status()}", [
                 'body' => $response->json(),
@@ -203,7 +205,7 @@ class CompanyApiService
 
             return [
                 'success' => false,
-                'message' => $response->json()['message'] ?? 'Cập nhật ảnh đại diện thất bại.'
+                'message' => $response->json()['error'] ?? $response->json()['message'] ?? 'Cập nhật ảnh đại diện thất bại.'
             ];
         } catch (\Exception $e) {
             return [
@@ -233,7 +235,7 @@ class CompanyApiService
 
             return [
                 'success' => false,
-                'message' => $response->json()['message'] ?? 'Cập nhật CCCD thất bại.'
+                'message' => $response->json()['error'] ?? $response->json()['message'] ?? 'Cập nhật CCCD thất bại.'
             ];
         } catch (\Exception $e) {
             return [
