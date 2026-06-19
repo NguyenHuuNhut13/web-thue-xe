@@ -1,0 +1,65 @@
+### Bộ kiểm thử các API account.nks.vn dùng cho VS Code Extension "REST Client"
+### Cài đặt extension: "REST Client" (tác giả Huachao Mao) để chạy trực tiếp các request bên dưới.
+
+@baseUrl = https://account.nks.vn/api
+@token = NHẬP_TOKEN_CỦA_BẠN_VÀO_ĐÂY
+
+### 1. Đăng nhập hệ thống (Lấy Token)
+POST {{baseUrl}}/nks/user/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "username_hoac_email@gmail.com",
+    "password": "mat_khau_cua_ban"
+}
+
+###
+
+### 2. Lấy thông tin thành viên (Yêu cầu Authentication)
+POST {{baseUrl}}/nks/user
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{}
+
+###
+
+### 3. Cập nhật thông tin thành viên (Yêu cầu Authentication)
+POST {{baseUrl}}/nks/user
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Nguyễn Văn A",
+    "phone": "0932030958",
+    "zalo": "0932030958"
+}
+
+###
+
+### 4. Cập nhật mật khẩu (Yêu cầu Authentication)
+POST {{baseUrl}}/nks/user/updatePass
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "old_password": "mat_khau_cu",
+    "password": "mat_khau_moi",
+    "password_confirmation": "mat_khau_moi"
+}
+
+###
+
+### 5. Cập nhật căn cước công dân (Yêu cầu Authentication)
+POST {{baseUrl}}/nks/user/updateCccd
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+    "cccd": "079195000123"
+}

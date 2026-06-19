@@ -49,7 +49,7 @@ class CompanyApiService
     {
         try {
             // Thử gửi cả email và username để tương thích tối đa với API công ty
-            $response = self::post('user/login', [
+            $response = self::post('nks/user/login', [
                 'email' => $email,
                 'username' => $email, 
                 'password' => $password,
@@ -70,7 +70,7 @@ class CompanyApiService
                 }
             }
 
-            $message = $response->json()['message'] ?? $response->json()['error'] ?? 'Đăng nhập không thành công. Vui lòng kiểm tra lại tài khoản.';
+            $message = $response->json()['error'] ?? $response->json()['message'] ?? 'Đăng nhập không thành công. Vui lòng kiểm tra lại tài khoản.';
             return [
                 'success' => false,
                 'message' => $message
