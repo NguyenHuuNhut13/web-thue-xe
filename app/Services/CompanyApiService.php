@@ -179,19 +179,14 @@ class CompanyApiService
     public static function updateAvatar($token, $avatarPath)
     {
         try {
-            $url = self::$baseUrl . '/nks/user/updateAvatar';
-            
-            Log::info("Company API Request: Upload Avatar POST {$url}", ['path' => $avatarPath]);
+            // Đọc file và chuyển sang định dạng Base64 kèm Mime-type
+            $mimeType = mime_content_type($avatarPath);
+            $base64Image = 'data:' . $mimeType . ';base64,' . base64_encode(file_get_contents($avatarPath));
 
-            // Gửi access_token kèm theo dưới dạng field trong multipart form-data
-            $response = Http::attach('avatar', file_get_contents($avatarPath), basename($avatarPath))
-                ->post($url, [
-                    'access_token' => $token
-                ]);
-
-            Log::info("Company API Response Upload Avatar: {$response->status()}", [
-                'body' => $response->json(),
-            ]);
+            // Gửi request JSON POST thông qua hàm post() dùng chung
+            $response = self::post('nks/user/updateAvatar', [
+                'avatar' => $base64Image,
+            ], $token);
 
             if ($response->successful()) {
                 $data = $response->json();
