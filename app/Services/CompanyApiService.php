@@ -120,7 +120,7 @@ class CompanyApiService
     public static function updateProfile($token, array $data)
     {
         try {
-            $response = self::post('nks/user', $data, $token);
+            $response = self::post('nks/user/updateInfo', $data, $token);
 
             if ($response->successful()) {
                 return [

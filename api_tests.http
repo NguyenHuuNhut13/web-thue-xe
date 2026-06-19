@@ -27,7 +27,7 @@ Accept: application/json
 ###
 
 ### 3. Cập nhật thông tin thành viên (Yêu cầu Authentication)
-POST {{baseUrl}}/nks/user
+POST {{baseUrl}}/nks/user/updateInfo
 Authorization: Bearer {{token}}
 Content-Type: application/json
 Accept: application/json
