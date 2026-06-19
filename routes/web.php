@@ -51,6 +51,20 @@ Route::get('/run-migrate-only', function () {
     }
 });
 
+// Test email sending directly to diagnose SMTP issues
+Route::get('/test-email-send', function () {
+    try {
+        $adminEmail = env('TEST_ADMIN_EMAIL', env('ADMIN_EMAIL', 'admin@nks.vn'));
+        \Illuminate\Support\Facades\Mail::raw('Đây là thư thử nghiệm cấu hình SMTP từ web Thuê xe NKS.', function ($message) use ($adminEmail) {
+            $message->to($adminEmail)
+                    ->subject('🧪 Test SMTP NKS');
+        });
+        return 'Gửi email test thành công tới: ' . $adminEmail . '! Cấu hình SMTP của bạn hoàn toàn chính xác.';
+    } catch (\Exception $e) {
+        return 'Gửi email thất bại. Lỗi SMTP: <br><pre>' . $e->getMessage() . '</pre>';
+    }
+});
+
 // Serve storage files from the local disk or database fallback
 Route::get('/storage/{path}', [App\Http\Controllers\StorageController::class, 'serve'])
     ->where('path', '.*')
