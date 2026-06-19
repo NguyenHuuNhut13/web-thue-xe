@@ -57,9 +57,10 @@ class CompanyApiService
 
             if ($response->successful()) {
                 $data = $response->json();
-                // Giả sử API trả về token ở key 'token' hoặc 'access_token' hoặc 'data.token'
-                $token = $data['token'] ?? $data['access_token'] ?? $data['data']['token'] ?? null;
-                $user = $data['user'] ?? $data['data']['user'] ?? $data['data'] ?? null;
+                
+                // Đọc chính xác token và user từ JSON phản hồi
+                $token = $data['data']['access_token'] ?? $data['token'] ?? $data['access_token'] ?? $data['data']['token'] ?? null;
+                $user = $data['data']['user'] ?? $data['user'] ?? $data['data'] ?? null;
 
                 if ($token) {
                     return [
@@ -68,12 +69,6 @@ class CompanyApiService
                         'user' => $user
                     ];
                 }
-
-                // Debug: Trả về toàn bộ JSON nếu thành công nhưng thiếu Token
-                return [
-                    'success' => false,
-                    'message' => 'Lỗi thiếu Token. JSON phản hồi: ' . json_encode($data, JSON_UNESCAPED_UNICODE)
-                ];
             }
 
             $message = $response->json()['error'] ?? $response->json()['message'] ?? 'Đăng nhập không thành công. Vui lòng kiểm tra lại tài khoản.';
@@ -99,7 +94,7 @@ class CompanyApiService
 
             if ($response->successful()) {
                 $data = $response->json();
-                $user = $data['user'] ?? $data['data'] ?? $data;
+                $user = $data['data']['user'] ?? $data['user'] ?? $data['data'] ?? $data;
                 return [
                     'success' => true,
                     'user' => $user
