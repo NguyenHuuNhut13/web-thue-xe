@@ -26,7 +26,7 @@ class MemberPanelProvider extends PanelProvider
         return $panel
             ->id('member')
             ->path('member')
-            ->login()
+            ->login(\App\Filament\Pages\Auth\MemberLogin::class)
             ->registration()
             ->brandLogo(fn () => view('filament.logo'))
             ->font('Outfit')

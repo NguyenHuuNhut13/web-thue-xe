@@ -62,6 +62,11 @@ class Profile extends Page implements HasForms
                     ->label('Số Zalo / Link Zalo')
                     ->placeholder('Ví dụ: 0932030958'),
 
+                TextInput::make('cccd')
+                    ->label('Số Căn cước công dân (CCCD)')
+                    ->placeholder('Ví dụ: 079195000123')
+                    ->maxLength(15),
+
                 FileUpload::make('avatar')
                     ->label('Ảnh đại diện (Avatar)')
                     ->image()
@@ -94,6 +99,7 @@ class Profile extends Page implements HasForms
         $user->email = $data['email'];
         $user->phone = $data['phone'];
         $user->zalo = $data['zalo'];
+        $user->cccd = $data['cccd'] ?? null;
         
         if (array_key_exists('avatar', $data)) {
             $user->avatar = $data['avatar'];
