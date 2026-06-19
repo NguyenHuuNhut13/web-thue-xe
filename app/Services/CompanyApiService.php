@@ -68,6 +68,12 @@ class CompanyApiService
                         'user' => $user
                     ];
                 }
+
+                // Debug: Trả về toàn bộ JSON nếu thành công nhưng thiếu Token
+                return [
+                    'success' => false,
+                    'message' => 'Lỗi thiếu Token. JSON phản hồi: ' . json_encode($data, JSON_UNESCAPED_UNICODE)
+                ];
             }
 
             $message = $response->json()['error'] ?? $response->json()['message'] ?? 'Đăng nhập không thành công. Vui lòng kiểm tra lại tài khoản.';
