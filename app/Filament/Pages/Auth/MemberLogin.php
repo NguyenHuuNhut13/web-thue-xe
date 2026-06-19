@@ -27,65 +27,93 @@ class MemberLogin extends BaseLogin
 
         $data = $this->form->getState();
 
-        // 1. Gọi API công ty để xác thực thông tin đăng nhập
+        // 1. Gọi API công ty để xác thực thông tin đăng nhập trước
         $apiResult = CompanyApiService::login($data['email'], $data['password']);
 
-        if (!$apiResult['success']) {
-            throw ValidationException::withMessages([
-                'data.email' => $apiResult['message'],
-            ]);
-        }
+        $token = null;
+        $apiUser = null;
+        $isLocalAuth = false;
+        $user = null;
 
-        $token = $apiResult['token'];
-        $apiUser = $apiResult['user'];
-
-        // Nếu API đăng nhập thành công nhưng chưa có thông tin user, gọi API lấy Profile
-        if (empty($apiUser)) {
-            $profileResult = CompanyApiService::getProfile($token);
-            if ($profileResult['success']) {
-                $apiUser = $profileResult['user'];
+        if ($apiResult['success']) {
+            $token = $apiResult['token'];
+            $apiUser = $apiResult['user'];
+        } else {
+            // Dự phòng: Thử đăng nhập bằng Database cục bộ (ví dụ: tài khoản admin@nks.vn)
+            $localUser = User::where('email', $data['email'])->first();
+            if ($localUser && Hash::check($data['password'], $localUser->password)) {
+                $user = $localUser;
+                $isLocalAuth = true;
+            } else {
+                // Nếu cả API và Database cục bộ đều thất bại, trả về lỗi của API
+                throw ValidationException::withMessages([
+                    'data.email' => $apiResult['message'] ?? 'Thông tin đăng nhập không chính xác.',
+                ]);
             }
         }
 
-        // Cần đảm bảo có email để đối chiếu tài khoản cục bộ
-        $email = $apiUser['email'] ?? $data['email'];
+        if (!$isLocalAuth) {
+            // Nếu API đăng nhập thành công nhưng chưa có thông tin user, gọi API lấy Profile
+            if (empty($apiUser)) {
+                $profileResult = CompanyApiService::getProfile($token);
+                if ($profileResult['success']) {
+                    $apiUser = $profileResult['user'];
+                }
+            }
 
-        // 2. Tìm hoặc tạo user cục bộ và đồng bộ thông tin từ API
-        $user = User::where('email', $email)->first();
+            // Cần đảm bảo có email để đối chiếu tài khoản cục bộ
+            $email = $apiUser['email'] ?? $data['email'];
 
-        $userData = [
-            'name' => $apiUser['name'] ?? $apiUser['username'] ?? strtok($email, '@'),
-            'phone' => $apiUser['phone'] ?? null,
-            'zalo' => $apiUser['zalo'] ?? null,
-            'avatar' => $apiUser['avatar'] ?? $apiUser['avatar_url'] ?? null,
-            'cccd' => $apiUser['cccd'] ?? $apiUser['cccd_number'] ?? null,
-            // Lưu hash password cục bộ để tương thích với auth của Laravel
-            'password' => Hash::make($data['password']), 
-        ];
+            // 2. Tìm hoặc tạo user cục bộ và đồng bộ thông tin từ API
+            $user = User::where('email', $email)->first();
 
-        if ($user) {
-            // Kiểm tra trạng thái khóa tài khoản cục bộ
+            $userData = [
+                'name' => $apiUser['name'] ?? $apiUser['username'] ?? strtok($email, '@'),
+                'phone' => $apiUser['phone'] ?? null,
+                'zalo' => $apiUser['zalo'] ?? null,
+                'avatar' => $apiUser['avatar'] ?? $apiUser['avatar_url'] ?? null,
+                'cccd' => $apiUser['cccd'] ?? $apiUser['cccd_number'] ?? null,
+                // Lưu hash password cục bộ để tương thích với auth của Laravel
+                'password' => Hash::make($data['password']), 
+            ];
+
+            if ($user) {
+                // Kiểm tra trạng thái khóa tài khoản cục bộ
+                if ($user->status === 'blocked') {
+                    throw ValidationException::withMessages([
+                        'data.email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
+                    ]);
+                }
+                $user->update($userData);
+            } else {
+                $userData['email'] = $email;
+                $userData['role'] = 'member'; // Mặc định gán vai trò member
+                $userData['status'] = 'active';
+                $user = User::create($userData);
+            }
+
+            // 3. Lưu Access Token vào session
+            session(['company_api_token' => $token]);
+        } else {
+            // Kiểm tra trạng thái khóa tài khoản cục bộ đối với tài khoản local
             if ($user->status === 'blocked') {
                 throw ValidationException::withMessages([
                     'data.email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
                 ]);
             }
-            $user->update($userData);
-        } else {
-            $userData['email'] = $email;
-            $userData['role'] = 'member'; // Mặc định gán vai trò member
-            $userData['status'] = 'active';
-            $user = User::create($userData);
         }
-
-        // 3. Lưu Access Token vào session
-        session(['company_api_token' => $token]);
 
         // 4. Đăng nhập cục bộ trong Laravel
         Auth::login($user, $data['remember'] ?? false);
 
         session()->regenerate();
 
-        return app(\Filament\Auth\Http\Responses\Contracts\LoginResponse::class);
+        // 5. Chuyển hướng về trang chủ thay vì trang tài khoản/dashboard
+        return new class implements \Filament\Auth\Http\Responses\Contracts\LoginResponse {
+            public function toResponse($request): \Illuminate\Http\RedirectResponse|\Livewire\Features\SupportRedirects\Redirector
+            {
+                return redirect('/');
+            }
+        };
     }
 }
