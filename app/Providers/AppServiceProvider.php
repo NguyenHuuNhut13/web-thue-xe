@@ -31,5 +31,26 @@ class AppServiceProvider extends ServiceProvider
                 $config
             );
         });
+
+        // Register Filament view hooks for Login Remember-me and User profile caching
+        \Filament\Support\Facades\FilamentView::registerRenderHook(
+            'panels::auth.login.form.after',
+            fn () => view('filament.hooks.login-remember-js')
+        );
+
+        \Filament\Support\Facades\FilamentView::registerRenderHook(
+            'panels::body.start',
+            function () {
+                if (auth()->check()) {
+                    $user = auth()->user();
+                    return '<script>
+                        localStorage.setItem("nks_last_user_name", ' . json_encode($user->name) . ');
+                        localStorage.setItem("nks_last_user_avatar", ' . json_encode($user->avatar_url) . ');
+                        localStorage.setItem("nks_last_user_email", ' . json_encode($user->email) . ');
+                    </script>';
+                }
+                return '';
+            }
+        );
     }
 }

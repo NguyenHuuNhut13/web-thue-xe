@@ -58,6 +58,12 @@
                 <!-- Auth Buttons -->
                 <div class="hidden md:flex items-center space-x-4">
                     @auth
+                        <!-- Save user info to localStorage for remember login feature -->
+                        <script>
+                            localStorage.setItem("nks_last_user_name", "{{ auth()->user()->name }}");
+                            localStorage.setItem("nks_last_user_avatar", "{{ auth()->user()->avatar_url }}");
+                            localStorage.setItem("nks_last_user_email", "{{ auth()->user()->email }}");
+                        </script>
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" @click.outside="open = false" class="flex items-center space-x-2 text-slate-700 hover:text-brand transition-colors py-2 focus:outline-none">
                                 <img src="{{ auth()->user()->avatar_url }}" 
