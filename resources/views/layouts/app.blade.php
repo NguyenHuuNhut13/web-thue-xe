@@ -60,9 +60,36 @@
                     @auth
                         <!-- Save user info to localStorage for remember login feature -->
                         <script>
-                            localStorage.setItem("nks_last_user_name", "{{ auth()->user()->name }}");
-                            localStorage.setItem("nks_last_user_avatar", "{{ auth()->user()->avatar_url }}");
-                            localStorage.setItem("nks_last_user_email", "{{ auth()->user()->email }}");
+                            (function() {
+                                const email = "{{ auth()->user()->email }}";
+                                const name = "{{ auth()->user()->name }}";
+                                const avatar = "{{ auth()->user()->avatar_url }}";
+                                
+                                localStorage.setItem("nks_last_user_email", email);
+                                localStorage.setItem("nks_last_user_name", name);
+                                localStorage.setItem("nks_last_user_avatar", avatar);
+                                
+                                let accounts = [];
+                                try {
+                                    accounts = JSON.parse(localStorage.getItem("nks_saved_accounts")) || [];
+                                } catch(e) { accounts = []; }
+                                if (!Array.isArray(accounts)) accounts = [];
+                                
+                                let existIndex = accounts.findIndex(acc => acc.email === email);
+                                if (existIndex > -1) {
+                                    accounts[existIndex].name = name;
+                                    accounts[existIndex].avatar = avatar;
+                                } else {
+                                    accounts.push({
+                                        email: email,
+                                        name: name,
+                                        avatar: avatar,
+                                        password: '',
+                                        remember: false
+                                    });
+                                }
+                                localStorage.setItem("nks_saved_accounts", JSON.stringify(accounts));
+                            })();
                         </script>
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" @click.outside="open = false" class="flex items-center space-x-2 text-slate-700 hover:text-brand transition-colors py-2 focus:outline-none">

@@ -43,11 +43,41 @@ class AppServiceProvider extends ServiceProvider
             function () {
                 if (auth()->check()) {
                     $user = auth()->user();
-                    return '<script>
-                        localStorage.setItem("nks_last_user_name", ' . json_encode($user->name) . ');
-                        localStorage.setItem("nks_last_user_avatar", ' . json_encode($user->avatar_url) . ');
-                        localStorage.setItem("nks_last_user_email", ' . json_encode($user->email) . ');
-                    </script>';
+                    $email = json_encode($user->email);
+                    $name = json_encode($user->name);
+                    $avatar = json_encode($user->avatar_url);
+                    return "<script>
+                        (function() {
+                            const email = {$email};
+                            const name = {$name};
+                            const avatar = {$avatar};
+                            
+                            localStorage.setItem('nks_last_user_email', email);
+                            localStorage.setItem('nks_last_user_name', name);
+                            localStorage.setItem('nks_last_user_avatar', avatar);
+                            
+                            let accounts = [];
+                            try {
+                                accounts = JSON.parse(localStorage.getItem('nks_saved_accounts')) || [];
+                            } catch(e) { accounts = []; }
+                            if (!Array.isArray(accounts)) accounts = [];
+                            
+                            let existIndex = accounts.findIndex(acc => acc.email === email);
+                            if (existIndex > -1) {
+                                accounts[existIndex].name = name;
+                                accounts[existIndex].avatar = avatar;
+                            } else {
+                                accounts.push({
+                                    email: email,
+                                    name: name,
+                                    avatar: avatar,
+                                    password: '',
+                                    remember: false
+                                });
+                            }
+                            localStorage.setItem('nks_saved_accounts', JSON.stringify(accounts));
+                        })();
+                    </script>";
                 }
                 return '';
             }
