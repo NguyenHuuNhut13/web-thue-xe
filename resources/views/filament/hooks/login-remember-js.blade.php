@@ -1,51 +1,60 @@
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const checkInterval = setInterval(() => {
-            const emailInput = document.getElementById('data.email');
-            const passwordInput = document.getElementById('data.password');
-            const rememberCheckbox = document.getElementById('data.remember');
-            
-            if (emailInput && passwordInput && rememberCheckbox) {
-                clearInterval(checkInterval);
-                initRememberLogin(emailInput, passwordInput, rememberCheckbox);
+(function() {
+    console.log('NKS Login Remember hook script loaded.');
+
+    function initRememberLogin() {
+        console.log('NKS initRememberLogin running...');
+        const emailInput = document.getElementById('data.email') || document.getElementById('email');
+        const passwordInput = document.getElementById('data.password') || document.getElementById('password');
+        const rememberCheckbox = document.getElementById('data.remember') || document.getElementById('remember');
+
+        if (!emailInput || !passwordInput || !rememberCheckbox) {
+            console.log('NKS fields not found yet, retrying...');
+            return false;
+        }
+
+        console.log('NKS fields found!');
+
+        // 1. Thay đổi nhãn "Remember me" / "Ghi nhớ đăng nhập" -> "Ghi nhớ mật khẩu"
+        const labelSpan = rememberCheckbox.closest('label')?.querySelector('span') || 
+                          document.querySelector('label[for="' + rememberCheckbox.id + '"] span') ||
+                          document.querySelector('label[for="data.remember"] span') ||
+                          document.querySelector('label[for="remember"] span');
+        if (labelSpan) {
+            labelSpan.textContent = 'Ghi nhớ mật khẩu';
+            console.log('NKS label text changed to "Ghi nhớ mật khẩu"');
+        }
+
+        // 2. Kiểm tra xem có tài khoản đã lưu từ trước không
+        const lastUserEmail = localStorage.getItem('nks_last_user_email');
+        const lastUserName = localStorage.getItem('nks_last_user_name');
+        const lastUserAvatar = localStorage.getItem('nks_last_user_avatar');
+        
+        const savedPassword = localStorage.getItem('nks_saved_password');
+        const isRemembered = localStorage.getItem('nks_remember_password') === 'true';
+
+        const emailWrapper = emailInput.closest('.fi-fo-field-wrp') || emailInput.parentElement;
+
+        if (lastUserEmail && lastUserName && emailWrapper) {
+            console.log('NKS Found last user:', lastUserEmail);
+            // Điền email vào input để Livewire/Laravel nhận diện khi submit
+            emailInput.value = lastUserEmail;
+            emailInput.dispatchEvent(new Event('input', { bubbles: true }));
+            emailInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+            if (isRemembered && savedPassword) {
+                passwordInput.value = savedPassword;
+                passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+                passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
+                rememberCheckbox.checked = true;
+                rememberCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
             }
-        }, 100);
 
-        function initRememberLogin(emailInput, passwordInput, rememberCheckbox) {
-            // 1. Thay đổi nhãn "Ghi nhớ đăng nhập" -> "Ghi nhớ mật khẩu"
-            const labelSpan = rememberCheckbox.closest('label')?.querySelector('span') || 
-                              document.querySelector('label[for="data.remember"] span');
-            if (labelSpan) {
-                labelSpan.textContent = 'Ghi nhớ mật khẩu';
-            }
+            // Ẩn trường nhập email
+            emailWrapper.style.display = 'none';
 
-            // 2. Kiểm tra xem có tài khoản đã lưu từ trước không
-            const lastUserEmail = localStorage.getItem('nks_last_user_email');
-            const lastUserName = localStorage.getItem('nks_last_user_name');
-            const lastUserAvatar = localStorage.getItem('nks_last_user_avatar');
-            
-            // Lấy mật khẩu đã lưu nếu có (nếu người dùng tích chọn ghi nhớ mật khẩu trước đó)
-            const savedPassword = localStorage.getItem('nks_saved_password');
-            const isRemembered = localStorage.getItem('nks_remember_password') === 'true';
-
-            // Tìm container của email input
-            const emailWrapper = emailInput.closest('.fi-fo-field-wrp');
-
-            if (lastUserEmail && lastUserName && emailWrapper) {
-                // Điền email vào input để Livewire/Laravel nhận diện khi submit
-                emailInput.value = lastUserEmail;
-                emailInput.dispatchEvent(new Event('input', { bubbles: true }));
-
-                if (isRemembered && savedPassword) {
-                    passwordInput.value = savedPassword;
-                    passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    rememberCheckbox.checked = true;
-                    rememberCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
-                }
-
-                // Ẩn trường nhập email
-                emailWrapper.style.display = 'none';
-
+            // Tránh tạo trùng hộp Profile
+            if (!document.getElementById('nks-login-profile-box')) {
                 // Xác định câu chào theo thời gian
                 const hour = new Date().getHours();
                 let greeting = 'Chào buổi sáng';
@@ -55,7 +64,7 @@
 
                 // Tạo giao diện Profile chào mừng
                 const profileHtml = `
-                    <div id="nks-login-profile-box" style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 1rem; margin-bottom: 1.25rem; box-sizing: border-box;">
+                    <div id="nks-login-profile-box" style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 1rem; margin-bottom: 1.25rem; box-sizing: border-box; width: 100%;">
                         <div style="display: flex; align-items: center; gap: 0.75rem;">
                             <img src="${lastUserAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80'}" 
                                  style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0;" 
@@ -73,7 +82,7 @@
                     </div>
                 `;
 
-                // Chèn Box Profile vào trước ô mật khẩu
+                // Chèn Box Profile vào trước ô mật khẩu hoặc sau wrapper email
                 emailWrapper.insertAdjacentHTML('afterend', profileHtml);
 
                 // Lắng nghe sự kiện click nút chuyển tài khoản
@@ -84,11 +93,14 @@
                     // Xóa thông tin đã điền sẵn
                     emailInput.value = '';
                     emailInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    emailInput.dispatchEvent(new Event('change', { bubbles: true }));
                     passwordInput.value = '';
                     passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
                     
                     // Xóa hộp Profile
-                    document.getElementById('nks-login-profile-box').remove();
+                    const profileBox = document.getElementById('nks-login-profile-box');
+                    if (profileBox) profileBox.remove();
 
                     // Xóa dữ liệu cũ khỏi localStorage để tránh tự động hiện lại
                     localStorage.removeItem('nks_last_user_email');
@@ -98,22 +110,78 @@
                     localStorage.removeItem('nks_remember_password');
                 });
             }
+        }
 
-            // 3. Lắng nghe sự kiện submit của form để lưu thông tin nếu người dùng chọn ghi nhớ
-            const form = emailInput.closest('form');
-            if (form) {
-                form.addEventListener('submit', function () {
-                    if (rememberCheckbox.checked) {
-                        localStorage.setItem('nks_remember_password', 'true');
-                        localStorage.setItem('nks_saved_password', passwordInput.value);
-                        // Lưu email hiện tại để nhớ người dùng
-                        localStorage.setItem('nks_last_user_email', emailInput.value);
-                    } else {
-                        localStorage.removeItem('nks_remember_password');
-                        localStorage.removeItem('nks_saved_password');
-                    }
-                });
+        // 3. Hàm lưu thông tin đăng nhập
+        function saveCredentials() {
+            console.log('NKS Saving credentials...');
+            if (rememberCheckbox.checked) {
+                localStorage.setItem('nks_remember_password', 'true');
+                localStorage.setItem('nks_saved_password', passwordInput.value);
+                localStorage.setItem('nks_last_user_email', emailInput.value);
+            } else {
+                localStorage.removeItem('nks_remember_password');
+                localStorage.removeItem('nks_saved_password');
             }
         }
-    });
+
+        // Lắng nghe sự kiện thay đổi của các trường và submit
+        const form = emailInput.closest('form');
+        if (form) {
+            form.removeEventListener('submit', saveCredentials);
+            form.addEventListener('submit', saveCredentials);
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.removeEventListener('click', saveCredentials);
+                submitBtn.addEventListener('click', saveCredentials);
+            }
+        }
+
+        rememberCheckbox.removeEventListener('change', saveCredentials);
+        rememberCheckbox.addEventListener('change', saveCredentials);
+
+        emailInput.removeEventListener('input', saveCredentials);
+        emailInput.addEventListener('input', () => {
+            if (rememberCheckbox.checked) {
+                localStorage.setItem('nks_last_user_email', emailInput.value);
+            }
+        });
+
+        passwordInput.removeEventListener('input', saveCredentials);
+        passwordInput.addEventListener('input', () => {
+            if (rememberCheckbox.checked) {
+                localStorage.setItem('nks_saved_password', passwordInput.value);
+            }
+        });
+
+        return true;
+    }
+
+    // Loop to find elements (necessary for dynamically loaded forms or Livewire re-renders)
+    let searchInterval = null;
+    function startSearch() {
+        if (searchInterval) clearInterval(searchInterval);
+        
+        let attempts = 0;
+        searchInterval = setInterval(() => {
+            attempts++;
+            const success = initRememberLogin();
+            if (success || attempts > 30) {
+                clearInterval(searchInterval);
+            }
+        }, 100);
+    }
+
+    // Run when ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startSearch);
+    } else {
+        startSearch();
+    }
+
+    // Livewire v3 events compatibility
+    document.addEventListener('livewire:navigated', startSearch);
+    document.addEventListener('livewire:load', startSearch);
+})();
 </script>
