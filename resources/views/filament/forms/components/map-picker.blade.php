@@ -74,7 +74,7 @@
 
     <!-- Map Modal Panel -->
     <div x-show="open" 
-         style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; z-index: 99999; align-items: center; justify-content: center; padding: 1rem; box-sizing: border-box;"
+         style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; z-index: 99999; align-items: center; justify-content: center; padding: 0; box-sizing: border-box;"
          :style="{ display: open ? 'flex' : 'none' }"
          x-cloak
          x-transition:enter="transition ease-out duration-300"
@@ -88,7 +88,7 @@
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);" @click="closeMap()"></div>
         
         <!-- Modal Card Container -->
-        <div style="position: relative; background-color: #ffffff; border-radius: 1.5rem; width: 100%; max-width: 85rem; height: 90vh; max-height: 850px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid #e2e8f0; z-index: 10; box-sizing: border-box;">
+        <div style="position: relative; background-color: #ffffff; border-radius: 0; width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: none; border: none; z-index: 10; box-sizing: border-box;">
             
             <!-- Modal Header -->
             <div style="padding: 1rem 1.5rem; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; background-color: #f8fafc; box-sizing: border-box; flex-shrink: 0;">
