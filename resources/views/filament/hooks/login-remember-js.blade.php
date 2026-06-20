@@ -4,9 +4,9 @@
 
     function initRememberLogin() {
         console.log('NKS initRememberLogin running...');
-        const emailInput = document.getElementById('data.email') || document.getElementById('email');
-        const passwordInput = document.getElementById('data.password') || document.getElementById('password');
-        const rememberCheckbox = document.getElementById('data.remember') || document.getElementById('remember');
+        const emailInput = document.getElementById('form.email') || document.getElementById('data.email') || document.getElementById('email');
+        const passwordInput = document.getElementById('form.password') || document.getElementById('data.password') || document.getElementById('password');
+        const rememberCheckbox = document.getElementById('form.remember') || document.getElementById('data.remember') || document.getElementById('remember');
 
         if (!emailInput || !passwordInput || !rememberCheckbox) {
             console.log('NKS fields not found yet, retrying...');
@@ -18,6 +18,7 @@
         // 1. Thay đổi nhãn "Remember me" / "Ghi nhớ đăng nhập" -> "Ghi nhớ mật khẩu"
         const labelSpan = rememberCheckbox.closest('label')?.querySelector('span') || 
                           document.querySelector('label[for="' + rememberCheckbox.id + '"] span') ||
+                          document.querySelector('label[for="form.remember"] span') ||
                           document.querySelector('label[for="data.remember"] span') ||
                           document.querySelector('label[for="remember"] span');
         if (labelSpan) {
