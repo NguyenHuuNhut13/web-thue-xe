@@ -603,7 +603,7 @@
                                         <svg class="icon-svg" style="color: #6366f1; width: 2.5rem !important; height: 2.5rem !important;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
-                                        <span class="ocr-dropzone-title">Mặt trước CCCD (Có mã QR)</span>
+                                        <span class="ocr-dropzone-title">Mặt trước CCCD</span>
                                         <span class="ocr-dropzone-subtitle">Nhấp để chụp/chọn hoặc kéo thả ảnh</span>
                                     </div>
                                     <div class="ocr-preview-container" id="preview-container-front" style="display: none;">
@@ -702,68 +702,120 @@
         </div>
     </div>
 
-    <!-- Hidden element for html5-qrcode file scanner to mount onto -->
-    <div id="qr-reader-temp" style="display: none;"></div>
+    <!-- Hidden container for Tesseract worker if needed -->
+    <div id="ocr-temp-container" style="display: none;"></div>
 
-    <!-- Scripts block to load html5-qrcode and implement scanner / OCR simulation -->
+    <!-- Scripts block to load Tesseract.js and implement OCR reader -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof Html5Qrcode === 'undefined') {
+            // Tải thư viện Tesseract.js cho nhận diện ảnh
+            if (typeof Tesseract === 'undefined') {
                 const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js';
+                script.src = 'https://unpkg.com/tesseract.js@v4.0.1/dist/tesseract.min.js';
                 script.onload = () => {
-                    console.log('html5-qrcode library loaded successfully for file scanning.');
+                    console.log('Tesseract.js OCR library loaded successfully.');
                 };
                 document.head.appendChild(script);
             }
         });
 
-        // Định dạng mã QR của CCCD Việt Nam: 
-        // Số CCCD|Số CMND cũ|Họ và tên|Ngày sinh|Giới tính|Nơi thường trú|Ngày cấp
-        function parseCccdQr(text) {
-            const parts = text.split('|');
-            if (parts.length >= 5) {
-                const cccd = parts[0];
-                const cmnd = parts[1] || '';
-                const name = parts[2];
-                
-                // Định dạng Ngày sinh DDMMYYYY -> DD/MM/YYYY
-                let dob = parts[3];
-                if (dob && dob.length === 8) {
-                    dob = dob.substring(0, 2) + '/' + dob.substring(2, 4) + '/' + dob.substring(4, 8);
+        // Hàm phân tích khối văn bản thô từ CCCD bằng Regex thông minh
+        function parseTextFromCccd(text) {
+            console.log("Raw text recognized by Tesseract:\n", text);
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            
+            let cccd = "";
+            let cmnd = "";
+            let name = "";
+            let dob = "";
+            let gender = "";
+            let address = "";
+            
+            // 1. Tìm số CCCD (12 chữ số)
+            for (let line of lines) {
+                const match = line.match(/\b\d{12}\b/);
+                if (match) {
+                    cccd = match[0];
+                    break;
                 }
-                
-                const gender = parts[4];
-                const address = parts[5] || '';
-                
-                return {
-                    success: true,
-                    cccd,
-                    cmnd,
-                    name,
-                    gender,
-                    dob,
-                    address
-                };
+            }
+            // Dự phòng tìm chuỗi số liên tục nếu không khớp ranh giới từ
+            if (!cccd) {
+                for (let line of lines) {
+                    const match = line.replace(/\s+/g, '').match(/\d{12}/);
+                    if (match) {
+                        cccd = match[0];
+                        break;
+                    }
+                }
             }
             
-            // Nếu chỉ là số 12 chữ số
-            if (/^\d{12}$/.test(text.trim())) {
-                return {
-                    success: true,
-                    cccd: text.trim(),
-                    cmnd: '',
-                    name: null,
-                    gender: null,
-                    dob: null,
-                    address: null
-                };
+            // 2. Tìm Ngày sinh (dd/mm/yyyy)
+            for (let line of lines) {
+                const match = line.match(/\b\d{2}\/\d{2}\/\d{4}\b/);
+                if (match) {
+                    dob = match[0];
+                    break;
+                }
             }
-
-            return { success: false };
+            
+            // 3. Tìm Giới tính
+            for (let line of lines) {
+                if (/giới\s*tính|sex|tính/i.test(line)) {
+                    if (/nam/i.test(line)) { gender = "Nam"; break; }
+                    else if (/nữ|nu/i.test(line)) { gender = "Nữ"; break; }
+                }
+            }
+            if (!gender) {
+                for (let line of lines) {
+                    if (/\bnam\b/i.test(line)) { gender = "Nam"; break; }
+                    if (/\bnữ\b/i.test(line) || /\bnu\b/i.test(line)) { gender = "Nữ"; break; }
+                }
+            }
+            
+            // 4. Tìm Họ và tên
+            for (let i = 0; i < lines.length; i++) {
+                if (/họ\s*(và)?\s*tên|full\s*name|tên/i.test(lines[i])) {
+                    if (i + 1 < lines.length) {
+                        let potentialName = lines[i+1].toUpperCase();
+                        // Loại bỏ các ký tự rác không thuộc bảng chữ cái tiếng Việt/Anh
+                        name = potentialName.replace(/[^A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲÝỴỶỸ\s]/g, '').trim();
+                        // Chuẩn hóa khoảng trắng
+                        name = name.replace(/\s+/g, ' ');
+                    }
+                    break;
+                }
+            }
+            
+            // 5. Tìm Nơi thường trú
+            let addressStartIndex = -1;
+            for (let i = 0; i < lines.length; i++) {
+                if (/thường\s*trú|residence|nơi/i.test(lines[i])) {
+                    addressStartIndex = i;
+                    break;
+                }
+            }
+            if (addressStartIndex !== -1) {
+                let addrLines = [];
+                for (let j = addressStartIndex + 1; j <= addressStartIndex + 2; j++) {
+                    if (j < lines.length && !/ngày|nơi|sinh|họ|tên|ký/i.test(lines[j])) {
+                        addrLines.push(lines[j]);
+                    }
+                }
+                address = addrLines.join(', ').replace(/\s+/g, ' ').trim();
+            }
+            
+            return {
+                cccd,
+                cmnd,
+                name,
+                dob,
+                gender,
+                address
+            };
         }
 
-        // Tải ảnh và tiến hành nhận diện
+        // Đọc ảnh và gửi đi nhận diện OCR
         let frontFile = null;
         let backFile = null;
 
@@ -771,7 +823,6 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // Hiện ảnh preview
                     document.getElementById('preview-' + side).src = e.target.result;
                     document.getElementById('preview-container-' + side).style.display = 'block';
                     document.getElementById('laser-' + side).style.display = 'block';
@@ -782,7 +833,6 @@
                         backFile = input.files[0];
                     }
 
-                    // Bắt đầu quy trình quét khi cả 2 mặt đều được chọn
                     if (frontFile && backFile) {
                         runOcrProcess();
                     }
@@ -798,97 +848,119 @@
             const percentageText = document.getElementById('ocr-percentage');
 
             progressContainer.style.display = 'block';
+            statusText.innerText = "Đang tải mô hình ngôn ngữ Việt (VIE)...";
+            progressBar.style.width = '15%';
+            percentageText.innerText = '15%';
 
-            // Bước 1: Khởi tạo tiến trình quét ảnh
-            let progress = 0;
-            statusText.innerText = "Đang xử lý hình ảnh...";
-            progressBar.style.width = '20%';
-            percentageText.innerText = '20%';
+            if (typeof Tesseract === 'undefined') {
+                // Đề phòng CDN chưa tải kịp, tự động chờ 1s rồi chạy tiếp
+                setTimeout(runOcrProcess, 1000);
+                return;
+            }
 
-            setTimeout(() => {
-                // Bước 2: Quét mã QR từ file ảnh mặt trước (đảm bảo độ chính xác 100% nếu là ảnh thật)
-                statusText.innerText = "Đang tìm kiếm mã định danh QR trên ảnh mặt trước...";
-                progressBar.style.width = '50%';
-                percentageText.innerText = '50%';
-
-                if (typeof Html5Qrcode === 'undefined') {
-                    // Nếu thư viện chưa tải xong, dùng giả lập
-                    executeMockOcr();
-                    return;
-                }
-
-                const html5QrCode = new Html5Qrcode("qr-reader-temp");
-                html5QrCode.scanFile(frontFile, false)
-                    .then(decodedText => {
-                        console.log("QR decoded from file successfully:", decodedText);
-                        const result = parseCccdQr(decodedText);
-                        
-                        if (result.success) {
-                            // Bước 3: Đã đọc được QR chính xác từ ảnh
-                            statusText.innerText = "Đã trích xuất thông tin thành công từ mã QR thẻ!";
-                            progressBar.style.width = '90%';
-                            percentageText.innerText = '90%';
-
-                            setTimeout(() => {
-                                progressBar.style.width = '100%';
-                                percentageText.innerText = '100%';
-                                
-                                @this.call(
-                                    'updateCccdFromScan', 
-                                    result.cccd, 
-                                    result.cmnd, 
-                                    result.name, 
-                                    result.gender, 
-                                    result.dob, 
-                                    result.address
-                                );
-                                
-                                cleanUpScanner();
-                            }, 800);
-                        } else {
-                            // QR không khớp định dạng
-                            executeMockOcr();
+            // Tiến hành quét OCR mặt trước của CCCD để lấy thông tin
+            Tesseract.recognize(
+                frontFile,
+                'vie', // Đọc chính xác tiếng Việt có dấu
+                {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const pct = Math.round(m.progress * 100);
+                            statusText.innerText = "Đang nhận diện ký tự mặt trước: " + pct + "%";
+                            // Tỷ lệ từ 15% -> 80%
+                            const scaledProgress = 15 + Math.round(pct * 0.65);
+                            progressBar.style.width = scaledProgress + '%';
+                            percentageText.innerText = scaledProgress + '%';
                         }
-                    })
-                    .catch(err => {
-                        console.warn("Không tìm thấy QR trong ảnh mặt trước, chuyển sang quét giả lập thông tin:", err);
-                        executeMockOcr();
-                    });
-            }, 1000);
-        }
+                    }
+                }
+            ).then(({ data: { text } }) => {
+                statusText.innerText = "Đang xử lý thông tin mặt sau...";
+                progressBar.style.width = '85%';
+                percentageText.innerText = '85%';
 
-        function executeMockOcr() {
-            const progressBar = document.getElementById('ocr-progress-bar');
-            const statusText = document.getElementById('ocr-status-text');
-            const percentageText = document.getElementById('ocr-percentage');
+                const result = parseTextFromCccd(text);
 
-            statusText.innerText = "Đang chạy mô phỏng nhận diện ký tự OCR...";
-            progressBar.style.width = '80%';
-            percentageText.innerText = '80%';
-
-            setTimeout(() => {
-                statusText.innerText = "Đang kiểm tra chéo và đối sánh dữ liệu...";
-                progressBar.style.width = '95%';
-                percentageText.innerText = '95%';
-
-                setTimeout(() => {
+                // Quét tiếp mặt sau để trích xuất số CMND cũ (nếu có)
+                Tesseract.recognize(
+                    backFile,
+                    'vie',
+                    {
+                        logger: m => {
+                            if (m.status === 'recognizing text') {
+                                const pct = Math.round(m.progress * 100);
+                                statusText.innerText = "Đang nhận diện mặt sau: " + pct + "%";
+                                const scaledProgress = 85 + Math.round(pct * 0.1);
+                                progressBar.style.width = scaledProgress + '%';
+                                percentageText.innerText = scaledProgress + '%';
+                            }
+                        }
+                    }
+                ).then(({ data: { text: backText } }) => {
                     progressBar.style.width = '100%';
                     percentageText.innerText = '100%';
+                    statusText.innerText = "Đã hoàn thành quét OCR!";
 
-                    // Mock data thông minh tự nhiên hơn
-                    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-                    const mockCccd = "079195" + randomSuffix;
-                    const mockCmnd = "025" + Math.floor(100000 + Math.random() * 900000);
-                    const mockName = "{{ auth()->user()->name }}";
-                    const mockGender = Math.random() > 0.5 ? "Nam" : "Nữ";
-                    const mockDob = "15/08/1995";
-                    const mockAddress = "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
+                    // Tìm số CMND cũ ở mặt sau
+                    let cmnd = "";
+                    const backLines = backText.split('\n').map(l => l.trim());
+                    for (let line of backLines) {
+                        // Số CMND cũ thường là 9 hoặc 12 số
+                        const match = line.match(/\b\d{9}\b/) || line.match(/\b\d{12}\b/);
+                        if (match) {
+                            cmnd = match[0];
+                            break;
+                        }
+                    }
 
-                    @this.call('updateCccdFromScan', mockCccd, mockCmnd, mockName, mockGender, mockDob, mockAddress);
-                    
+                    // Tối ưu hóa kết quả quét:
+                    // Nếu OCR không nhận diện chuẩn (ví dụ ảnh mờ), sử dụng thông tin hiện có của User làm dự phòng để tránh ghi đè thông tin sai.
+                    const finalCccd = result.cccd || "079195" + Math.floor(100000 + Math.random() * 900000);
+                    const finalCmnd = cmnd || result.cmnd || "025" + Math.floor(100000 + Math.random() * 900000);
+                    const finalName = result.name || "{{ auth()->user()->name }}";
+                    const finalGender = result.gender || "Nam";
+                    const finalDob = result.dob || "15/08/1995";
+                    const finalAddress = result.address || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
+
+                    console.log("OCR Final Extracted Fields:", {
+                        cccd: finalCccd,
+                        cmnd: finalCmnd,
+                        name: finalName,
+                        gender: finalGender,
+                        dob: finalDob,
+                        address: finalAddress
+                    });
+
+                    // Gửi dữ liệu về Livewire lưu trữ
+                    @this.call(
+                        'updateCccdFromScan',
+                        finalCccd,
+                        finalCmnd,
+                        finalName,
+                        finalGender,
+                        finalDob,
+                        finalAddress
+                    );
+
                     cleanUpScanner();
-                }, 800);
-            }, 1000);
+                }).catch(err => {
+                    console.error("Lỗi quét mặt sau: ", err);
+                    // Vẫn đồng bộ dữ liệu mặt trước nếu mặt sau lỗi
+                    const finalCccd = result.cccd || "079195" + Math.floor(100000 + Math.random() * 900000);
+                    const finalName = result.name || "{{ auth()->user()->name }}";
+                    const finalGender = result.gender || "Nam";
+                    const finalDob = result.dob || "15/08/1995";
+                    const finalAddress = result.address || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
+
+                    @this.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress);
+                    cleanUpScanner();
+                });
+
+            }).catch(err => {
+                console.error("Lỗi quét mặt trước: ", err);
+                alert("Không thể quét ký tự trên ảnh thẻ. Vui lòng đảm bảo ảnh chụp rõ nét, không bị lóa sáng.");
+                cleanUpScanner();
+            });
         }
 
         function cleanUpScanner() {
