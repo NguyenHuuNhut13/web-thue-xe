@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Attributes\Url;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Grid;
+use Filament\Schemas\Components\Grid;
 
 class Profile extends Page implements HasForms
 {
