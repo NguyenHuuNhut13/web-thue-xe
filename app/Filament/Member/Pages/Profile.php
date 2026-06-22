@@ -545,7 +545,7 @@ class Profile extends Page implements HasForms
 
         // 3. Sync to Company API if token is present
         if ($token) {
-            $avatarRes = CompanyApiService::updateAvatar($token, $fullPublicPath);
+            $avatarRes = CompanyApiService::updateAvatar($token, $base64Data);
             if (!$avatarRes['success']) {
                 // Delete temporary local file
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($filename);

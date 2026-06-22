@@ -182,9 +182,13 @@ class CompanyApiService
     public static function updateAvatar($token, $avatarPath)
     {
         try {
-            // Đọc file và chuyển sang định dạng Base64 kèm Mime-type
-            $mimeType = mime_content_type($avatarPath);
-            $base64Image = 'data:' . $mimeType . ';base64,' . base64_encode(file_get_contents($avatarPath));
+            if (str_starts_with($avatarPath, 'data:')) {
+                $base64Image = $avatarPath;
+            } else {
+                // Đọc file và chuyển sang định dạng Base64 kèm Mime-type
+                $mimeType = mime_content_type($avatarPath);
+                $base64Image = 'data:' . $mimeType . ';base64,' . base64_encode(file_get_contents($avatarPath));
+            }
 
             // Gửi request JSON POST thông qua hàm post() dùng chung
             $response = self::post('nks/user/updateAvatar', [

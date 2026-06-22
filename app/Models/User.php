@@ -102,7 +102,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
      */
     public function getAvatarUrlAttribute(): string
     {
-        if (!$this->avatar) {
+        if (!$this->avatar || str_contains($this->avatar, 'default.png')) {
             return 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80';
         }
 
