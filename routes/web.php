@@ -69,7 +69,52 @@ Route::get('/test-email-send', function () {
 Route::get('/storage/{path}', [App\Http\Controllers\StorageController::class, 'serve'])
     ->where('path', '.*')
     ->name('storage.serve');
+// Debug: Test CCCD API (xóa sau khi debug xong)
+Route::get('/test-cccd-api', function () {
+    if (!auth()->check()) return response()->json(['error' => 'Chưa đăng nhập'], 401);
 
+    $user  = auth()->user();
+    $token = session('company_api_token') ?? $user->company_api_token ?? null;
+    if (!$token) return response()->json(['error' => 'Không có token API'], 403);
 
+    $rawDate    = $user->issue_date ?? '';
+    $parsedDate = $rawDate;
+    foreach (['d/m/Y', 'd-m-Y', 'Y-m-d', 'm/d/Y'] as $fmt) {
+        $dt = \DateTime::createFromFormat($fmt, $rawDate);
+        if ($dt && $dt->format($fmt) === $rawDate) { $parsedDate = $dt->format('Y-m-d'); break; }
+    }
 
+    $payload = [
+        'access_token' => $token,
+        'number'       => $user->cccd ?? '',
+        'date'         => $parsedDate,
+        'place'        => $user->address ?? '',
+    ];
+
+    // Test X: Không dùng withToken() - chỉ body access_token (không Bearer header)
+    $rX = \Illuminate\Support\Facades\Http::asJson()
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', $payload);
+
+    // Test Y: Form data + chỉ body access_token (không Bearer header)
+    $rY = \Illuminate\Support\Facades\Http::asForm()
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', $payload);
+
+    // Test Z: JSON + không Bearer + chỉ field "cccd" (tên khác)
+    $rZ = \Illuminate\Support\Facades\Http::asJson()
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', [
+            'access_token' => $token,
+            'cccd'         => $user->cccd ?? '',
+            'date'         => $parsedDate,
+            'place'        => $user->address ?? '',
+        ]);
+
+    return response()->json([
+        'testX_json_no_bearer'       => ['status' => $rX->status(), 'body' => $rX->json()],
+        'testY_form_no_bearer'       => ['status' => $rY->status(), 'body' => $rY->json()],
+        'testZ_json_cccd_no_bearer'  => ['status' => $rZ->status(), 'body' => $rZ->json()],
+        'date_raw'        => $rawDate,
+        'date_converted'  => $parsedDate,
+        'token_prefix'    => substr($token, 0, 20) . '...',
+    ]);
+})->middleware('auth');
 
