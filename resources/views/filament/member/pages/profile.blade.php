@@ -752,9 +752,9 @@
             // 2. Tìm Ngày sinh (dd/mm/yyyy)
             for (let line of lines) {
                 let normalizedLine = line.replace(/[oO]/g, '0').replace(/[Il|]/g, '1');
-                const match = normalizedLine.match(/\b\d{2}\/\d{2}\/\d{4}\b/);
+                const match = normalizedLine.match(/\b\d{2}[\/\-\.\|\s\\lI1]\d{2}[\/\-\.\|\s\\lI1]\d{4}\b/);
                 if (match) {
-                    dob = match[0];
+                    dob = match[0].replace(/[\-\.\|\s\\lI1]/g, '/');
                     break;
                 }
             }
@@ -922,17 +922,19 @@
                     let issueDate = "";
                     const backLines = backText.split('\n').map(l => l.trim());
                     for (let line of backLines) {
+                        let normalizedLine = line.replace(/[oO]/g, '0').replace(/[Il|]/g, '1');
                         // Thường là ngày cấp ở định dạng dd/mm/yyyy
-                        const match = line.match(/\b\d{2}\/\d{2}\/\d{4}\b/);
+                        const match = normalizedLine.match(/\b\d{2}[\/\-\.\|\s\\lI1]\d{2}[\/\-\.\|\s\\lI1]\d{4}\b/);
                         if (match) {
-                            issueDate = match[0];
+                            issueDate = match[0].replace(/[\-\.\|\s\\lI1]/g, '/');
                             break;
                         }
                     }
                     if (!issueDate) {
                         // Hỗ trợ dạng ngày... tháng... năm...
                         for (let line of backLines) {
-                            const match = line.match(/ngày\s*(\d{1,2})\s*tháng\s*(\d{1,2})\s*năm\s*(\d{4})/i);
+                            let normalizedLine = line.replace(/[oO]/g, '0').replace(/[Il|]/g, '1');
+                            const match = normalizedLine.match(/ngày\s*(\d{1,2})\s*tháng\s*(\d{1,2})\s*năm\s*(\d{4})/i);
                             if (match) {
                                 let dd = match[1].padStart(2, '0');
                                 let mm = match[2].padStart(2, '0');
@@ -957,7 +959,8 @@
                     
                     let finalAddress = result.address || "";
                     finalAddress = finalAddress.replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
-                    if (!finalAddress || finalAddress.length < 10 || !/phường|quận|thành phố|tỉnh|huyện|xã|đường|phố|thị xã|ấp|thôn/i.test(finalAddress)) {
+                    finalAddress = finalAddress.replace(/\s+[a-zA-Z0-9¡«»]$/, "").trim();
+                    if (!finalAddress || finalAddress.length < 15 || !/[a-zA-ZÀ-ỸđĐ]/.test(finalAddress)) {
                         finalAddress = "{{ auth()->user()->address }}" || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
                     }
 
@@ -971,7 +974,7 @@
                     });
 
                     // Gửi dữ liệu về Livewire lưu trữ
-                    @this.call(
+                    $wire.call(
                         'updateCccdFromScan',
                         finalCccd,
                         finalIssueDate,
@@ -996,11 +999,12 @@
                     
                     let finalAddress = result.address || "";
                     finalAddress = finalAddress.replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
-                    if (!finalAddress || finalAddress.length < 10 || !/phường|quận|thành phố|tỉnh|huyện|xã|đường|phố|thị xã|ấp|thôn/i.test(finalAddress)) {
+                    finalAddress = finalAddress.replace(/\s+[a-zA-Z0-9¡«»]$/, "").trim();
+                    if (!finalAddress || finalAddress.length < 15 || !/[a-zA-ZÀ-ỸđĐ]/.test(finalAddress)) {
                         finalAddress = "{{ auth()->user()->address }}" || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
                     }
 
-                    @this.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress);
+                    $wire.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress);
                     cleanUpScanner();
                 });
 
