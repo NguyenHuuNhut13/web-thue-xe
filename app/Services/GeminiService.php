@@ -21,10 +21,10 @@ class GeminiService
         }
 
         $models = [
-            'gemini-3.5-flash' => ['timeout' => 4, 'thinking' => true],
+            'gemini-3.1-flash-lite' => ['timeout' => 5, 'thinking' => false],
+            'gemini-flash-lite-latest' => ['timeout' => 5, 'thinking' => false],
             'gemini-2.5-flash' => ['timeout' => 8, 'thinking' => false],
-            'gemini-3.1-flash-lite' => ['timeout' => 8, 'thinking' => true],
-            'gemini-2.5-flash-lite' => ['timeout' => 8, 'thinking' => false]
+            'gemini-3.5-flash' => ['timeout' => 3, 'thinking' => true]
         ];
 
         foreach ($models as $model => $config) {
@@ -88,7 +88,7 @@ class GeminiService
      */
     public static function getAiAnswerForFaq(string $question, string $fixedAnswer): string
     {
-        $systemInstruction = "Bạn là chuyên gia tư vấn kỹ thuật và bảo dưỡng xe ô tô của NKS Car Rental. Nhiệm vụ của bạn là giải thích chuyên sâu, cung cấp thêm lời khuyên hữu ích, các bước thực hiện chi tiết hoặc lưu ý an toàn cho câu hỏi bảo dưỡng xe của người dùng. Hãy viết câu trả lời sinh động, chuyên nghiệp bằng tiếng Việt và định dạng Markdown (in đậm, danh sách gạch đầu dòng nếu cần).";
+        $systemInstruction = "Bạn là chuyên gia tư vấn kỹ thuật và bảo dưỡng xe ô tô của NKS Car Rental. Nhiệm vụ của bạn là giải thích chuyên sâu, cung cấp thêm lời khuyên hữu ích, các bước thực hiện chi tiết hoặc lưu ý an toàn cho câu hỏi bảo dưỡng xe của người dùng. Hãy viết câu trả lời sinh động, ngắn gọn và súc tích (khoảng 150-200 từ) nhưng vẫn đầy đủ thông tin, chuyên nghiệp bằng tiếng Việt và định dạng Markdown (in đậm, danh sách gạch đầu dòng nếu cần).";
 
         $prompt = "Câu hỏi từ người dùng: \"{$question}\"\n\nCâu trả lời cơ bản hiện tại của hệ thống:\n\"{$fixedAnswer}\"\n\nHãy viết một câu trả lời bổ sung, mở rộng và chi tiết hơn dựa trên câu hỏi trên.";
 
