@@ -302,9 +302,42 @@ class Profile extends Page implements HasForms
             ]);
         }
 
-        // Ghi chú: updateCccd API của NKS đang bị lỗi server (HTTP 500 - Undefined offset: 1)
-        // trên mọi request, không phụ thuộc vào data. Chờ NKS fix server.
-        // CCCD đã được lưu cục bộ thành công.
+        // Cập nhật CCCD lên API công ty nếu có token
+        if ($token) {
+            $frontBase64 = null;
+            $backBase64 = null;
+
+            if ($user->cccd_front) {
+                // Đọc file từ storage để chuyển thành base64 data URL
+                $frontContent = \Illuminate\Support\Facades\Storage::disk('public')->get($user->cccd_front);
+                if ($frontContent) {
+                    $frontBase64 = 'data:image/jpeg;base64,' . base64_encode($frontContent);
+                }
+            }
+
+            if ($user->cccd_back) {
+                $backContent = \Illuminate\Support\Facades\Storage::disk('public')->get($user->cccd_back);
+                if ($backContent) {
+                    $backBase64 = 'data:image/jpeg;base64,' . base64_encode($backContent);
+                }
+            }
+
+            $cccdRes = CompanyApiService::updateCccd($token, [
+                'cccd' => $data['cccd'],
+                'issue_date' => $data['issue_date'],
+                'address' => 'Cục Cảnh sát QLHC về TTXH', // default or issuing authority
+                'front_base64' => $frontBase64,
+                'back_base64' => $backBase64,
+            ]);
+
+            if (!$cccdRes['success']) {
+                Notification::make()
+                    ->title('Lỗi cập nhật CCCD lên hệ thống: ' . $cccdRes['message'])
+                    ->danger()
+                    ->send();
+                return;
+            }
+        }
 
         Notification::make()
             ->title('Cập nhật CCCD thành công!')
@@ -459,8 +492,24 @@ class Profile extends Page implements HasForms
         $user->cccd_back  = $backPath;
         $user->save();
 
-        // Ghi chú: updateCccd API của NKS đang bị lỗi server (HTTP 500 - Undefined offset: 1)
-        // Chờ NKS fix server. CCCD đã lưu cục bộ thành công.
+        // Cập nhật CCCD lên API công ty nếu có token
+        if ($token) {
+            $cccdRes = CompanyApiService::updateCccd($token, [
+                'cccd' => $cccd,
+                'issue_date' => $issueDate,
+                'address' => 'Cục Cảnh sát QLHC về TTXH', // default or issuing authority
+                'front_base64' => $frontBase64,
+                'back_base64' => $backBase64,
+            ]);
+
+            if (!$cccdRes['success']) {
+                Notification::make()
+                    ->title('Lỗi cập nhật CCCD lên hệ thống: ' . $cccdRes['message'])
+                    ->danger()
+                    ->send();
+                return;
+            }
+        }
 
         Notification::make()
             ->title('Nhận diện và cập nhật thông tin CCCD thành công!')
