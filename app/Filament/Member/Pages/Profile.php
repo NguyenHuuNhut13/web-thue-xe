@@ -25,16 +25,59 @@ class Profile extends Page implements HasForms
 
     protected static ?string $slug = 'profile';
 
-    protected string $view = 'filament.pages.profile';
+    protected string $view = 'filament.member.pages.profile';
 
-    public ?array $data = [];
+    public string $activeTab = 'personal';
+
+    public bool $isEditing = false;
+
+    public ?array $profileData = [];
+    public ?array $cccdData = [];
+    public ?array $avatarData = [];
+    public ?array $passwordData = [];
 
     public function mount(): void
     {
-        $this->form->fill(auth()->user()->toArray());
+        $user = auth()->user();
+
+        $this->profileData = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'zalo' => $user->zalo,
+        ];
+
+        $this->cccdData = [
+            'cccd' => $user->cccd,
+        ];
+
+        $this->avatarData = [
+            'avatar' => $user->avatar,
+        ];
+
+        $this->passwordData = [
+            'old_password' => '',
+            'new_password' => '',
+            'new_password_confirmation' => '',
+        ];
+
+        $this->profileForm->fill($this->profileData);
+        $this->cccdForm->fill($this->cccdData);
+        $this->avatarForm->fill($this->avatarData);
+        $this->passwordForm->fill($this->passwordData);
     }
 
-    public function form(Schema $schema): Schema
+    protected function getForms(): array
+    {
+        return [
+            'profileForm',
+            'cccdForm',
+            'avatarForm',
+            'passwordForm',
+        ];
+    }
+
+    public function profileForm(Schema $schema): Schema
     {
         return $schema
             ->components([
@@ -62,56 +105,96 @@ class Profile extends Page implements HasForms
                 TextInput::make('zalo')
                     ->label('Số Zalo / Link Zalo')
                     ->placeholder('Ví dụ: 0932030958'),
+            ])
+            ->statePath('profileData');
+    }
 
+    public function cccdForm(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
                 TextInput::make('cccd')
                     ->label('Số Căn cước công dân (CCCD)')
                     ->placeholder('Ví dụ: 079195000123')
-                    ->maxLength(15),
+                    ->maxLength(15)
+                    ->required(),
+            ])
+            ->statePath('cccdData');
+    }
 
+    public function avatarForm(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
                 FileUpload::make('avatar')
                     ->label('Ảnh đại diện (Avatar)')
                     ->image()
                     ->avatar()
                     ->disk('public')
                     ->directory('avatars')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->required(),
+            ])
+            ->statePath('avatarData');
+    }
 
+    public function passwordForm(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
                 TextInput::make('old_password')
                     ->label('Mật khẩu hiện tại')
                     ->password()
-                    ->placeholder('Nhập mật khẩu hiện tại nếu muốn đổi mật khẩu')
-                    ->requiredWith('new_password'),
+                    ->required()
+                    ->placeholder('Nhập mật khẩu hiện tại'),
 
                 TextInput::make('new_password')
                     ->label('Mật khẩu mới')
                     ->password()
-                    ->placeholder('Chỉ điền nếu muốn đổi mật khẩu'),
+                    ->required()
+                    ->placeholder('Nhập mật khẩu mới'),
 
                 TextInput::make('new_password_confirmation')
                     ->label('Xác nhận mật khẩu mới')
                     ->password()
                     ->same('new_password')
-                    ->requiredWith('new_password')
+                    ->required()
                     ->placeholder('Nhập lại mật khẩu mới'),
             ])
-            ->statePath('data');
+            ->statePath('passwordData');
     }
 
-    public function save(): void
+    public function enableEditing(): void
+    {
+        $this->isEditing = true;
+    }
+
+    public function cancelEdit(): void
     {
         $user = auth()->user();
-        $data = $this->form->getState();
+        $this->profileData = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'zalo' => $user->zalo,
+        ];
+        $this->profileForm->fill($this->profileData);
+        $this->isEditing = false;
+    }
+
+    public function saveProfile(): void
+    {
+        $user = auth()->user();
+        $data = $this->profileForm->getState();
         $token = session('company_api_token');
 
-        // 1. Nếu có token API, thực hiện cập nhật qua API trước
         if ($token) {
-            // Cập nhật profile (name, phone, zalo)
             $profileRes = CompanyApiService::updateProfile($token, [
                 'name' => $data['name'],
                 'phone' => $data['phone'],
                 'zalo' => $data['zalo'],
             ]);
-            
+
             if (!$profileRes['success']) {
                 Notification::make()
                     ->title('Lỗi cập nhật thông tin lên hệ thống: ' . $profileRes['message'])
@@ -119,9 +202,30 @@ class Profile extends Page implements HasForms
                     ->send();
                 return;
             }
+        }
 
-            // Cập nhật CCCD
-            if ($data['cccd'] !== $user->cccd) {
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        $user->phone = $data['phone'];
+        $user->zalo = $data['zalo'];
+        $user->save();
+
+        Notification::make()
+            ->title('Đã cập nhật thông tin cá nhân thành công!')
+            ->success()
+            ->send();
+
+        $this->isEditing = false;
+    }
+
+    public function saveCccd(): void
+    {
+        $user = auth()->user();
+        $data = $this->cccdForm->getState();
+        $token = session('company_api_token');
+
+        if ($data['cccd'] !== $user->cccd) {
+            if ($token) {
                 $cccdRes = CompanyApiService::updateCccd($token, $data['cccd']);
                 if (!$cccdRes['success']) {
                     Notification::make()
@@ -132,28 +236,29 @@ class Profile extends Page implements HasForms
                 }
             }
 
-            // Cập nhật mật khẩu
-            if (!empty($data['new_password'])) {
-                if (empty($data['old_password'])) {
-                    Notification::make()
-                        ->title('Vui lòng nhập mật khẩu hiện tại để đổi mật khẩu.')
-                        ->danger()
-                        ->send();
-                    return;
-                }
+            $user->cccd = $data['cccd'];
+            $user->save();
 
-                $passRes = CompanyApiService::updatePassword($token, $data['old_password'], $data['new_password']);
-                if (!$passRes['success']) {
-                    Notification::make()
-                        ->title('Lỗi đổi mật khẩu: ' . $passRes['message'])
-                        ->danger()
-                        ->send();
-                    return;
-                }
-            }
+            Notification::make()
+                ->title('Cập nhật CCCD thành công!')
+                ->success()
+                ->send();
+        } else {
+            Notification::make()
+                ->title('Số CCCD không thay đổi.')
+                ->warning()
+                ->send();
+        }
+    }
 
-            // Cập nhật avatar
-            if (!empty($data['avatar']) && $data['avatar'] !== $user->avatar) {
+    public function saveAvatar(): void
+    {
+        $user = auth()->user();
+        $data = $this->avatarForm->getState();
+        $token = session('company_api_token');
+
+        if (!empty($data['avatar']) && $data['avatar'] !== $user->avatar) {
+            if ($token) {
                 $avatarPath = storage_path('app/public/' . $data['avatar']);
                 if (file_exists($avatarPath)) {
                     $avatarRes = CompanyApiService::updateAvatar($token, $avatarPath);
@@ -166,35 +271,60 @@ class Profile extends Page implements HasForms
                     }
                 }
             }
-        }
 
-        // 2. Đồng bộ lưu lại cục bộ
-        $user->name = $data['name'];
-        $user->email = $data['email'];
-        $user->phone = $data['phone'];
-        $user->zalo = $data['zalo'];
-        $user->cccd = $data['cccd'];
-        
-        if (array_key_exists('avatar', $data)) {
             $user->avatar = $data['avatar'];
+            $user->save();
+
+            Notification::make()
+                ->title('Cập nhật ảnh đại diện thành công!')
+                ->success()
+                ->send();
+        } else {
+            Notification::make()
+                ->title('Ảnh đại diện không thay đổi hoặc không hợp lệ.')
+                ->warning()
+                ->send();
+        }
+    }
+
+    public function savePassword(): void
+    {
+        $user = auth()->user();
+        $data = $this->passwordForm->getState();
+        $token = session('company_api_token');
+
+        if ($token) {
+            $passRes = CompanyApiService::updatePassword($token, $data['old_password'], $data['new_password']);
+            if (!$passRes['success']) {
+                Notification::make()
+                    ->title('Lỗi đổi mật khẩu: ' . $passRes['message'])
+                    ->danger()
+                    ->send();
+                return;
+            }
+        } else {
+            if (!Hash::check($data['old_password'], $user->password)) {
+                Notification::make()
+                    ->title('Mật khẩu hiện tại không chính xác.')
+                    ->danger()
+                    ->send();
+                return;
+            }
         }
 
-        if (!empty($data['new_password'])) {
-            $user->password = Hash::make($data['new_password']);
-        }
-
+        $user->password = Hash::make($data['new_password']);
         $user->save();
 
         Notification::make()
-            ->title('Đã cập nhật hồ sơ thành công!')
+            ->title('Đổi mật khẩu thành công!')
             ->success()
             ->send();
-            
-        // Reset password fields in state and update form
-        $userArray = $user->toArray();
-        $userArray['old_password'] = null;
-        $userArray['new_password'] = null;
-        $userArray['new_password_confirmation'] = null;
-        $this->form->fill($userArray);
+
+        $this->passwordData = [
+            'old_password' => '',
+            'new_password' => '',
+            'new_password_confirmation' => '',
+        ];
+        $this->passwordForm->fill($this->passwordData);
     }
 }
