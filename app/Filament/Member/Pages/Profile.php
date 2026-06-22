@@ -11,7 +11,8 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Unique;
-use App\Services\CompanyApiService;
+use Livewire\Attributes\Url;
+use Filament\Forms\Components\Select;
 
 class Profile extends Page implements HasForms
 {
@@ -27,6 +28,7 @@ class Profile extends Page implements HasForms
 
     protected string $view = 'filament.member.pages.profile';
 
+    #[Url]
     public string $activeTab = 'personal';
 
     public bool $isEditing = false;
@@ -49,6 +51,10 @@ class Profile extends Page implements HasForms
 
         $this->cccdData = [
             'cccd' => $user->cccd,
+            'cmnd' => $user->cmnd,
+            'gender' => $user->gender,
+            'dob' => $user->dob,
+            'address' => $user->address,
         ];
 
         $this->avatarData = [
@@ -118,6 +124,27 @@ class Profile extends Page implements HasForms
                     ->placeholder('Ví dụ: 079195000123')
                     ->maxLength(15)
                     ->required(),
+
+                TextInput::make('cmnd')
+                    ->label('Số CMND cũ')
+                    ->placeholder('Ví dụ: 025123456')
+                    ->maxLength(15),
+
+                Select::make('gender')
+                    ->label('Giới tính')
+                    ->options([
+                        'Nam' => 'Nam',
+                        'Nữ' => 'Nữ',
+                    ])
+                    ->placeholder('Chọn giới tính'),
+
+                TextInput::make('dob')
+                    ->label('Ngày sinh')
+                    ->placeholder('Ví dụ: 15/08/1995'),
+
+                TextInput::make('address')
+                    ->label('Nơi thường trú')
+                    ->placeholder('Địa chỉ thường trú trên CCCD'),
             ])
             ->statePath('cccdData');
     }
@@ -235,20 +262,19 @@ class Profile extends Page implements HasForms
                     return;
                 }
             }
-
-            $user->cccd = $data['cccd'];
-            $user->save();
-
-            Notification::make()
-                ->title('Cập nhật CCCD thành công!')
-                ->success()
-                ->send();
-        } else {
-            Notification::make()
-                ->title('Số CCCD không thay đổi.')
-                ->warning()
-                ->send();
         }
+
+        $user->cccd = $data['cccd'];
+        $user->cmnd = $data['cmnd'];
+        $user->gender = $data['gender'];
+        $user->dob = $data['dob'];
+        $user->address = $data['address'];
+        $user->save();
+
+        Notification::make()
+            ->title('Cập nhật CCCD và thông tin liên quan thành công!')
+            ->success()
+            ->send();
     }
 
     public function saveAvatar(): void
@@ -328,13 +354,25 @@ class Profile extends Page implements HasForms
         $this->passwordForm->fill($this->passwordData);
     }
 
-    public function updateCccdFromScan(string $cccd, ?string $name = null): void
-    {
+    public function updateCccdFromScan(
+        string $cccd,
+        ?string $cmnd = null,
+        ?string $name = null,
+        ?string $gender = null,
+        ?string $dob = null,
+        ?string $address = null
+    ): void {
         $user = auth()->user();
         $token = session('company_api_token');
 
         // Cập nhật CCCD form state
-        $this->cccdData['cccd'] = $cccd;
+        $this->cccdData = [
+            'cccd' => $cccd,
+            'cmnd' => $cmnd,
+            'gender' => $gender,
+            'dob' => $dob,
+            'address' => $address,
+        ];
         $this->cccdForm->fill($this->cccdData);
 
         // Cập nhật tên nếu có
@@ -357,9 +395,13 @@ class Profile extends Page implements HasForms
             if ($token) {
                 CompanyApiService::updateCccd($token, $cccd);
             }
-            $user->cccd = $cccd;
         }
 
+        $user->cccd = $cccd;
+        $user->cmnd = $cmnd;
+        $user->gender = $gender;
+        $user->dob = $dob;
+        $user->address = $address;
         $user->save();
 
         Notification::make()

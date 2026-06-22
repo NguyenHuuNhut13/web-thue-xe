@@ -546,7 +546,7 @@
                                 <svg style="width: 16rem; height: 16rem;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                             </div>
                             
-                            <div class="flex-between" style="margin-bottom: 1.5rem;">
+                            <div class="flex-between" style="margin-bottom: 1rem;">
                                 <div>
                                     <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.75;">CĂN CƯỚC CÔNG DÂN</span>
                                     <h4 style="font-size: 0.875rem; font-weight: 700; opacity: 0.9; margin-top: 0.125rem;">CITIZEN IDENTITY CARD</h4>
@@ -556,23 +556,37 @@
                                 </span>
                             </div>
 
-                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                                 <div>
-                                    <span style="font-size: 0.75rem; opacity: 0.75; display: block;">Số / No.:</span>
-                                    <span class="cccd-number">{{ auth()->user()->cccd ?: 'CHƯA CẬP NHẬT' }}</span>
+                                    <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Số / No.:</span>
+                                    <span class="cccd-number" style="font-size: 1.125rem; font-weight: 800; letter-spacing: 0.05em;">{{ auth()->user()->cccd ?: 'CHƯA CẬP NHẬT' }}</span>
                                 </div>
                                 
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.75rem;">
                                     <div>
-                                        <span style="font-size: 0.75rem; opacity: 0.75; display: block;">Họ và tên / Full name:</span>
-                                        <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->name }}</span>
+                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Họ và tên / Full name:</span>
+                                        <span style="font-size: 0.875rem; font-weight: 700;">{{ auth()->user()->name }}</span>
                                     </div>
                                     <div>
-                                        <span style="font-size: 0.75rem; opacity: 0.75; display: block;">Trạng thái / Status:</span>
-                                        <span style="display: inline-flex; align-items: center; border-radius: 9999px; background-color: rgba(255, 255, 255, 0.2); padding: 0.125rem 0.5rem; font-size: 0.75rem; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.1);">
-                                            {{ auth()->user()->cccd ? 'Đã liên kết' : 'Chưa liên kết' }}
-                                        </span>
+                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">CMND cũ / Old ID:</span>
+                                        <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->cmnd ?: 'N/A' }}</span>
                                     </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                                    <div>
+                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Ngày sinh / Date of birth:</span>
+                                        <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->dob ?: 'Chưa cập nhật' }}</span>
+                                    </div>
+                                    <div>
+                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Giới tính / Sex:</span>
+                                        <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->gender ?: 'Chưa cập nhật' }}</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Nơi thường trú / Place of residence:</span>
+                                    <span style="font-size: 0.75rem; font-weight: 500; display: block; line-height: 1.25;">{{ auth()->user()->address ?: 'Chưa cập nhật' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -602,7 +616,7 @@
                                     <input type="file" id="input-front" accept="image/*" style="display: none;" onchange="handleFileSelect(this, 'front')">
                                     <div class="ocr-dropzone-content" id="content-front">
                                         <svg class="icon-svg" style="color: #6366f1; width: 2.5rem !important; height: 2.5rem !important;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
                                         <span class="ocr-dropzone-title">Mặt trước CCCD</span>
                                         <span class="ocr-dropzone-subtitle">Nhấp để chọn hoặc kéo thả ảnh vào đây</span>
@@ -618,7 +632,7 @@
                                     <input type="file" id="input-back" accept="image/*" style="display: none;" onchange="handleFileSelect(this, 'back')">
                                     <div class="ocr-dropzone-content" id="content-back">
                                         <svg class="icon-svg" style="color: #9333ea; width: 2.5rem !important; height: 2.5rem !important;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
                                         <span class="ocr-dropzone-title">Mặt sau CCCD</span>
                                         <span class="ocr-dropzone-subtitle">Nhấp để chọn hoặc kéo thả ảnh vào đây</span>
@@ -706,7 +720,6 @@
     <!-- Scripts block to load html5-qrcode and implement scanner / OCR simulation -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Load html5-qrcode dynamically if not loaded
             if (typeof Html5Qrcode === 'undefined') {
                 const script = document.createElement('script');
                 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js';
@@ -730,19 +743,20 @@
             document.getElementById('start-qr-scan-btn').style.display = 'none';
 
             html5QrcodeScanner = new Html5Qrcode("qr-reader");
+            
+            // Cấu hình tối ưu cho quét QR CCCD:
+            // Tăng tốc độ đọc fps và không giới hạn khu vực quét (Omit qrbox) giúp tự động focus và bắt mã nhanh hơn.
             html5QrcodeScanner.start(
                 { facingMode: "environment" },
                 {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 }
+                    fps: 20
                 },
                 (decodedText, decodedResult) => {
-                    // Quét thành công!
                     parseAndFillCccd(decodedText);
                     stopQrScan();
                 },
                 (errorMessage) => {
-                    // Bỏ qua lỗi đọc khung hình
+                    // ignore error
                 }
             ).catch((err) => {
                 console.error("Không thể khởi động camera: ", err);
@@ -769,17 +783,31 @@
         }
 
         function parseAndFillCccd(text) {
+            console.log("Scanned QR Text: ", text);
             const parts = text.split('|');
-            if (parts.length >= 3) {
+            
+            // Định dạng mã QR của CCCD Việt Nam: 
+            // Số CCCD|Số CMND cũ|Họ và tên|Ngày sinh|Giới tính|Nơi thường trú|Ngày cấp
+            if (parts.length >= 5) {
                 const cccd = parts[0];
+                const cmnd = parts[1] || '';
                 const name = parts[2];
                 
-                @this.call('updateCccdFromScan', cccd, name);
+                // Định dạng Ngày sinh DDMMYYYY -> DD/MM/YYYY
+                let dob = parts[3];
+                if (dob && dob.length === 8) {
+                    dob = dob.substring(0, 2) + '/' + dob.substring(2, 4) + '/' + dob.substring(4, 8);
+                }
+                
+                const gender = parts[4];
+                const address = parts[5] || '';
+                
+                @this.call('updateCccdFromScan', cccd, cmnd, name, gender, dob, address);
             } else {
                 if (/^\d{12}$/.test(text.trim())) {
-                    @this.call('updateCccdFromScan', text.trim(), null);
+                    @this.call('updateCccdFromScan', text.trim(), null, null, null, null, null);
                 } else {
-                    alert("Đã đọc được mã QR: \"" + text + "\" nhưng không đúng định dạng thông tin CCCD Việt Nam.");
+                    alert("Đã đọc được QR: \"" + text + "\" nhưng không đúng cấu trúc CCCD Việt Nam.");
                 }
             }
         }
@@ -792,7 +820,6 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // Hiển thị preview
                     document.getElementById('preview-' + side).src = e.target.result;
                     document.getElementById('preview-container-' + side).style.display = 'block';
                     document.getElementById('laser-' + side).style.display = 'block';
@@ -803,7 +830,6 @@
                         backImageLoaded = true;
                     }
 
-                    // Nếu cả 2 mặt đều được tải lên, bắt đầu quét OCR
                     if (frontImageLoaded && backImageLoaded) {
                         runOcrSimulation();
                     }
@@ -839,29 +865,31 @@
                 } else {
                     clearInterval(interval);
                     
-                    // Tạo số CCCD mẫu ngẫu nhiên
+                    // Tạo dữ liệu CCCD mô phỏng ngẫu nhiên
                     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
                     const mockCccd = "079195" + randomSuffix;
-                    const mockName = "{{ auth()->user()->name }}"; // Giữ lại tên hiện tại làm mẫu
+                    
+                    const randomCmnd = "025" + Math.floor(100000 + Math.random() * 900000);
+                    const mockName = "{{ auth()->user()->name }}";
+                    const mockGender = Math.random() > 0.5 ? "Nam" : "Nữ";
+                    const mockDob = "15/08/1995";
+                    const mockAddress = "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
 
-                    // Đồng bộ lên Livewire
-                    @this.call('updateCccdFromScan', mockCccd, mockName);
+                    // Đồng bộ dữ liệu mới lên Livewire
+                    @this.call('updateCccdFromScan', mockCccd, randomCmnd, mockName, mockGender, mockDob, mockAddress);
 
-                    // Tắt quét laser sau khi hoàn thành
+                    // Tắt quét laser
                     setTimeout(() => {
                         document.getElementById('laser-front').style.display = 'none';
                         document.getElementById('laser-back').style.display = 'none';
                         progressContainer.style.display = 'none';
                         
-                        // Reset trạng thái tải ảnh
                         frontImageLoaded = false;
                         backImageLoaded = false;
                         
-                        // Ẩn các preview để sẵn sàng cho lần quét sau
                         document.getElementById('preview-container-front').style.display = 'none';
                         document.getElementById('preview-container-back').style.display = 'none';
                         
-                        // Xóa giá trị input file để có thể chọn lại cùng 1 file
                         document.getElementById('input-front').value = '';
                         document.getElementById('input-back').value = '';
                     }, 1000);
