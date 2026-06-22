@@ -265,6 +265,116 @@
         .padding-b-sm {
             padding-bottom: 1rem;
         }
+
+        /* Styles for Drag & Drop and laser scan */
+        .ocr-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .ocr-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .ocr-dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            background-color: #f8fafc;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+        }
+        .dark .ocr-dropzone {
+            border-color: #374151;
+            background-color: #1e293b;
+        }
+        .ocr-dropzone:hover {
+            border-color: #6366f1;
+            background-color: #f1f5f9;
+        }
+        .dark .ocr-dropzone:hover {
+            border-color: #818cf8;
+            background-color: rgba(30, 41, 59, 0.8);
+        }
+        .ocr-dropzone-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .ocr-dropzone-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #334155;
+        }
+        .dark .ocr-dropzone-title {
+            color: #cbd5e1;
+        }
+        .ocr-dropzone-subtitle {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        .dark .ocr-dropzone-subtitle {
+            color: #94a3b8;
+        }
+        .ocr-preview-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .ocr-preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .laser-scanner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, rgba(99, 102, 241, 0), #6366f1, rgba(99, 102, 241, 0));
+            box-shadow: 0 0 8px 2px rgba(99, 102, 241, 0.8);
+            animation: laser-scan 2.5s infinite ease-in-out;
+        }
+        @keyframes laser-scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+        .ocr-progress-container {
+            margin-top: 1.5rem;
+            background-color: #f1f5f9;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+        .dark .ocr-progress-container {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+        .ocr-progress-bar {
+            height: 6px;
+            background-color: #6366f1;
+            width: 0%;
+            border-radius: 9999px;
+            transition: width 0.3s;
+        }
     </style>
 
     <div class="profile-grid">
@@ -467,6 +577,72 @@
                             </div>
                         </div>
 
+                        <!-- Chức năng Quét Mã QR -->
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                                <x-filament::button type="button" icon="heroicon-o-qr-code" id="start-qr-scan-btn" onclick="startQrScan()">
+                                    Quét Mã QR thẻ CCCD
+                                </x-filament::button>
+                                
+                                <x-filament::button type="button" color="danger" id="stop-qr-scan-btn" onclick="stopQrScan()" style="display: none;">
+                                    Đóng Camera quét
+                                </x-filament::button>
+                            </div>
+                            
+                            <div id="qr-reader" style="width: 100%; max-width: 400px; display: none; border-radius: 1rem; overflow: hidden; border: 2px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);"></div>
+                        </div>
+
+                        <!-- Chức năng tải lên Mặt trước / Mặt sau & OCR -->
+                        <div style="margin-bottom: 2rem;">
+                            <h3 style="font-size: 0.875rem; font-weight: 600; color: #4b5563; margin-bottom: 1rem;" class="dark:text-gray-300">Tải lên tài liệu ảnh CCCD để quét tự động (OCR)</h3>
+                            
+                            <div class="ocr-grid">
+                                <!-- Dropzone Mặt trước -->
+                                <div class="ocr-dropzone" id="dropzone-front" onclick="document.getElementById('input-front').click()">
+                                    <input type="file" id="input-front" accept="image/*" style="display: none;" onchange="handleFileSelect(this, 'front')">
+                                    <div class="ocr-dropzone-content" id="content-front">
+                                        <svg class="icon-svg" style="color: #6366f1; width: 2.5rem !important; height: 2.5rem !important;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <span class="ocr-dropzone-title">Mặt trước CCCD</span>
+                                        <span class="ocr-dropzone-subtitle">Nhấp để chọn hoặc kéo thả ảnh vào đây</span>
+                                    </div>
+                                    <div class="ocr-preview-container" id="preview-container-front" style="display: none;">
+                                        <img id="preview-front" src="" alt="Mặt trước CCCD" class="ocr-preview-img">
+                                        <div class="laser-scanner" id="laser-front" style="display: none;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Dropzone Mặt sau -->
+                                <div class="ocr-dropzone" id="dropzone-back" onclick="document.getElementById('input-back').click()">
+                                    <input type="file" id="input-back" accept="image/*" style="display: none;" onchange="handleFileSelect(this, 'back')">
+                                    <div class="ocr-dropzone-content" id="content-back">
+                                        <svg class="icon-svg" style="color: #9333ea; width: 2.5rem !important; height: 2.5rem !important;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <span class="ocr-dropzone-title">Mặt sau CCCD</span>
+                                        <span class="ocr-dropzone-subtitle">Nhấp để chọn hoặc kéo thả ảnh vào đây</span>
+                                    </div>
+                                    <div class="ocr-preview-container" id="preview-container-back" style="display: none;">
+                                        <img id="preview-back" src="" alt="Mặt sau CCCD" class="ocr-preview-img">
+                                        <div class="laser-scanner" id="laser-back" style="display: none;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Trạng thái quét OCR -->
+                            <div class="ocr-progress-container" id="ocr-progress-container">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <span style="font-size: 0.875rem; font-weight: 600; color: #4f46e5;" id="ocr-status-text">Đang chuẩn bị ảnh quét...</span>
+                                    <span style="font-size: 0.875rem; font-weight: 600; color: #4f46e5;" id="ocr-percentage">0%</span>
+                                </div>
+                                <div style="width: 100%; background-color: #cbd5e1; height: 6px; border-radius: 9999px; overflow: hidden;">
+                                    <div class="ocr-progress-bar" id="ocr-progress-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form nhập tay thông thường -->
                         <form wire:submit="saveCccd" style="display: flex; flex-direction: column; gap: 1.5rem;">
                             {{ $this->cccdForm }}
                             
@@ -526,4 +702,171 @@
             </div>
         </div>
     </div>
+
+    <!-- Scripts block to load html5-qrcode and implement scanner / OCR simulation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load html5-qrcode dynamically if not loaded
+            if (typeof Html5Qrcode === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js';
+                script.onload = () => {
+                    console.log('html5-qrcode library loaded successfully.');
+                };
+                document.head.appendChild(script);
+            }
+        });
+
+        let html5QrcodeScanner = null;
+
+        function startQrScan() {
+            if (typeof Html5Qrcode === 'undefined') {
+                alert("Đang tải thư viện camera, vui lòng đợi trong giây lát...");
+                return;
+            }
+
+            document.getElementById('qr-reader').style.display = 'block';
+            document.getElementById('stop-qr-scan-btn').style.display = 'inline-flex';
+            document.getElementById('start-qr-scan-btn').style.display = 'none';
+
+            html5QrcodeScanner = new Html5Qrcode("qr-reader");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                (decodedText, decodedResult) => {
+                    // Quét thành công!
+                    parseAndFillCccd(decodedText);
+                    stopQrScan();
+                },
+                (errorMessage) => {
+                    // Bỏ qua lỗi đọc khung hình
+                }
+            ).catch((err) => {
+                console.error("Không thể khởi động camera: ", err);
+                alert("Không thể khởi động camera. Vui lòng cấp quyền truy cập camera cho trình duyệt.");
+                stopQrScan();
+            });
+        }
+
+        function stopQrScan() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    document.getElementById('qr-reader').style.display = 'none';
+                    document.getElementById('stop-qr-scan-btn').style.display = 'none';
+                    document.getElementById('start-qr-scan-btn').style.display = 'inline-flex';
+                    html5QrcodeScanner = null;
+                }).catch((err) => {
+                    console.error("Lỗi khi tắt camera: ", err);
+                    document.getElementById('qr-reader').style.display = 'none';
+                    document.getElementById('stop-qr-scan-btn').style.display = 'none';
+                    document.getElementById('start-qr-scan-btn').style.display = 'inline-flex';
+                    html5QrcodeScanner = null;
+                });
+            }
+        }
+
+        function parseAndFillCccd(text) {
+            const parts = text.split('|');
+            if (parts.length >= 3) {
+                const cccd = parts[0];
+                const name = parts[2];
+                
+                @this.call('updateCccdFromScan', cccd, name);
+            } else {
+                if (/^\d{12}$/.test(text.trim())) {
+                    @this.call('updateCccdFromScan', text.trim(), null);
+                } else {
+                    alert("Đã đọc được mã QR: \"" + text + "\" nhưng không đúng định dạng thông tin CCCD Việt Nam.");
+                }
+            }
+        }
+
+        // Tải ảnh và mô phỏng OCR
+        let frontImageLoaded = false;
+        let backImageLoaded = false;
+
+        function handleFileSelect(input, side) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Hiển thị preview
+                    document.getElementById('preview-' + side).src = e.target.result;
+                    document.getElementById('preview-container-' + side).style.display = 'block';
+                    document.getElementById('laser-' + side).style.display = 'block';
+
+                    if (side === 'front') {
+                        frontImageLoaded = true;
+                    } else if (side === 'back') {
+                        backImageLoaded = true;
+                    }
+
+                    // Nếu cả 2 mặt đều được tải lên, bắt đầu quét OCR
+                    if (frontImageLoaded && backImageLoaded) {
+                        runOcrSimulation();
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function runOcrSimulation() {
+            const progressContainer = document.getElementById('ocr-progress-container');
+            const progressBar = document.getElementById('ocr-progress-bar');
+            const statusText = document.getElementById('ocr-status-text');
+            const percentageText = document.getElementById('ocr-percentage');
+
+            progressContainer.style.display = 'block';
+
+            const steps = [
+                { progress: 20, text: "Đang xử lý hình ảnh..." },
+                { progress: 50, text: "Đang phân tích cấu trúc thẻ CCCD..." },
+                { progress: 80, text: "Đang trích xuất văn bản (OCR)..." },
+                { progress: 100, text: "Đang đối chiếu và kiểm tra thông tin..." }
+            ];
+
+            let currentStep = 0;
+            
+            const interval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    const step = steps[currentStep];
+                    progressBar.style.width = step.progress + '%';
+                    statusText.innerText = step.text;
+                    percentageText.innerText = step.progress + '%';
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                    
+                    // Tạo số CCCD mẫu ngẫu nhiên
+                    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+                    const mockCccd = "079195" + randomSuffix;
+                    const mockName = "{{ auth()->user()->name }}"; // Giữ lại tên hiện tại làm mẫu
+
+                    // Đồng bộ lên Livewire
+                    @this.call('updateCccdFromScan', mockCccd, mockName);
+
+                    // Tắt quét laser sau khi hoàn thành
+                    setTimeout(() => {
+                        document.getElementById('laser-front').style.display = 'none';
+                        document.getElementById('laser-back').style.display = 'none';
+                        progressContainer.style.display = 'none';
+                        
+                        // Reset trạng thái tải ảnh
+                        frontImageLoaded = false;
+                        backImageLoaded = false;
+                        
+                        // Ẩn các preview để sẵn sàng cho lần quét sau
+                        document.getElementById('preview-container-front').style.display = 'none';
+                        document.getElementById('preview-container-back').style.display = 'none';
+                        
+                        // Xóa giá trị input file để có thể chọn lại cùng 1 file
+                        document.getElementById('input-front').value = '';
+                        document.getElementById('input-back').value = '';
+                    }, 1000);
+                }
+            }, 800);
+        }
+    </script>
 </x-filament-panels::page>

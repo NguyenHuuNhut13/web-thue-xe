@@ -327,4 +327,44 @@ class Profile extends Page implements HasForms
         ];
         $this->passwordForm->fill($this->passwordData);
     }
+
+    public function updateCccdFromScan(string $cccd, ?string $name = null): void
+    {
+        $user = auth()->user();
+        $token = session('company_api_token');
+
+        // Cập nhật CCCD form state
+        $this->cccdData['cccd'] = $cccd;
+        $this->cccdForm->fill($this->cccdData);
+
+        // Cập nhật tên nếu có
+        if ($name && $name !== $user->name) {
+            $this->profileData['name'] = $name;
+            $this->profileForm->fill($this->profileData);
+            
+            if ($token) {
+                CompanyApiService::updateProfile($token, [
+                    'name' => $name,
+                    'phone' => $user->phone,
+                    'zalo' => $user->zalo,
+                ]);
+            }
+            $user->name = $name;
+        }
+
+        // Cập nhật CCCD
+        if ($cccd !== $user->cccd) {
+            if ($token) {
+                CompanyApiService::updateCccd($token, $cccd);
+            }
+            $user->cccd = $cccd;
+        }
+
+        $user->save();
+
+        Notification::make()
+            ->title('Nhận diện và cập nhật thông tin CCCD thành công!')
+            ->success()
+            ->send();
+    }
 }
