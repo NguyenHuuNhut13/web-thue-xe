@@ -406,6 +406,203 @@
             background-color: #374151 !important;
             color: #f3f4f6 !important;
         }
+
+        /* Custom password card styles */
+        .password-form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 28rem;
+            margin: 0 auto;
+        }
+        .password-input-wrapper {
+            position: relative;
+        }
+        .password-input {
+            width: 100%;
+            padding: 0.625rem 2.5rem 0.625rem 0.875rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            font-size: 0.875rem;
+            color: #1f2937;
+            transition: all 0.2s;
+        }
+        .dark .password-input {
+            border-color: #374151;
+            background-color: #1f2937;
+            color: #f3f4f6;
+        }
+        .password-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        .password-input-icon-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+        .password-input-icon-btn:hover {
+            color: #4b5563;
+        }
+        .dark .password-input-icon-btn:hover {
+            color: #e5e7eb;
+        }
+        .password-input-icon-btn.eye-btn {
+            right: 0.75rem;
+        }
+        .password-input-icon-btn.bulb-btn {
+            right: 2.5rem;
+        }
+        /* Make sure password-input has extra right padding when it has bulb + eye */
+        .password-input.with-bulb {
+            padding-right: 4.25rem;
+        }
+        
+        /* Generator card styles */
+        .generator-panel {
+            border: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .dark .generator-panel {
+            border-color: #374151;
+            background-color: #1e293b;
+        }
+        .generated-display {
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-family: monospace;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .dark .generated-display {
+            background-color: #0f172a;
+            border-color: #374151;
+            color: #f8fafc;
+        }
+        
+        /* Slider wrapper */
+        .slider-wrapper {
+            margin-bottom: 1.25rem;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        .dark .slider-label {
+            color: #9ca3af;
+        }
+        .char-slider {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            accent-color: #6366f1;
+        }
+        .dark .char-slider {
+            background: #374151;
+        }
+        
+        /* Checkbox option rows */
+        .criteria-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        .dark .criteria-row {
+            color: #d1d5db;
+        }
+        .criteria-checkbox {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.25rem;
+            border-color: #d1d5db;
+            color: #6366f1;
+            cursor: pointer;
+        }
+        .dark .criteria-checkbox {
+            border-color: #4b5563;
+            background-color: #1f2937;
+        }
+        
+        /* Save confirmation checkbox container */
+        .save-confirmation-container {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 0.75rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .dark .save-confirmation-container {
+            border-color: #374151;
+        }
+        .save-confirm-text {
+            color: #dc2626;
+            font-weight: 600;
+        }
+        .dark .save-confirm-text {
+            color: #f87171;
+        }
+        
+        /* Gửi button custom style to match the mockup */
+        .btn-gui {
+            width: 100%;
+            background-color: #0284c7;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0.625rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-gui:hover:not(:disabled) {
+            background-color: #0369a1;
+        }
+        .btn-gui:disabled {
+            background-color: #94a3b8;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .dark .btn-gui:disabled {
+            background-color: #475569;
+        }
     </style>
 
     <div class="profile-grid">
@@ -780,21 +977,279 @@
                 @endif
 
                 @if($activeTab === 'password')
-                    <div>
+                    <div x-data="{
+                        showOldPassword: false,
+                        showNewPassword: false,
+                        showConfirmPassword: false,
+                        showGenerator: false,
+                        generatedPassword: '',
+                        charLength: 12,
+                        hasAtLeast8: true,
+                        hasNumbers: true,
+                        hasLowercase: true,
+                        hasUppercase: true,
+                        hasSpecial: true,
+                        isSaved: false,
+                        
+                        init() {
+                            this.generate();
+                            this.$watch('charLength', value => {
+                                if (this.hasAtLeast8 && value < 8) {
+                                    this.charLength = 8;
+                                }
+                                this.generate();
+                            });
+                        },
+                        
+                        generate() {
+                            let chars = '';
+                            if (this.hasLowercase) chars += 'abcdefghijklmnopqrstuvwxyz';
+                            if (this.hasUppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                            if (this.hasNumbers) chars += '0123456789';
+                            if (this.hasSpecial) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+                            
+                            if (chars === '') {
+                                this.generatedPassword = '';
+                                return;
+                            }
+                            
+                            let password = '';
+                            let guaranteed = [];
+                            if (this.hasLowercase) guaranteed.push('abcdefghijklmnopqrstuvwxyz');
+                            if (this.hasUppercase) guaranteed.push('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+                            if (this.hasNumbers) guaranteed.push('0123456789');
+                            if (this.hasSpecial) guaranteed.push('!@#$%^&*()_+-=[]{}|;:,.<>?');
+                            
+                            let remainingLength = this.charLength;
+                            guaranteed.forEach(charset => {
+                                if (password.length < this.charLength) {
+                                    password += charset.charAt(Math.floor(Math.random() * charset.length));
+                                    remainingLength--;
+                                }
+                            });
+                            
+                            for (let i = 0; i < remainingLength; i++) {
+                                password += chars.charAt(Math.floor(Math.random() * chars.length));
+                            }
+                            
+                            // Shuffle
+                            this.generatedPassword = password.split('').sort(() => 0.5 - Math.random()).join('');
+                        },
+                        
+                        applyGeneratedPassword() {
+                            if (!this.isSaved) return;
+                            @this.set('passwordData.new_password', this.generatedPassword);
+                            @this.set('passwordData.new_password_confirmation', this.generatedPassword);
+                            this.showGenerator = false;
+                            this.showNewPassword = true;
+                            this.showConfirmPassword = true;
+                            this.isSaved = false;
+                        }
+                    }">
                         <div class="border-b-thin padding-b-sm margin-b-med">
                             <h2 style="font-size: 1.125rem; font-weight: 700; color: #1f2937;" class="dark:text-gray-200">Đổi mật khẩu</h2>
                             <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Thay đổi mật khẩu tài khoản thường xuyên để bảo mật</p>
                         </div>
 
-                        <form wire:submit="savePassword" style="display: flex; flex-direction: column; gap: 1.5rem;">
-                            {{ $this->passwordForm }}
-                            
-                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1rem;" class="border-t-thin">
-                                <x-filament::button type="submit">
-                                    Cập nhật mật khẩu
-                                </x-filament::button>
+                        <div class="password-form-container">
+                            <form wire:submit="savePassword" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                                <!-- Mật khẩu hiện tại -->
+                                <div>
+                                    <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #4b5563; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;" class="dark:text-gray-400">
+                                        Mật khẩu hiện tại
+                                    </label>
+                                    <div class="password-input-wrapper">
+                                        <input :type="showOldPassword ? 'text' : 'password'"
+                                               wire:model="passwordData.old_password"
+                                               class="password-input"
+                                               placeholder="Nhập mật khẩu hiện tại">
+                                        <button type="button" 
+                                                @click="showOldPassword = !showOldPassword"
+                                                class="password-input-icon-btn eye-btn">
+                                            <template x-if="showOldPassword">
+                                                <svg class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                                                </svg>
+                                            </template>
+                                            <template x-if="!showOldPassword">
+                                                <svg class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                            </template>
+                                        </button>
+                                    </div>
+                                    @error('passwordData.old_password')
+                                        <span style="color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <!-- Mật khẩu mới -->
+                                <div>
+                                    <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #4b5563; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;" class="dark:text-gray-400">
+                                        Mật khẩu mới
+                                    </label>
+                                    <div class="password-input-wrapper">
+                                        <input :type="showNewPassword ? 'text' : 'password'"
+                                               wire:model="passwordData.new_password"
+                                               class="password-input with-bulb"
+                                               placeholder="Nhập mật khẩu mới">
+                                        
+                                        <!-- Bóng đèn tạo mật khẩu ngẫu nhiên -->
+                                        <button type="button" 
+                                                @click="showGenerator = !showGenerator"
+                                                class="password-input-icon-btn bulb-btn"
+                                                style="color: #eab308;"
+                                                title="Tạo mật khẩu ngẫu nhiên">
+                                            <svg class="icon-svg" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 2C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2 18H10c-.55 0-1 .45-1 1s.45 1 1 1h4c.55 0 1-.45 1-1s-.45-1-1-1z"/>
+                                            </svg>
+                                        </button>
+
+                                        <button type="button" 
+                                                @click="showNewPassword = !showNewPassword"
+                                                class="password-input-icon-btn eye-btn">
+                                            <template x-if="showNewPassword">
+                                                <svg class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                                                </svg>
+                                            </template>
+                                            <template x-if="!showNewPassword">
+                                                <svg class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                            </template>
+                                        </button>
+                                    </div>
+                                    @error('passwordData.new_password')
+                                        <span style="color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <!-- Xác nhận mật khẩu mới -->
+                                <div>
+                                    <label style="display: block; font-size: 0.75rem; font-weight: 600; color: #4b5563; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;" class="dark:text-gray-400">
+                                        Xác nhận mật khẩu mới
+                                    </label>
+                                    <div class="password-input-wrapper">
+                                        <input :type="showConfirmPassword ? 'text' : 'password'"
+                                               wire:model="passwordData.new_password_confirmation"
+                                               class="password-input"
+                                               placeholder="Nhập lại mật khẩu mới">
+                                        <button type="button" 
+                                                @click="showConfirmPassword = !showConfirmPassword"
+                                                class="password-input-icon-btn eye-btn">
+                                            <template x-if="showConfirmPassword">
+                                                <svg class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                                                </svg>
+                                            </template>
+                                            <template x-if="!showConfirmPassword">
+                                                <svg class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                            </template>
+                                        </button>
+                                    </div>
+                                    @error('passwordData.new_password_confirmation')
+                                        <span style="color: #ef4444; font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                <div style="margin-top: 0.5rem;">
+                                    <x-filament::button type="submit" size="md" style="width: 100%;">
+                                        Cập nhật mật khẩu
+                                    </x-filament::button>
+                                </div>
+                            </form>
+
+                            <!-- Khung Tạo mật khẩu ngẫu nhiên (Generate Password) -->
+                            <div x-show="showGenerator"
+                                 x-transition:enter="transition ease-out duration-300"
+                                 x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                                 x-transition:leave="transition ease-in duration-200"
+                                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                                 x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                 class="generator-panel">
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                    <h4 style="font-size: 0.875rem; font-weight: 700; color: #111827;" class="dark:text-white">Tạo mật khẩu ngẫu nhiên</h4>
+                                    <button type="button" @click="showGenerator = false" style="color: #9ca3af; background: transparent; border: none; cursor: pointer;">
+                                        <svg class="icon-svg-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Password Display Box -->
+                                <div class="generated-display">
+                                    <span x-text="generatedPassword"></span>
+                                    <button type="button" 
+                                            @click="navigator.clipboard.writeText(generatedPassword); alert('Đã sao chép mật khẩu vào clipboard!')" 
+                                            style="color: #6366f1; background: transparent; border: none; cursor: pointer; display: flex; align-items: center;"
+                                            title="Sao chép">
+                                        <svg class="icon-svg-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Length Slider -->
+                                <div class="slider-wrapper">
+                                    <div class="slider-label">
+                                        <span>Số lượng ký tự</span>
+                                        <span x-text="charLength" style="color: #6366f1; font-weight: 700;"></span>
+                                    </div>
+                                    <input type="range" 
+                                           x-model="charLength" 
+                                           min="6" max="32" 
+                                           class="char-slider">
+                                </div>
+
+                                <!-- Option Checkboxes -->
+                                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                                    <label class="criteria-row">
+                                        <input type="checkbox" x-model="hasAtLeast8" @change="if(hasAtLeast8 && charLength < 8) charLength = 8; generate()" class="criteria-checkbox">
+                                        <span>Có 8 ký tự</span>
+                                    </label>
+                                    <label class="criteria-row">
+                                        <input type="checkbox" x-model="hasNumbers" @change="generate()" class="criteria-checkbox">
+                                        <span>Có ký tự số</span>
+                                    </label>
+                                    <label class="criteria-row">
+                                        <input type="checkbox" x-model="hasLowercase" @change="generate()" class="criteria-checkbox">
+                                        <span>Có ký tự thường</span>
+                                    </label>
+                                    <label class="criteria-row">
+                                        <input type="checkbox" x-model="hasUppercase" @change="generate()" class="criteria-checkbox">
+                                        <span>Có ký tự hoa</span>
+                                    </label>
+                                    <label class="criteria-row">
+                                        <input type="checkbox" x-model="hasSpecial" @change="generate()" class="criteria-checkbox">
+                                        <span>Có ký tự đặc biệt</span>
+                                    </label>
+                                </div>
+
+                                <!-- Save confirmation box -->
+                                <div class="save-confirmation-container">
+                                    <label class="criteria-row" style="align-items: flex-start;">
+                                        <input type="checkbox" x-model="isSaved" class="criteria-checkbox" style="margin-top: 0.2rem;">
+                                        <span class="save-confirm-text" style="font-size: 0.825rem;">Tôi đã lưu lại mật khẩu mới</span>
+                                    </label>
+                                </div>
+
+                                <!-- Submit button -->
+                                <button type="button" 
+                                        @click="applyGeneratedPassword()" 
+                                        :disabled="!isSaved"
+                                        class="btn-gui">
+                                    Gửi
+                                </button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 @endif
             </div>

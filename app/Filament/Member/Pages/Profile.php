@@ -73,7 +73,6 @@ class Profile extends Page implements HasForms
         $this->profileForm->fill($this->profileData);
         $this->cccdForm->fill($this->cccdData);
         $this->avatarForm->fill($this->avatarData);
-        $this->passwordForm->fill($this->passwordData);
     }
 
     protected function getForms(): array
@@ -82,7 +81,6 @@ class Profile extends Page implements HasForms
             'profileForm',
             'cccdForm',
             'avatarForm',
-            'passwordForm',
         ];
     }
 
@@ -175,31 +173,7 @@ class Profile extends Page implements HasForms
             ->statePath('avatarData');
     }
 
-    public function passwordForm(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                TextInput::make('old_password')
-                    ->label('Mật khẩu hiện tại')
-                    ->password()
-                    ->required()
-                    ->placeholder('Nhập mật khẩu hiện tại'),
 
-                TextInput::make('new_password')
-                    ->label('Mật khẩu mới')
-                    ->password()
-                    ->required()
-                    ->placeholder('Nhập mật khẩu mới'),
-
-                TextInput::make('new_password_confirmation')
-                    ->label('Xác nhận mật khẩu mới')
-                    ->password()
-                    ->same('new_password')
-                    ->required()
-                    ->placeholder('Nhập lại mật khẩu mới'),
-            ])
-            ->statePath('passwordData');
-    }
 
     /**
      * Lấy API token của company: ưu tiên từ session, fallback sang DB.
@@ -384,8 +358,20 @@ class Profile extends Page implements HasForms
 
     public function savePassword(): void
     {
+        $this->validate([
+            'passwordData.old_password' => 'required',
+            'passwordData.new_password' => 'required|min:6',
+            'passwordData.new_password_confirmation' => 'required|same:passwordData.new_password',
+        ], [
+            'passwordData.old_password.required' => 'Mật khẩu hiện tại không được để trống.',
+            'passwordData.new_password.required' => 'Mật khẩu mới không được để trống.',
+            'passwordData.new_password.min' => 'Mật khẩu mới phải chứa ít nhất 6 ký tự.',
+            'passwordData.new_password_confirmation.required' => 'Xác nhận mật khẩu mới không được để trống.',
+            'passwordData.new_password_confirmation.same' => 'Xác nhận mật khẩu mới không trùng khớp.',
+        ]);
+
         $user = auth()->user();
-        $data = $this->passwordForm->getState();
+        $data = $this->passwordData;
         $token = $this->getApiToken();
 
         if ($token) {
@@ -420,7 +406,6 @@ class Profile extends Page implements HasForms
             'new_password' => '',
             'new_password_confirmation' => '',
         ];
-        $this->passwordForm->fill($this->passwordData);
     }
 
     public function updateCccdFromScan(
