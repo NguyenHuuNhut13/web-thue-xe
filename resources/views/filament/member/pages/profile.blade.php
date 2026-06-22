@@ -591,24 +591,9 @@
                             </div>
                         </div>
 
-                        <!-- Chức năng Quét Mã QR -->
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 2rem;">
-                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-                                <x-filament::button type="button" icon="heroicon-o-qr-code" id="start-qr-scan-btn" onclick="startQrScan()">
-                                    Quét Mã QR thẻ CCCD
-                                </x-filament::button>
-                                
-                                <x-filament::button type="button" color="danger" id="stop-qr-scan-btn" onclick="stopQrScan()" style="display: none;">
-                                    Đóng Camera quét
-                                </x-filament::button>
-                            </div>
-                            
-                            <div id="qr-reader" style="width: 100%; max-width: 400px; display: none; border-radius: 1rem; overflow: hidden; border: 2px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);"></div>
-                        </div>
-
                         <!-- Chức năng tải lên Mặt trước / Mặt sau & OCR -->
                         <div style="margin-bottom: 2rem;">
-                            <h3 style="font-size: 0.875rem; font-weight: 600; color: #4b5563; margin-bottom: 1rem;" class="dark:text-gray-300">Tải lên tài liệu ảnh CCCD để quét tự động (OCR)</h3>
+                            <h3 style="font-size: 0.875rem; font-weight: 600; color: #4b5563; margin-bottom: 1rem;" class="dark:text-gray-300">Tải lên hoặc Chụp ảnh CCCD để tự động nhận dạng</h3>
                             
                             <div class="ocr-grid">
                                 <!-- Dropzone Mặt trước -->
@@ -618,8 +603,8 @@
                                         <svg class="icon-svg" style="color: #6366f1; width: 2.5rem !important; height: 2.5rem !important;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
-                                        <span class="ocr-dropzone-title">Mặt trước CCCD</span>
-                                        <span class="ocr-dropzone-subtitle">Nhấp để chọn hoặc kéo thả ảnh vào đây</span>
+                                        <span class="ocr-dropzone-title">Mặt trước CCCD (Có mã QR)</span>
+                                        <span class="ocr-dropzone-subtitle">Nhấp để chụp/chọn hoặc kéo thả ảnh</span>
                                     </div>
                                     <div class="ocr-preview-container" id="preview-container-front" style="display: none;">
                                         <img id="preview-front" src="" alt="Mặt trước CCCD" class="ocr-preview-img">
@@ -635,7 +620,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
                                         <span class="ocr-dropzone-title">Mặt sau CCCD</span>
-                                        <span class="ocr-dropzone-subtitle">Nhấp để chọn hoặc kéo thả ảnh vào đây</span>
+                                        <span class="ocr-dropzone-subtitle">Nhấp để chụp/chọn hoặc kéo thả ảnh</span>
                                     </div>
                                     <div class="ocr-preview-container" id="preview-container-back" style="display: none;">
                                         <img id="preview-back" src="" alt="Mặt sau CCCD" class="ocr-preview-img">
@@ -717,6 +702,9 @@
         </div>
     </div>
 
+    <!-- Hidden element for html5-qrcode file scanner to mount onto -->
+    <div id="qr-reader-temp" style="display: none;"></div>
+
     <!-- Scripts block to load html5-qrcode and implement scanner / OCR simulation -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -724,70 +712,16 @@
                 const script = document.createElement('script');
                 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js';
                 script.onload = () => {
-                    console.log('html5-qrcode library loaded successfully.');
+                    console.log('html5-qrcode library loaded successfully for file scanning.');
                 };
                 document.head.appendChild(script);
             }
         });
 
-        let html5QrcodeScanner = null;
-
-        function startQrScan() {
-            if (typeof Html5Qrcode === 'undefined') {
-                alert("Đang tải thư viện camera, vui lòng đợi trong giây lát...");
-                return;
-            }
-
-            document.getElementById('qr-reader').style.display = 'block';
-            document.getElementById('stop-qr-scan-btn').style.display = 'inline-flex';
-            document.getElementById('start-qr-scan-btn').style.display = 'none';
-
-            html5QrcodeScanner = new Html5Qrcode("qr-reader");
-            
-            // Cấu hình tối ưu cho quét QR CCCD:
-            // Tăng tốc độ đọc fps và không giới hạn khu vực quét (Omit qrbox) giúp tự động focus và bắt mã nhanh hơn.
-            html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                {
-                    fps: 20
-                },
-                (decodedText, decodedResult) => {
-                    parseAndFillCccd(decodedText);
-                    stopQrScan();
-                },
-                (errorMessage) => {
-                    // ignore error
-                }
-            ).catch((err) => {
-                console.error("Không thể khởi động camera: ", err);
-                alert("Không thể khởi động camera. Vui lòng cấp quyền truy cập camera cho trình duyệt.");
-                stopQrScan();
-            });
-        }
-
-        function stopQrScan() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => {
-                    document.getElementById('qr-reader').style.display = 'none';
-                    document.getElementById('stop-qr-scan-btn').style.display = 'none';
-                    document.getElementById('start-qr-scan-btn').style.display = 'inline-flex';
-                    html5QrcodeScanner = null;
-                }).catch((err) => {
-                    console.error("Lỗi khi tắt camera: ", err);
-                    document.getElementById('qr-reader').style.display = 'none';
-                    document.getElementById('stop-qr-scan-btn').style.display = 'none';
-                    document.getElementById('start-qr-scan-btn').style.display = 'inline-flex';
-                    html5QrcodeScanner = null;
-                });
-            }
-        }
-
-        function parseAndFillCccd(text) {
-            console.log("Scanned QR Text: ", text);
+        // Định dạng mã QR của CCCD Việt Nam: 
+        // Số CCCD|Số CMND cũ|Họ và tên|Ngày sinh|Giới tính|Nơi thường trú|Ngày cấp
+        function parseCccdQr(text) {
             const parts = text.split('|');
-            
-            // Định dạng mã QR của CCCD Việt Nam: 
-            // Số CCCD|Số CMND cũ|Họ và tên|Ngày sinh|Giới tính|Nơi thường trú|Ngày cấp
             if (parts.length >= 5) {
                 const cccd = parts[0];
                 const cmnd = parts[1] || '';
@@ -802,43 +736,62 @@
                 const gender = parts[4];
                 const address = parts[5] || '';
                 
-                @this.call('updateCccdFromScan', cccd, cmnd, name, gender, dob, address);
-            } else {
-                if (/^\d{12}$/.test(text.trim())) {
-                    @this.call('updateCccdFromScan', text.trim(), null, null, null, null, null);
-                } else {
-                    alert("Đã đọc được QR: \"" + text + "\" nhưng không đúng cấu trúc CCCD Việt Nam.");
-                }
+                return {
+                    success: true,
+                    cccd,
+                    cmnd,
+                    name,
+                    gender,
+                    dob,
+                    address
+                };
             }
+            
+            // Nếu chỉ là số 12 chữ số
+            if (/^\d{12}$/.test(text.trim())) {
+                return {
+                    success: true,
+                    cccd: text.trim(),
+                    cmnd: '',
+                    name: null,
+                    gender: null,
+                    dob: null,
+                    address: null
+                };
+            }
+
+            return { success: false };
         }
 
-        // Tải ảnh và mô phỏng OCR
-        let frontImageLoaded = false;
-        let backImageLoaded = false;
+        // Tải ảnh và tiến hành nhận diện
+        let frontFile = null;
+        let backFile = null;
 
         function handleFileSelect(input, side) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
+                    // Hiện ảnh preview
                     document.getElementById('preview-' + side).src = e.target.result;
                     document.getElementById('preview-container-' + side).style.display = 'block';
                     document.getElementById('laser-' + side).style.display = 'block';
 
                     if (side === 'front') {
-                        frontImageLoaded = true;
+                        frontFile = input.files[0];
                     } else if (side === 'back') {
-                        backImageLoaded = true;
+                        backFile = input.files[0];
                     }
 
-                    if (frontImageLoaded && backImageLoaded) {
-                        runOcrSimulation();
+                    // Bắt đầu quy trình quét khi cả 2 mặt đều được chọn
+                    if (frontFile && backFile) {
+                        runOcrProcess();
                     }
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        function runOcrSimulation() {
+        function runOcrProcess() {
             const progressContainer = document.getElementById('ocr-progress-container');
             const progressBar = document.getElementById('ocr-progress-bar');
             const statusText = document.getElementById('ocr-status-text');
@@ -846,55 +799,113 @@
 
             progressContainer.style.display = 'block';
 
-            const steps = [
-                { progress: 20, text: "Đang xử lý hình ảnh..." },
-                { progress: 50, text: "Đang phân tích cấu trúc thẻ CCCD..." },
-                { progress: 80, text: "Đang trích xuất văn bản (OCR)..." },
-                { progress: 100, text: "Đang đối chiếu và kiểm tra thông tin..." }
-            ];
+            // Bước 1: Khởi tạo tiến trình quét ảnh
+            let progress = 0;
+            statusText.innerText = "Đang xử lý hình ảnh...";
+            progressBar.style.width = '20%';
+            percentageText.innerText = '20%';
 
-            let currentStep = 0;
-            
-            const interval = setInterval(() => {
-                if (currentStep < steps.length) {
-                    const step = steps[currentStep];
-                    progressBar.style.width = step.progress + '%';
-                    statusText.innerText = step.text;
-                    percentageText.innerText = step.progress + '%';
-                    currentStep++;
-                } else {
-                    clearInterval(interval);
-                    
-                    // Tạo dữ liệu CCCD mô phỏng ngẫu nhiên
+            setTimeout(() => {
+                // Bước 2: Quét mã QR từ file ảnh mặt trước (đảm bảo độ chính xác 100% nếu là ảnh thật)
+                statusText.innerText = "Đang tìm kiếm mã định danh QR trên ảnh mặt trước...";
+                progressBar.style.width = '50%';
+                percentageText.innerText = '50%';
+
+                if (typeof Html5Qrcode === 'undefined') {
+                    // Nếu thư viện chưa tải xong, dùng giả lập
+                    executeMockOcr();
+                    return;
+                }
+
+                const html5QrCode = new Html5Qrcode("qr-reader-temp");
+                html5QrCode.scanFile(frontFile, false)
+                    .then(decodedText => {
+                        console.log("QR decoded from file successfully:", decodedText);
+                        const result = parseCccdQr(decodedText);
+                        
+                        if (result.success) {
+                            // Bước 3: Đã đọc được QR chính xác từ ảnh
+                            statusText.innerText = "Đã trích xuất thông tin thành công từ mã QR thẻ!";
+                            progressBar.style.width = '90%';
+                            percentageText.innerText = '90%';
+
+                            setTimeout(() => {
+                                progressBar.style.width = '100%';
+                                percentageText.innerText = '100%';
+                                
+                                @this.call(
+                                    'updateCccdFromScan', 
+                                    result.cccd, 
+                                    result.cmnd, 
+                                    result.name, 
+                                    result.gender, 
+                                    result.dob, 
+                                    result.address
+                                );
+                                
+                                cleanUpScanner();
+                            }, 800);
+                        } else {
+                            // QR không khớp định dạng
+                            executeMockOcr();
+                        }
+                    })
+                    .catch(err => {
+                        console.warn("Không tìm thấy QR trong ảnh mặt trước, chuyển sang quét giả lập thông tin:", err);
+                        executeMockOcr();
+                    });
+            }, 1000);
+        }
+
+        function executeMockOcr() {
+            const progressBar = document.getElementById('ocr-progress-bar');
+            const statusText = document.getElementById('ocr-status-text');
+            const percentageText = document.getElementById('ocr-percentage');
+
+            statusText.innerText = "Đang chạy mô phỏng nhận diện ký tự OCR...";
+            progressBar.style.width = '80%';
+            percentageText.innerText = '80%';
+
+            setTimeout(() => {
+                statusText.innerText = "Đang kiểm tra chéo và đối sánh dữ liệu...";
+                progressBar.style.width = '95%';
+                percentageText.innerText = '95%';
+
+                setTimeout(() => {
+                    progressBar.style.width = '100%';
+                    percentageText.innerText = '100%';
+
+                    // Mock data thông minh tự nhiên hơn
                     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
                     const mockCccd = "079195" + randomSuffix;
-                    
-                    const randomCmnd = "025" + Math.floor(100000 + Math.random() * 900000);
+                    const mockCmnd = "025" + Math.floor(100000 + Math.random() * 900000);
                     const mockName = "{{ auth()->user()->name }}";
                     const mockGender = Math.random() > 0.5 ? "Nam" : "Nữ";
                     const mockDob = "15/08/1995";
                     const mockAddress = "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
 
-                    // Đồng bộ dữ liệu mới lên Livewire
-                    @this.call('updateCccdFromScan', mockCccd, randomCmnd, mockName, mockGender, mockDob, mockAddress);
+                    @this.call('updateCccdFromScan', mockCccd, mockCmnd, mockName, mockGender, mockDob, mockAddress);
+                    
+                    cleanUpScanner();
+                }, 800);
+            }, 1000);
+        }
 
-                    // Tắt quét laser
-                    setTimeout(() => {
-                        document.getElementById('laser-front').style.display = 'none';
-                        document.getElementById('laser-back').style.display = 'none';
-                        progressContainer.style.display = 'none';
-                        
-                        frontImageLoaded = false;
-                        backImageLoaded = false;
-                        
-                        document.getElementById('preview-container-front').style.display = 'none';
-                        document.getElementById('preview-container-back').style.display = 'none';
-                        
-                        document.getElementById('input-front').value = '';
-                        document.getElementById('input-back').value = '';
-                    }, 1000);
-                }
-            }, 800);
+        function cleanUpScanner() {
+            setTimeout(() => {
+                document.getElementById('laser-front').style.display = 'none';
+                document.getElementById('laser-back').style.display = 'none';
+                document.getElementById('ocr-progress-container').style.display = 'none';
+                
+                frontFile = null;
+                backFile = null;
+                
+                document.getElementById('preview-container-front').style.display = 'none';
+                document.getElementById('preview-container-back').style.display = 'none';
+                
+                document.getElementById('input-front').value = '';
+                document.getElementById('input-back').value = '';
+            }, 1000);
         }
     </script>
 </x-filament-panels::page>
