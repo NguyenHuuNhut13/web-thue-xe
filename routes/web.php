@@ -118,10 +118,33 @@ Route::get('/test-cccd-api', function () {
             'zalo'         => $user->zalo ?? '',
         ]);
 
+    // Test S: Dùng đúng nơi cấp (issuing authority từ Postman response)
+    $rS = \Illuminate\Support\Facades\Http::asJson()
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', [
+            'access_token' => $token,
+            'number'       => $user->cccd ?? '',
+            'date'         => $parsedDate,
+            'place'        => 'Cục Cảnh sát QLHC về TTXH',
+            'front'        => $tiny,
+            'back'         => $tiny,
+        ]);
+
+    // Test T: Không có place, chỉ số và ngày + ảnh
+    $rT = \Illuminate\Support\Facades\Http::asJson()
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', [
+            'access_token' => $token,
+            'number'       => $user->cccd ?? '',
+            'date'         => $parsedDate,
+            'front'        => $tiny,
+            'back'         => $tiny,
+        ]);
+
     return response()->json([
-        'testP_cccd_with_valid_image_json'  => ['status' => $rP->status(), 'body' => $rP->json()],
-        'testQ_cccd_with_valid_image_form'  => ['status' => $rQ->status(), 'body' => $rQ->json()],
-        'testR_updateInfo_json_no_bearer'   => ['status' => $rR->status(), 'body' => $rR->json()],
+        'testP_home_address_json'     => ['status' => $rP->status(), 'body' => $rP->json()],
+        'testQ_home_address_form'     => ['status' => $rQ->status(), 'body' => $rQ->json()],
+        'testR_updateInfo_comparison' => ['status' => $rR->status(), 'body' => $rR->json()],
+        'testS_issuing_authority'     => ['status' => $rS->status(), 'body' => $rS->json()],
+        'testT_no_place'              => ['status' => $rT->status(), 'body' => $rT->json()],
         'date_raw'       => $rawDate,
         'date_converted' => $parsedDate,
     ]);
