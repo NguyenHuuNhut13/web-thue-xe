@@ -1002,38 +1002,82 @@
                         },
                         
                         generate() {
-                            let chars = '';
-                            if (this.hasLowercase) chars += 'abcdefghijklmnopqrstuvwxyz';
-                            if (this.hasUppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                            if (this.hasNumbers) chars += '0123456789';
-                            if (this.hasSpecial) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+                            const consonants = 'bcdfghjklmnpqrstvwxyz';
+                            const vowels = 'aeiou';
                             
-                            if (chars === '') {
-                                this.generatedPassword = '';
-                                return;
-                            }
+                            // Generate readable syllables
+                            let word = '';
                             
-                            let password = '';
-                            let guaranteed = [];
-                            if (this.hasLowercase) guaranteed.push('abcdefghijklmnopqrstuvwxyz');
-                            if (this.hasUppercase) guaranteed.push('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-                            if (this.hasNumbers) guaranteed.push('0123456789');
-                            if (this.hasSpecial) guaranteed.push('!@#$%^&*()_+-=[]{}|;:,.<>?');
+                            // Determine extra chars space
+                            let extraSpace = 0;
+                            if (this.hasNumbers) extraSpace += 2;
+                            if (this.hasSpecial) extraSpace += 1;
                             
-                            let remainingLength = this.charLength;
-                            guaranteed.forEach(charset => {
-                                if (password.length < this.charLength) {
-                                    password += charset.charAt(Math.floor(Math.random() * charset.length));
-                                    remainingLength--;
+                            let targetWordLength = Math.max(3, this.charLength - extraSpace);
+                            
+                            while (word.length < targetWordLength) {
+                                let c = consonants[Math.floor(Math.random() * consonants.length)];
+                                let v = vowels[Math.floor(Math.random() * vowels.length)];
+                                
+                                word += c + v;
+                                
+                                if (word.length < targetWordLength) {
+                                    let c2 = consonants[Math.floor(Math.random() * consonants.length)];
+                                    word += c2;
                                 }
-                            });
-                            
-                            for (let i = 0; i < remainingLength; i++) {
-                                password += chars.charAt(Math.floor(Math.random() * chars.length));
                             }
                             
-                            // Shuffle
-                            this.generatedPassword = password.split('').sort(() => 0.5 - Math.random()).join('');
+                            word = word.substring(0, targetWordLength);
+                            
+                            // Handle casing
+                            if (this.hasUppercase && word.length > 0) {
+                                word = word.charAt(0).toUpperCase() + word.slice(1);
+                            } else if (!this.hasUppercase) {
+                                word = word.toLowerCase();
+                            }
+                            
+                            let password = word;
+                            
+                            // Add numbers
+                            if (this.hasNumbers) {
+                                let numLength = this.charLength - password.length - (this.hasSpecial ? 1 : 0);
+                                if (numLength > 0) {
+                                    let numStr = '';
+                                    for (let i = 0; i < numLength; i++) {
+                                        numStr += Math.floor(Math.random() * 10);
+                                    }
+                                    password += numStr;
+                                }
+                            }
+                            
+                            // Add special characters
+                            if (this.hasSpecial) {
+                                const specialPool = '!@#$%^*';
+                                let specLength = this.charLength - password.length;
+                                if (specLength > 0) {
+                                    let specStr = '';
+                                    for (let i = 0; i < specLength; i++) {
+                                        specStr += specialPool[Math.floor(Math.random() * specialPool.length)];
+                                    }
+                                    password += specStr;
+                                }
+                            }
+                            
+                            // Fallback if password length is under-filled
+                            if (password.length < this.charLength) {
+                                let chars = '';
+                                if (this.hasLowercase) chars += 'abcdefghijklmnopqrstuvwxyz';
+                                if (this.hasUppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                                if (this.hasNumbers) chars += '0123456789';
+                                if (this.hasSpecial) chars += '!@#$%^*';
+                                if (chars === '') chars = 'abcdefghijklmnopqrstuvwxyz';
+                                
+                                while (password.length < this.charLength) {
+                                    password += chars[Math.floor(Math.random() * chars.length)];
+                                }
+                            }
+                            
+                            this.generatedPassword = password;
                         },
                         
                         applyGeneratedPassword() {
