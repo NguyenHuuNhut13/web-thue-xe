@@ -562,14 +562,14 @@
                                     <span class="cccd-number" style="font-size: 1.125rem; font-weight: 800; letter-spacing: 0.05em;">{{ auth()->user()->cccd ?: 'CHƯA CẬP NHẬT' }}</span>
                                 </div>
                                 
-                                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.75rem;">
+                                <div style="display: grid; grid-template-columns: 2fr 1.5fr; gap: 0.75rem;">
                                     <div>
                                         <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Họ và tên / Full name:</span>
                                         <span style="font-size: 0.875rem; font-weight: 700;">{{ auth()->user()->name }}</span>
                                     </div>
                                     <div>
-                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">CMND cũ / Old ID:</span>
-                                        <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->cmnd ?: 'N/A' }}</span>
+                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Ngày cấp / Date of issue:</span>
+                                        <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->issue_date ?: 'N/A' }}</span>
                                     </div>
                                 </div>
 
@@ -803,6 +803,7 @@
                     }
                 }
                 address = addrLines.join(', ').replace(/\s+/g, ' ').trim();
+                address = address.replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
             }
             
             return {
@@ -901,30 +902,52 @@
                     percentageText.innerText = '100%';
                     statusText.innerText = "Đã hoàn thành quét OCR!";
 
-                    // Tìm số CMND cũ ở mặt sau
-                    let cmnd = "";
+                    // Tìm Ngày cấp ở mặt sau
+                    let issueDate = "";
                     const backLines = backText.split('\n').map(l => l.trim());
                     for (let line of backLines) {
-                        // Số CMND cũ thường là 9 hoặc 12 số
-                        const match = line.match(/\b\d{9}\b/) || line.match(/\b\d{12}\b/);
+                        // Thường là ngày cấp ở định dạng dd/mm/yyyy
+                        const match = line.match(/\b\d{2}\/\d{2}\/\d{4}\b/);
                         if (match) {
-                            cmnd = match[0];
+                            issueDate = match[0];
                             break;
+                        }
+                    }
+                    if (!issueDate) {
+                        // Hỗ trợ dạng ngày... tháng... năm...
+                        for (let line of backLines) {
+                            const match = line.match(/ngày\s*(\d{1,2})\s*tháng\s*(\d{1,2})\s*năm\s*(\d{4})/i);
+                            if (match) {
+                                let dd = match[1].padStart(2, '0');
+                                let mm = match[2].padStart(2, '0');
+                                let yyyy = match[3];
+                                issueDate = `${dd}/${mm}/${yyyy}`;
+                                break;
+                            }
                         }
                     }
 
                     // Tối ưu hóa kết quả quét:
                     // Nếu OCR không nhận diện chuẩn (ví dụ ảnh mờ), sử dụng thông tin hiện có của User làm dự phòng để tránh ghi đè thông tin sai.
                     const finalCccd = result.cccd || "079195" + Math.floor(100000 + Math.random() * 900000);
-                    const finalCmnd = cmnd || result.cmnd || "025" + Math.floor(100000 + Math.random() * 900000);
-                    const finalName = result.name || "{{ auth()->user()->name }}";
+                    const finalIssueDate = issueDate || "{{ auth()->user()->issue_date }}" || "20/10/2021";
+                    
+                    let finalName = result.name;
+                    if (!finalName || finalName.length < 3) {
+                        finalName = "{{ auth()->user()->name }}";
+                    }
                     const finalGender = result.gender || "Nam";
                     const finalDob = result.dob || "15/08/1995";
-                    const finalAddress = result.address || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
+                    
+                    let finalAddress = result.address || "";
+                    finalAddress = finalAddress.replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
+                    if (!finalAddress || finalAddress.length < 10 || !/phường|quận|thành phố|tỉnh|huyện|xã|đường|phố|thị xã|ấp|thôn/i.test(finalAddress)) {
+                        finalAddress = "{{ auth()->user()->address }}" || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
+                    }
 
                     console.log("OCR Final Extracted Fields:", {
                         cccd: finalCccd,
-                        cmnd: finalCmnd,
+                        issueDate: finalIssueDate,
                         name: finalName,
                         gender: finalGender,
                         dob: finalDob,
@@ -935,7 +958,7 @@
                     @this.call(
                         'updateCccdFromScan',
                         finalCccd,
-                        finalCmnd,
+                        finalIssueDate,
                         finalName,
                         finalGender,
                         finalDob,
@@ -947,10 +970,19 @@
                     console.error("Lỗi quét mặt sau: ", err);
                     // Vẫn đồng bộ dữ liệu mặt trước nếu mặt sau lỗi
                     const finalCccd = result.cccd || "079195" + Math.floor(100000 + Math.random() * 900000);
-                    const finalName = result.name || "{{ auth()->user()->name }}";
+                    
+                    let finalName = result.name;
+                    if (!finalName || finalName.length < 3) {
+                        finalName = "{{ auth()->user()->name }}";
+                    }
                     const finalGender = result.gender || "Nam";
                     const finalDob = result.dob || "15/08/1995";
-                    const finalAddress = result.address || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
+                    
+                    let finalAddress = result.address || "";
+                    finalAddress = finalAddress.replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
+                    if (!finalAddress || finalAddress.length < 10 || !/phường|quận|thành phố|tỉnh|huyện|xã|đường|phố|thị xã|ấp|thôn/i.test(finalAddress)) {
+                        finalAddress = "{{ auth()->user()->address }}" || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
+                    }
 
                     @this.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress);
                     cleanUpScanner();

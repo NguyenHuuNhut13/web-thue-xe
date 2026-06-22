@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Attributes\Url;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Grid;
 
 class Profile extends Page implements HasForms
 {
@@ -51,10 +52,11 @@ class Profile extends Page implements HasForms
 
         $this->cccdData = [
             'cccd' => $user->cccd,
-            'cmnd' => $user->cmnd,
+            'name' => $user->name,
             'gender' => $user->gender,
             'dob' => $user->dob,
             'address' => $user->address,
+            'issue_date' => $user->issue_date,
         ];
 
         $this->avatarData = [
@@ -125,22 +127,29 @@ class Profile extends Page implements HasForms
                     ->maxLength(15)
                     ->required(),
 
-                TextInput::make('cmnd')
-                    ->label('Số CMND cũ')
-                    ->placeholder('Ví dụ: 025123456')
-                    ->maxLength(15),
+                TextInput::make('name')
+                    ->label('Họ và tên')
+                    ->placeholder('Ví dụ: NGUYỄN VĂN A')
+                    ->required(),
 
-                Select::make('gender')
-                    ->label('Giới tính')
-                    ->options([
-                        'Nam' => 'Nam',
-                        'Nữ' => 'Nữ',
-                    ])
-                    ->placeholder('Chọn giới tính'),
+                Grid::make(2)
+                    ->schema([
+                        Select::make('gender')
+                            ->label('Giới tính')
+                            ->options([
+                                'Nam' => 'Nam',
+                                'Nữ' => 'Nữ',
+                            ])
+                            ->placeholder('Chọn giới tính'),
 
-                TextInput::make('dob')
-                    ->label('Ngày sinh')
-                    ->placeholder('Ví dụ: 15/08/1995'),
+                        TextInput::make('dob')
+                            ->label('Ngày sinh')
+                            ->placeholder('Ví dụ: 15/08/1995'),
+                    ]),
+
+                TextInput::make('issue_date')
+                    ->label('Ngày cấp')
+                    ->placeholder('Ví dụ: 20/10/2021'),
 
                 TextInput::make('address')
                     ->label('Nơi thường trú')
@@ -264,11 +273,24 @@ class Profile extends Page implements HasForms
             }
         }
 
+        if ($data['name'] !== $user->name) {
+            if ($token) {
+                CompanyApiService::updateProfile($token, [
+                    'name' => $data['name'],
+                    'phone' => $user->phone,
+                    'zalo' => $user->zalo,
+                ]);
+            }
+            $user->name = $data['name'];
+            $this->profileData['name'] = $data['name'];
+            $this->profileForm->fill($this->profileData);
+        }
+
         $user->cccd = $data['cccd'];
-        $user->cmnd = $data['cmnd'];
         $user->gender = $data['gender'];
         $user->dob = $data['dob'];
         $user->address = $data['address'];
+        $user->issue_date = $data['issue_date'];
         $user->save();
 
         Notification::make()
@@ -356,7 +378,7 @@ class Profile extends Page implements HasForms
 
     public function updateCccdFromScan(
         string $cccd,
-        ?string $cmnd = null,
+        ?string $issueDate = null,
         ?string $name = null,
         ?string $gender = null,
         ?string $dob = null,
@@ -368,10 +390,11 @@ class Profile extends Page implements HasForms
         // Cập nhật CCCD form state
         $this->cccdData = [
             'cccd' => $cccd,
-            'cmnd' => $cmnd,
+            'name' => $name,
             'gender' => $gender,
             'dob' => $dob,
             'address' => $address,
+            'issue_date' => $issueDate,
         ];
         $this->cccdForm->fill($this->cccdData);
 
@@ -398,10 +421,10 @@ class Profile extends Page implements HasForms
         }
 
         $user->cccd = $cccd;
-        $user->cmnd = $cmnd;
         $user->gender = $gender;
         $user->dob = $dob;
         $user->address = $address;
+        $user->issue_date = $issueDate;
         $user->save();
 
         Notification::make()
