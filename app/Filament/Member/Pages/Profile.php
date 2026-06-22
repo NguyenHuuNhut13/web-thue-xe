@@ -516,4 +516,70 @@ class Profile extends Page implements HasForms
             ->success()
             ->send();
     }
+
+    public function updateAvatarFromCropper(string $base64Data): void
+    {
+        $user = auth()->user();
+        $token = $this->getApiToken();
+
+        // 1. Decode base64 data
+        $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Data));
+        if (!$imageData) {
+            Notification::make()
+                ->title('Ảnh đại diện không hợp lệ.')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        // 2. Save image locally to public disk
+        $filename = 'avatars/' . $user->id . '_' . time() . '.jpg';
+        
+        // Ensure avatars directory exists
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('avatars')) {
+            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('avatars');
+        }
+        
+        \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $imageData);
+        $fullPublicPath = storage_path('app/public/' . $filename);
+
+        // 3. Sync to Company API if token is present
+        if ($token) {
+            $avatarRes = CompanyApiService::updateAvatar($token, $fullPublicPath);
+            if (!$avatarRes['success']) {
+                // Delete temporary local file
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($filename);
+                
+                Notification::make()
+                    ->title('Lỗi cập nhật ảnh đại diện lên hệ thống: ' . $avatarRes['message'])
+                    ->danger()
+                    ->send();
+                return;
+            }
+            // Use the URL returned by the API if available, otherwise fallback to local path
+            $remoteUrl = $avatarRes['avatar_url'] ?? null;
+            if ($remoteUrl) {
+                // If it is successfully uploaded to NKS CDN, we store that URL
+                $user->avatar = $remoteUrl;
+            } else {
+                $user->avatar = $filename;
+            }
+        } else {
+            $user->avatar = $filename;
+        }
+
+        $user->save();
+
+        // Refresh the form state
+        $this->avatarData = [
+            'avatar' => $user->avatar,
+        ];
+        $this->avatarForm->fill($this->avatarData);
+
+        Notification::make()
+            ->title('Cập nhật ảnh đại diện thành công!')
+            ->success()
+            ->send();
+    }
 }
+

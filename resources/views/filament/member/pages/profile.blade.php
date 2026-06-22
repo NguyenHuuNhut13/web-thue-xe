@@ -375,6 +375,37 @@
             border-radius: 9999px;
             transition: width 0.3s;
         }
+        
+        /* Custom styles for circular Cropper mask and premium styling elements */
+        .cropper-view-box,
+        .cropper-face {
+            border-radius: 50% !important;
+        }
+        .cropper-line,
+        .cropper-point {
+            display: none !important;
+        }
+        .avatar-filter-card {
+            transition: all 0.2s;
+        }
+        .avatar-filter-card:hover {
+            transform: translateY(-2px);
+        }
+        .avatar-filter-card.active {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+        }
+        .btn-tool {
+            transition: all 0.2s;
+        }
+        .btn-tool:hover {
+            background-color: #e5e7eb !important;
+            color: #111827 !important;
+        }
+        .dark .btn-tool:hover {
+            background-color: #374151 !important;
+            color: #f3f4f6 !important;
+        }
     </style>
 
     <div class="profile-grid">
@@ -658,25 +689,93 @@
                     <div>
                         <div class="border-b-thin padding-b-sm margin-b-med">
                             <h2 style="font-size: 1.125rem; font-weight: 700; color: #1f2937;" class="dark:text-gray-200">Ảnh đại diện</h2>
-                            <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Cập nhật ảnh đại diện hiển thị trên hệ thống</p>
+                            <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Cắt, xoay và áp dụng các bộ lọc màu nghệ thuật cho ảnh đại diện của bạn</p>
                         </div>
 
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem 0; margin-bottom: 1.5rem;">
-                            <img class="avatar-edit-preview" 
-                                 src="{{ auth()->user()->avatar_url }}" 
-                                 alt="{{ auth()->user()->name }}">
-                            <span style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem;">Ảnh hiện tại của bạn</span>
+                        <!-- View Mode: Display current avatar and upload button -->
+                        <div id="avatar-view-mode" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 0;">
+                            <div class="avatar-container" style="margin-bottom: 1.5rem;">
+                                <img class="avatar-img" style="width: 10rem; height: 10rem; border-width: 6px;"
+                                     src="{{ auth()->user()->avatar_url }}" 
+                                     alt="{{ auth()->user()->name }}">
+                                <span class="status-dot" style="width: 1.5rem; height: 1.5rem; border-width: 3px;"></span>
+                            </div>
+                            <x-filament::button type="button" size="sm" icon="heroicon-o-arrow-up-tray" onclick="document.getElementById('avatar-file-input').click()">
+                                Tải lên ảnh mới
+                            </x-filament::button>
+                            <input type="file" id="avatar-file-input" accept="image/*" style="display: none;" onchange="initAvatarCropper(this)">
                         </div>
 
-                        <form wire:submit="saveAvatar" style="display: flex; flex-direction: column; gap: 1.5rem;">
-                            {{ $this->avatarForm }}
-                            
-                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1rem;" class="border-t-thin">
-                                <x-filament::button type="submit">
-                                    Cập nhật ảnh đại diện
+                        <!-- Edit Mode: Cropper Canvas + Tools + Filter presets -->
+                        <div id="avatar-edit-mode" style="display: none; flex-direction: column; gap: 2rem;">
+                            <!-- Crop Box -->
+                            <div style="max-height: 400px; width: 100%; background-color: #f1f5f9; border-radius: 1rem; overflow: hidden; display: flex; justify-content: center; align-items: center;" class="dark:bg-slate-800">
+                                <img id="avatar-crop-image" style="max-width: 100%; max-height: 400px; display: block;">
+                            </div>
+
+                            <!-- Tools Panel (Rotate & Zoom) -->
+                            <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-top: -1rem;">
+                                <button type="button" onclick="cropper.rotate(-90)" class="btn-tool" title="Xoay trái 90°" style="padding: 0.5rem 0.75rem; background: #f3f4f6; border-radius: 0.5rem; display: flex; align-items: center; gap: 0.25rem; font-size: 0.875rem;" class="dark:bg-gray-800 dark:text-gray-200">
+                                    <svg style="width: 1.25rem; height: 1.25rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z"/></svg>
+                                    <span>Xoay trái</span>
+                                </button>
+                                <button type="button" onclick="cropper.rotate(90)" class="btn-tool" title="Xoay phải 90°" style="padding: 0.5rem 0.75rem; background: #f3f4f6; border-radius: 0.5rem; display: flex; align-items: center; gap: 0.25rem; font-size: 0.875rem;" class="dark:bg-gray-800 dark:text-gray-200">
+                                    <span>Xoay phải</span>
+                                    <svg style="width: 1.25rem; height: 1.25rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4zM19.934 12.8a1 1 0 000-1.6l-5.334-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z"/></svg>
+                                </button>
+                                <button type="button" onclick="cropper.zoom(0.1)" class="btn-tool" title="Phóng to" style="padding: 0.5rem 0.75rem; background: #f3f4f6; border-radius: 0.5rem; display: flex; align-items: center;" class="dark:bg-gray-800 dark:text-gray-200">
+                                    <svg style="width: 1.25rem; height: 1.25rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </button>
+                                <button type="button" onclick="cropper.zoom(-0.1)" class="btn-tool" title="Thu nhỏ" style="padding: 0.5rem 0.75rem; background: #f3f4f6; border-radius: 0.5rem; display: flex; align-items: center;" class="dark:bg-gray-800 dark:text-gray-200">
+                                    <svg style="width: 1.25rem; height: 1.25rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </button>
+                                <button type="button" onclick="cropper.reset()" class="btn-tool" title="Đặt lại" style="padding: 0.5rem 0.75rem; background: #f3f4f6; border-radius: 0.5rem; display: flex; align-items: center; gap: 0.25rem; font-size: 0.875rem;" class="dark:bg-gray-800 dark:text-gray-200">
+                                    <svg style="width: 1.25rem; height: 1.25rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12"/></svg>
+                                    <span>Đặt lại</span>
+                                </button>
+                            </div>
+
+                            <!-- Filter Selection Grid -->
+                            <div>
+                                <h4 style="font-size: 0.875rem; font-weight: 600; color: #4b5563; margin-bottom: 0.75rem;" class="dark:text-gray-300">Bộ lọc ảnh nghệ thuật</h4>
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center;" id="avatar-filter-grid">
+                                    <div onclick="applyAvatarFilter('none')" class="avatar-filter-card active" id="filter-none" style="cursor: pointer; border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.5rem; background: #fff;" class="dark:bg-gray-800 dark:border-gray-700">
+                                        <div style="height: 60px; border-radius: 0.5rem; background-color: #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: #475569;">Original</div>
+                                        <span style="font-size: 0.75rem; font-weight: 600; display: block; margin-top: 0.25rem;" class="dark:text-gray-300">Gốc</span>
+                                    </div>
+                                    <div onclick="applyAvatarFilter('brighten')" class="avatar-filter-card" id="filter-brighten" style="cursor: pointer; border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.5rem; background: #fff;" class="dark:bg-gray-800 dark:border-gray-700">
+                                        <div style="height: 60px; border-radius: 0.5rem; background-color: #cbd5e1; filter: brightness(1.2); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: #475569;">Brighten</div>
+                                        <span style="font-size: 0.75rem; font-weight: 600; display: block; margin-top: 0.25rem;" class="dark:text-gray-300">Sáng sủa</span>
+                                    </div>
+                                    <div onclick="applyAvatarFilter('grayscale')" class="avatar-filter-card" id="filter-grayscale" style="cursor: pointer; border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.5rem; background: #fff;" class="dark:bg-gray-800 dark:border-gray-700">
+                                        <div style="height: 60px; border-radius: 0.5rem; background-color: #cbd5e1; filter: grayscale(1); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: #475569;">B&W</div>
+                                        <span style="font-size: 0.75rem; font-weight: 600; display: block; margin-top: 0.25rem;" class="dark:text-gray-300">Đen trắng</span>
+                                    </div>
+                                    <div onclick="applyAvatarFilter('sepia')" class="avatar-filter-card" id="filter-sepia" style="cursor: pointer; border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.5rem; background: #fff;" class="dark:bg-gray-800 dark:border-gray-700">
+                                        <div style="height: 60px; border-radius: 0.5rem; background-color: #cbd5e1; filter: sepia(0.8); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: #475569;">Vintage</div>
+                                        <span style="font-size: 0.75rem; font-weight: 600; display: block; margin-top: 0.25rem;" class="dark:text-gray-300">Hoài cổ</span>
+                                    </div>
+                                    <div onclick="applyAvatarFilter('warm')" class="avatar-filter-card" id="filter-warm" style="cursor: pointer; border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.5rem; background: #fff;" class="dark:bg-gray-800 dark:border-gray-700">
+                                        <div style="height: 60px; border-radius: 0.5rem; background-color: #cbd5e1; filter: sepia(0.2) saturate(1.2) hue-rotate(-10deg); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: #475569;">Warm</div>
+                                        <span style="font-size: 0.75rem; font-weight: 600; display: block; margin-top: 0.25rem;" class="dark:text-gray-300">Ấm áp</span>
+                                    </div>
+                                    <div onclick="applyAvatarFilter('cool')" class="avatar-filter-card" id="filter-cool" style="cursor: pointer; border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 0.5rem; background: #fff;" class="dark:bg-gray-800 dark:border-gray-700">
+                                        <div style="height: 60px; border-radius: 0.5rem; background-color: #cbd5e1; filter: hue-rotate(30deg) saturate(1.1); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: #475569;">Cool</div>
+                                        <span style="font-size: 0.75rem; font-weight: 600; display: block; margin-top: 0.25rem;" class="dark:text-gray-300">Mát mẻ</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; padding-top: 1.5rem;" class="border-t-thin">
+                                <x-filament::button type="button" onclick="submitCroppedAvatar()">
+                                    Cập nhật ảnh đại diện mới
+                                </x-filament::button>
+                                <x-filament::button type="button" color="gray" onclick="cancelAvatarCrop()">
+                                    Hủy bỏ
                                 </x-filament::button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 @endif
 
@@ -1247,6 +1346,185 @@
                 document.getElementById('input-front').value = '';
                 document.getElementById('input-back').value = '';
             }, 1000);
+        }
+
+        // --- AVATAR CROPPING AND EDITING FUNCTIONALITY ---
+        let cropper = null;
+        let selectedFilter = 'none';
+        let originalImageSrc = '';
+
+        // Dynamically inject Cropper CSS if not present
+        if (document.getElementById('cropper-css') === null) {
+            const link = document.createElement('link');
+            link.id = 'cropper-css';
+            link.rel = 'stylesheet';
+            link.href = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css';
+            document.head.appendChild(link);
+        }
+
+        // Dynamically inject Cropper JS if not loaded
+        if (typeof Cropper === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js';
+            script.onload = () => {
+                console.log("Cropper.js loaded dynamically.");
+            };
+            document.head.appendChild(script);
+        }
+
+        function initAvatarCropper(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    originalImageSrc = e.target.result;
+                    
+                    document.getElementById('avatar-view-mode').style.display = 'none';
+                    document.getElementById('avatar-edit-mode').style.display = 'flex';
+                    
+                    const img = document.getElementById('avatar-crop-image');
+                    img.src = originalImageSrc;
+                    
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    
+                    // Wait for DOM layout to settle, then initialize Cropper
+                    setTimeout(() => {
+                        cropper = new Cropper(img, {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            dragMode: 'move',
+                            autoCropArea: 0.8,
+                            restore: false,
+                            guides: false,
+                            center: false,
+                            highlight: false,
+                            cropBoxMovable: true,
+                            cropBoxResizable: true,
+                            toggleDragModeOnDblclick: false,
+                            ready: function() {
+                                applyAvatarFilter('none');
+                            }
+                        });
+                    }, 200);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function applyAvatarFilter(filterName) {
+            selectedFilter = filterName;
+            
+            // Highlight chosen card
+            document.querySelectorAll('.avatar-filter-card').forEach(card => {
+                card.classList.remove('active');
+                card.style.borderColor = '#e5e7eb';
+                card.style.boxShadow = 'none';
+            });
+            const activeCard = document.getElementById('filter-' + filterName);
+            if (activeCard) {
+                activeCard.classList.add('active');
+                activeCard.style.borderColor = '#6366f1';
+                activeCard.style.boxShadow = '0 0 0 2px rgba(99, 102, 241, 0.2)';
+            }
+            
+            // Apply visual filters inside the cropper wrapper
+            const cropperContainer = document.querySelector('.cropper-container');
+            if (cropperContainer) {
+                let filterStyle = '';
+                switch (filterName) {
+                    case 'brighten':
+                        filterStyle = 'brightness(1.2)';
+                        break;
+                    case 'grayscale':
+                        filterStyle = 'grayscale(1)';
+                        break;
+                    case 'sepia':
+                        filterStyle = 'sepia(0.8)';
+                        break;
+                    case 'warm':
+                        filterStyle = 'sepia(0.2) saturate(1.2) hue-rotate(-10deg)';
+                        break;
+                    case 'cool':
+                        filterStyle = 'hue-rotate(30deg) saturate(1.1)';
+                        break;
+                    default:
+                        filterStyle = 'none';
+                }
+                
+                const cropperImages = document.querySelectorAll('.cropper-view-box img, .cropper-canvas img');
+                cropperImages.forEach(img => {
+                    img.style.filter = filterStyle;
+                });
+            }
+        }
+
+        function cancelAvatarCrop() {
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            
+            document.getElementById('avatar-edit-mode').style.display = 'none';
+            document.getElementById('avatar-view-mode').style.display = 'flex';
+            document.getElementById('avatar-file-input').value = '';
+        }
+
+        function submitCroppedAvatar() {
+            if (!cropper) return;
+            
+            // 1. Crop canvas to 500x500px square
+            const canvas = cropper.getCroppedCanvas({
+                width: 500,
+                height: 500,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+            });
+            
+            // 2. Draw color filter directly into canvas pixels
+            const ctx = canvas.getContext('2d');
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            let filterString = 'none';
+            switch (selectedFilter) {
+                case 'brighten':
+                    filterString = 'brightness(1.2)';
+                    break;
+                case 'grayscale':
+                    filterString = 'grayscale(100%)';
+                    break;
+                case 'sepia':
+                    filterString = 'sepia(80%)';
+                    break;
+                case 'warm':
+                    filterString = 'sepia(20%) saturate(120%) hue-rotate(-10deg)';
+                    break;
+                case 'cool':
+                    filterString = 'hue-rotate(30deg) saturate(110%)';
+                    break;
+            }
+            
+            if (ctx && filterString !== 'none') {
+                try {
+                    tempCtx.filter = filterString;
+                    tempCtx.drawImage(canvas, 0, 0);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(tempCanvas, 0, 0);
+                } catch (e) {
+                    console.warn("Canvas filter rendering not fully supported, using raw cropped image.", e);
+                }
+            }
+            
+            // 3. Export as base64 JPEG at 85% quality
+            const base64Data = canvas.toDataURL('image/jpeg', 0.85);
+            
+            // 4. Send image base64 data to backend Livewire
+            @this.call('updateAvatarFromCropper', base64Data);
+            
+            cancelAvatarCrop();
         }
     </script>
 </x-filament-panels::page>
