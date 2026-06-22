@@ -238,15 +238,22 @@ class CompanyApiService
                 }
             }
 
-            $response = self::post('nks/user/updateCccd', [
-                'front'       => $data['front_base64'] ?? '',
-                'back'        => $data['back_base64'] ?? '',
+            $payload = [
                 'number'      => $data['cccd'] ?? '',
                 'date'        => $parsedDate,
                 'place'       => $data['address'] ?? '',
                 'cccd'        => $data['cccd'] ?? '',
                 'cccd_number' => $data['cccd'] ?? '',
-            ], $token);
+            ];
+            // Chỉ thêm front/back khi có ảnh thực sự (tránh API crash khi parse empty string)
+            if (!empty($data['front_base64'])) {
+                $payload['front'] = $data['front_base64'];
+            }
+            if (!empty($data['back_base64'])) {
+                $payload['back'] = $data['back_base64'];
+            }
+
+            $response = self::post('nks/user/updateCccd', $payload, $token);
 
             if ($response->successful()) {
                 return [

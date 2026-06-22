@@ -109,8 +109,7 @@ Route::get('/test-cccd-api', function () {
             'date'         => $parsedDate,
             'place'        => $user->address ?? '',
             'cccd'         => $user->cccd ?? '',
-            'front'        => '',
-            'back'         => '',
+            // KHÔNG gửi front/back rỗng - API crash khi parse empty string
         ]);
 
     return response()->json([
