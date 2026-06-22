@@ -100,26 +100,49 @@ Route::get('/test-cccd-api', function () {
         if (!$parsedDate) $parsedDate = $rawDate;
     }
 
-    // Gọi updateCccd chỉ với text fields (không ảnh) để test
-    $response = \Illuminate\Support\Facades\Http::asJson()
-        ->withToken($token)
+    $base = ['access_token' => $token];
+
+    // Test 1: Chỉ số CCCD
+    $r1 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, ['number' => $user->cccd]));
+
+    // Test 2: Chỉ ngày cấp (đã convert)
+    $r2 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, ['date' => $parsedDate]));
+
+    // Test 3: Chỉ nơi cấp (address)
+    $r3 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, ['place' => $user->address]));
+
+    // Test 4: Tất cả fields text cùng lúc
+    $r4 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, [
+            'number' => $user->cccd,
+            'date'   => $parsedDate,
+            'place'  => $user->address,
+        ]));
+
+    // Test 5: Chỉ field "cccd" (theo spec gốc api_tests.http)
+    $r5 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, ['cccd' => $user->cccd]));
+
+    // Test 6: KHÔNG có access_token trong body, chỉ Bearer header
+    $r6 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
         ->post('https://account.nks.vn/api/nks/user/updateCccd', [
-            'access_token' => $token,
-            'number'       => $user->cccd ?? '',
-            'date'         => $parsedDate,
-            'place'        => $user->address ?? '',
-            'cccd'         => $user->cccd ?? '',
-            // KHÔNG gửi front/back rỗng - API crash khi parse empty string
+            'number' => $user->cccd,
+            'date'   => $parsedDate,
+            'place'  => $user->address,
         ]);
 
     return response()->json([
-        'token_used'      => substr($token, 0, 20) . '...',
-        'http_status'     => $response->status(),
-        'api_response'    => $response->json(),
-        'date_raw'        => $rawDate,
-        'date_converted'  => $parsedDate,
-        'user_cccd'       => $user->cccd,
-        'user_address'    => $user->address,
+        'test1_only_number'   => ['status' => $r1->status(), 'response' => $r1->json()],
+        'test2_only_date'     => ['status' => $r2->status(), 'response' => $r2->json()],
+        'test3_only_place'    => ['status' => $r3->status(), 'response' => $r3->json()],
+        'test4_all_text'      => ['status' => $r4->status(), 'response' => $r4->json()],
+        'test5_field_cccd'    => ['status' => $r5->status(), 'response' => $r5->json()],
+        'test6_no_body_token' => ['status' => $r6->status(), 'response' => $r6->json()],
+        'date_raw'            => $rawDate,
+        'date_converted'      => $parsedDate,
     ]);
 })->middleware('auth');
 
