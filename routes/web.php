@@ -89,34 +89,56 @@ Route::get('/test-gemini-nks', function() {
     $maskedKey = substr($apiKey, 0, min(5, $len)) . '...' . substr($apiKey, max(0, $len - 5));
     $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" . $apiKey;
     
-    try {
-        $response = \Illuminate\Support\Facades\Http::timeout(10)
-            ->withHeaders(['Content-Type' => 'application/json'])
-            ->post($url, [
-                'contents' => [
-                    [
-                        'role' => 'user',
-                        'parts' => [
-                            ['text' => 'Hello, reply with "NKS OK"']
-                        ]
-                    ]
+    $systemInstruction = "You are a helpful car maintenance assistant. Speak in Vietnamese.";
+    $prompt = "Tại sao nên thay nhớt định kỳ?";
+    
+    $payload = [
+        'contents' => [
+            [
+                'role' => 'user',
+                'parts' => [
+                    ['text' => $prompt]
                 ]
-            ]);
-            
-        return response()->json([
-            'api_key_masked' => $maskedKey,
-            'api_key_length' => $len,
-            'status_code' => $response->status(),
-            'is_successful' => $response->successful(),
-            'api_response' => $response->json() ?: $response->body()
-        ], 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            ]
+        ],
+        'systemInstruction' => [
+            'parts' => [
+                ['text' => $systemInstruction]
+            ]
+        ]
+    ];
+    
+    $statusWithInstruction = null;
+    $responseBodyWithInstruction = null;
+    
+    try {
+        $res = \Illuminate\Support\Facades\Http::timeout(10)
+            ->withHeaders(['Content-Type' => 'application/json'])
+            ->post($url, $payload);
+        
+        $statusWithInstruction = $res->status();
+        $responseBodyWithInstruction = $res->json() ?: $res->body();
     } catch (\Exception $e) {
-        return response()->json([
-            'api_key_masked' => $maskedKey,
-            'api_key_length' => $len,
-            'exception_message' => $e->getMessage()
-        ], 500, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $responseBodyWithInstruction = "Exception: " . $e->getMessage();
     }
+    
+    // Test the actual GeminiService method
+    $serviceResponse = null;
+    try {
+        $serviceResponse = \App\Services\GeminiService::getAiAnswerForFaq($prompt, "Để bôi trơn động cơ.");
+    } catch (\Exception $e) {
+        $serviceResponse = "Exception in service: " . $e->getMessage();
+    }
+    
+    return response()->json([
+        'api_key_masked' => $maskedKey,
+        'api_key_length' => $len,
+        'system_instruction_test' => [
+            'status_code' => $statusWithInstruction,
+            'response' => $responseBodyWithInstruction
+        ],
+        'actual_service_test_response' => $serviceResponse
+    ], 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 });
 
 
