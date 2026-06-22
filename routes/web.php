@@ -78,4 +78,45 @@ Route::get('/storage/{path}', [App\Http\Controllers\StorageController::class, 's
     ->where('path', '.*')
     ->name('storage.serve');
 
+// Diagnostic route for Gemini API
+Route::get('/test-gemini-nks', function() {
+    $apiKey = env('GEMINI_API_KEY');
+    if (empty($apiKey)) {
+        return 'Thất bại: Biến môi trường GEMINI_API_KEY chưa được cấu hình hoặc bị trống trong file .env hoặc trên Vercel.';
+    }
+    
+    $len = strlen($apiKey);
+    $maskedKey = substr($apiKey, 0, min(5, $len)) . '...' . substr($apiKey, max(0, $len - 5));
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $apiKey;
+    
+    try {
+        $response = \Illuminate\Support\Facades\Http::timeout(10)
+            ->withHeaders(['Content-Type' => 'application/json'])
+            ->post($url, [
+                'contents' => [
+                    [
+                        'role' => 'user',
+                        'parts' => [
+                            ['text' => 'Hello, reply with "NKS OK"']
+                        ]
+                    ]
+                ]
+            ]);
+            
+        return response()->json([
+            'api_key_masked' => $maskedKey,
+            'api_key_length' => $len,
+            'status_code' => $response->status(),
+            'is_successful' => $response->successful(),
+            'api_response' => $response->json() ?: $response->body()
+        ], 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    } catch (\Exception $e) {
+        return response()->json([
+            'api_key_masked' => $maskedKey,
+            'api_key_length' => $len,
+            'exception_message' => $e->getMessage()
+        ], 500, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
+});
+
 
