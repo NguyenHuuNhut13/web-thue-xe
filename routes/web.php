@@ -105,6 +105,11 @@ Route::get('/test-gemini-nks', function() {
             'parts' => [
                 ['text' => $systemInstruction]
             ]
+        ],
+        'generationConfig' => [
+            'thinkingConfig' => [
+                'thinkingLevel' => 'minimal'
+            ]
         ]
     ];
     
@@ -112,7 +117,7 @@ Route::get('/test-gemini-nks', function() {
     $responseBodyWithInstruction = null;
     
     try {
-        $res = \Illuminate\Support\Facades\Http::timeout(10)
+        $res = \Illuminate\Support\Facades\Http::timeout(25)
             ->withHeaders(['Content-Type' => 'application/json'])
             ->post($url, $payload);
         

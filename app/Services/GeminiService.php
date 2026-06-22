@@ -24,6 +24,11 @@ class GeminiService
 
         $body = [
             'contents' => $contents,
+            'generationConfig' => [
+                'thinkingConfig' => [
+                    'thinkingLevel' => 'minimal'
+                ]
+            ]
         ];
 
         if ($systemInstruction) {
@@ -35,7 +40,7 @@ class GeminiService
         }
 
         try {
-            $response = Http::timeout(10)
+            $response = Http::timeout(25)
                 ->withHeaders(['Content-Type' => 'application/json'])
                 ->post($url, $body);
 
