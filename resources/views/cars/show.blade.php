@@ -5,6 +5,18 @@
 @endsection
 
 @section('content')
+    @php
+        $imageUrls = [];
+        if (!empty($car->images) && is_array($car->images)) {
+            foreach($car->images as $index => $img) {
+                $imageUrls[] = $car->imageUrl($index);
+            }
+        }
+        if (empty($imageUrls)) {
+            $imageUrls[] = $car->imageUrl(0);
+        }
+    @endphp
+
     <!-- Status Messages -->
     <!-- Status Messages -->
     @if(session('success'))
@@ -57,26 +69,47 @@
     @endif
 
     <!-- Main Container -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+         x-data="{ 
+            showLightbox: false, 
+            activeImageIndex: 0, 
+            images: {{ json_encode($imageUrls) }},
+            prevImage() {
+                this.activeImageIndex = (this.activeImageIndex - 1 + this.images.length) % this.images.length;
+            },
+            nextImage() {
+                this.activeImageIndex = (this.activeImageIndex + 1) % this.images.length;
+            },
+            openLightbox(index) {
+                this.activeImageIndex = index;
+                this.showLightbox = true;
+            }
+         }">
         
         <!-- Gallery Header -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <!-- Main large image -->
-            <div class="md:col-span-2 h-[350px] md:h-[450px] rounded-3xl overflow-hidden shadow-sm bg-slate-200">
+            <div @click="openLightbox(0)" class="md:col-span-2 h-[350px] md:h-[450px] rounded-3xl overflow-hidden shadow-sm bg-slate-200 cursor-pointer relative group">
                 <img src="{{ $car->imageUrl(0) }}" 
-                     alt="{{ $car->title }}" class="w-full h-full object-cover">
+                     alt="{{ $car->title }}" class="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-500">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                    <i class="fa-solid fa-magnifying-glass-plus text-white text-3xl opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </div>
             </div>
             
             <!-- Side images (grid/stacked) -->
             <div class="hidden md:flex flex-col gap-4 h-[450px]">
-                <div class="h-1/2 rounded-3xl overflow-hidden shadow-sm bg-slate-200">
+                <div @click="openLightbox(images.length > 1 ? 1 : 0)" class="h-1/2 rounded-3xl overflow-hidden shadow-sm bg-slate-200 cursor-pointer relative group">
                     <img src="{{ $car->imageUrl(1) }}" 
-                         alt="{{ $car->title }}" class="w-full h-full object-cover">
+                         alt="{{ $car->title }}" class="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-500">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                        <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
                 </div>
-                <div class="h-1/2 rounded-3xl overflow-hidden shadow-sm bg-slate-200 relative">
-                    <img src="{{ $car->imageUrl(0) }}" 
-                         alt="{{ $car->title }}" class="w-full h-full object-cover opacity-60">
-                    <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                <div @click="openLightbox(images.length > 2 ? 2 : 0)" class="h-1/2 rounded-3xl overflow-hidden shadow-sm bg-slate-200 relative cursor-pointer group">
+                    <img src="{{ count($car->images) > 2 ? $car->imageUrl(2) : $car->imageUrl(0) }}" 
+                         alt="{{ $car->title }}" class="w-full h-full object-cover opacity-60 group-hover:scale-[1.01] transition-transform duration-500">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
                         <span class="text-white font-extrabold text-lg"><i class="fa-solid fa-images mr-1"></i> Xem ảnh thực tế</span>
                     </div>
                 </div>
@@ -261,7 +294,7 @@
                         </div>
                         
                         <!-- Favorite Button (AJAX) -->
-                        <button onclick="toggleFavorite({{ $car->id }})" id="fav-btn" class="w-12 h-12 rounded-2xl flex items-center justify-center border {{ $isFavorite ? 'border-rose-100 bg-rose-50 text-rose-500' : 'border-slate-100 hover:bg-slate-50 text-slate-400' }} transition-all focus:outline-none">
+                        <button onclick="toggleFavorite({{ $car->id }})" id="fav-btn" class="w-12 h-12 rounded-2xl flex items-center justify-center border {{ $isFavorite ? 'border-rose-100 bg-rose-50 text-rose-500' : 'border-slate-100 hover:bg-slate-50 text-slate-400' }} transition-all focus:outline-none cursor-pointer">
                             <i class="fa-{{ $isFavorite ? 'solid' : 'regular' }} fa-heart text-xl"></i>
                         </button>
                     </div>
@@ -357,7 +390,7 @@
 
                             <!-- Submit Request -->
                             @auth
-                                <button type="submit" class="w-full bg-brand hover:bg-brand-hover text-white text-sm font-semibold py-3.5 rounded-xl shadow-lg shadow-brand/20 transition-all flex items-center justify-center space-x-2">
+                                <button type="submit" class="w-full bg-brand hover:bg-brand-hover text-white text-sm font-semibold py-3.5 rounded-xl shadow-lg shadow-brand/20 transition-all flex items-center justify-center space-x-2 cursor-pointer">
                                     <i class="fa-solid fa-file-contract"></i>
                                     <span>Gửi yêu cầu đặt xe</span>
                                 </button>
@@ -373,7 +406,7 @@
                     <div class="border-t border-slate-100 pt-4 flex items-center justify-between">
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Chia sẻ xe</span>
                         <div class="flex space-x-2.5">
-                            <button onclick="copyShareLink()" class="w-8 h-8 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-500 text-xs flex items-center justify-center transition-colors" title="Copy Link">
+                            <button onclick="copyShareLink()" class="w-8 h-8 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-500 text-xs flex items-center justify-center transition-colors cursor-pointer" title="Copy Link">
                                 <i class="fa-solid fa-copy"></i>
                             </button>
                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank"
@@ -419,6 +452,42 @@
             </div>
         </div>
 
+        <!-- Lightbox Modal -->
+        <div x-show="showLightbox" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4"
+             @keydown.escape.window="showLightbox = false"
+             style="display: none;">
+            
+            <!-- Close button -->
+            <button @click="showLightbox = false" class="absolute top-6 right-6 text-white/70 hover:text-white text-3xl focus:outline-none transition-colors cursor-pointer z-50">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Prev button -->
+            <button @click="prevImage()" x-show="images.length > 1" class="absolute left-6 text-white/70 hover:text-white text-4xl focus:outline-none transition-colors cursor-pointer p-4 z-50">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <!-- Main Image Container -->
+            <div class="max-w-4xl max-h-[80vh] flex flex-col items-center justify-center relative">
+                <img :src="images[activeImageIndex]" class="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl select-none" />
+                
+                <!-- Index indicator -->
+                <span class="text-white/60 text-xs font-bold mt-4 tracking-widest" x-text="(activeImageIndex + 1) + ' / ' + images.length"></span>
+            </div>
+
+            <!-- Next button -->
+            <button @click="nextImage()" x-show="images.length > 1" class="absolute right-6 text-white/70 hover:text-white text-4xl focus:outline-none transition-colors cursor-pointer p-4 z-50">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
     </div>
 @endsection
 
@@ -453,10 +522,10 @@
                     const icon = btn.querySelector('i');
                     
                     if (data.is_favorite) {
-                        btn.className = 'w-12 h-12 rounded-2xl flex items-center justify-center border border-rose-100 bg-rose-50 text-rose-500 transition-all focus:outline-none';
+                        btn.className = 'w-12 h-12 rounded-2xl flex items-center justify-center border border-rose-100 bg-rose-50 text-rose-500 transition-all focus:outline-none cursor-pointer';
                         icon.className = 'fa-solid fa-heart text-xl';
                     } else {
-                        btn.className = 'w-12 h-12 rounded-2xl flex items-center justify-center border border-slate-100 hover:bg-slate-50 text-slate-400 transition-all focus:outline-none';
+                        btn.className = 'w-12 h-12 rounded-2xl flex items-center justify-center border border-slate-100 hover:bg-slate-50 text-slate-400 transition-all focus:outline-none cursor-pointer';
                         icon.className = 'fa-regular fa-heart text-xl';
                     }
                     
