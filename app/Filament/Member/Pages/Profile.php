@@ -201,6 +201,24 @@ class Profile extends Page implements HasForms
             ->statePath('passwordData');
     }
 
+    /**
+     * Lấy API token của company: ưu tiên từ session, fallback sang DB.
+     * Điều này tránh mất token trên môi trường serverless (Vercel).
+     */
+    protected function getApiToken(): ?string
+    {
+        $token = session('company_api_token');
+        if (!$token) {
+            $token = auth()->user()->company_api_token ?? null;
+            // Đồng bộ lại session nếu lấy từ DB
+            if ($token) {
+                session(['company_api_token' => $token]);
+            }
+        }
+        return $token ?: null;
+    }
+
+
     public function enableEditing(): void
     {
         $this->isEditing = true;
@@ -223,7 +241,7 @@ class Profile extends Page implements HasForms
     {
         $user = auth()->user();
         $data = $this->profileForm->getState();
-        $token = session('company_api_token');
+        $token = $this->getApiToken();
 
         if ($token) {
             $profileRes = CompanyApiService::updateProfile($token, [
@@ -259,7 +277,7 @@ class Profile extends Page implements HasForms
     {
         $user = auth()->user();
         $data = $this->cccdForm->getState();
-        $token = session('company_api_token');
+        $token = $this->getApiToken();
 
         if ($token) {
             $frontBase64 = '';
@@ -318,7 +336,7 @@ class Profile extends Page implements HasForms
     {
         $user = auth()->user();
         $data = $this->avatarForm->getState();
-        $token = session('company_api_token');
+        $token = $this->getApiToken();
 
         if (!empty($data['avatar']) && $data['avatar'] !== $user->avatar) {
             if ($token) {
@@ -354,7 +372,7 @@ class Profile extends Page implements HasForms
     {
         $user = auth()->user();
         $data = $this->passwordForm->getState();
-        $token = session('company_api_token');
+        $token = $this->getApiToken();
 
         if ($token) {
             $passRes = CompanyApiService::updatePassword($token, $data['old_password'], $data['new_password']);
@@ -402,7 +420,7 @@ class Profile extends Page implements HasForms
         ?string $backBase64 = null
     ): void {
         $user = auth()->user();
-        $token = session('company_api_token');
+        $token = $this->getApiToken();
 
         // Lưu ảnh mặt trước và mặt sau cục bộ vào storage
         $frontPath = $user->cccd_front;

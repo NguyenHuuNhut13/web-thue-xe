@@ -37,6 +37,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'issue_date',
         'cccd_front',
         'cccd_back',
+        'company_api_token',
     ];
 
     /**
@@ -47,6 +48,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     protected $hidden = [
         'password',
         'remember_token',
+        'company_api_token',
     ];
 
     /**

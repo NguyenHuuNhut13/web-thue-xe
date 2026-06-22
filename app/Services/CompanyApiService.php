@@ -15,28 +15,31 @@ class CompanyApiService
     protected static function post($endpoint, array $data = [], $token = null)
     {
         $url = self::$baseUrl . '/' . ltrim($endpoint, '/');
-        
+
+        // Gửi token qua cả Bearer Authorization header (chuẩn REST) lẫn body (tương thích ngược)
         $request = Http::asJson();
         if ($token) {
-            // Nhận diện API công ty yêu cầu nhận token qua trường access_token ở body
-            $data['access_token'] = $token;
+            $request = $request->withToken($token); // Authorization: Bearer {token}
+            $data['access_token'] = $token;         // Body fallback
         }
 
         Log::info("Company API Request: POST {$url}", [
-            'payload' => collect($data)->except(['password', 'old_password', 'new_password', 'password_confirmation', 'access_token'])->toArray(),
-            'has_token' => !empty($token)
+            'payload' => collect($data)->except(['password', 'old_password', 'new_password', 'password_confirmation', 'access_token', 'front', 'back', 'front_base64', 'back_base64'])->toArray(),
+            'has_token' => !empty($token),
         ]);
 
         try {
             $response = $request->post($url, $data);
-            
+
             Log::info("Company API Response: {$response->status()}", [
+                'url'  => $url,
                 'body' => $response->json(),
             ]);
 
             return $response;
         } catch (\Exception $e) {
             Log::error("Company API Exception: " . $e->getMessage(), [
+                'url'   => $url,
                 'trace' => $e->getTraceAsString()
             ]);
             throw $e;

@@ -92,8 +92,10 @@ class MemberLogin extends BaseLogin
                 $user = User::create($userData);
             }
 
-            // 3. Lưu Access Token vào session
+            // 3. Lưu Access Token vào session VÀ database (để bền vững hơn trên serverless)
             session(['company_api_token' => $token]);
+            $user->company_api_token = $token;
+            $user->save();
         } else {
             // Kiểm tra trạng thái khóa tài khoản cục bộ đối với tài khoản local
             if ($user->status === 'blocked') {
