@@ -717,6 +717,16 @@
                 };
                 document.head.appendChild(script);
             }
+
+            // Tải thư viện jsQR cho quét mã QR
+            if (typeof jsQR === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+                script.onload = () => {
+                    console.log('jsQR library loaded successfully.');
+                };
+                document.head.appendChild(script);
+            }
         });
 
         // Hàm phân tích khối văn bản thô từ CCCD bằng Regex thông minh
@@ -853,9 +863,121 @@
             return null;
         }
 
+        // Hàm quét mã QR bằng thư viện jsQR
+        function tryQrScan(file) {
+            return new Promise((resolve) => {
+                if (typeof jsQR === 'undefined') {
+                    console.log("jsQR chưa tải xong, đang chờ...");
+                    setTimeout(() => {
+                        tryQrScan(file).then(resolve);
+                    }, 500);
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        // 1. Thử quét trên toàn bộ kích thước ảnh trước
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        
+                        let imageData = ctx.getImageData(0, 0, img.width, img.height);
+                        let code = jsQR(imageData.data, imageData.width, imageData.height);
+                        
+                        if (code && code.data) {
+                            console.log("Tìm thấy mã QR từ ảnh gốc:", code.data);
+                            resolve(code.data);
+                            return;
+                        }
+                        
+                        // 2. Thử cắt vùng chứa mã QR (góc trên cùng bên phải của CCCD)
+                        console.log("Quét QR trên ảnh gốc không thành công, thử cắt vùng chứa QR...");
+                        const startY = Math.floor(img.height * 0.02);
+                        const endY = Math.floor(img.height * 0.38);
+                        const startX = Math.floor(img.width * 0.70);
+                        const endX = Math.floor(img.width * 0.98);
+                        const cropWidth = endX - startX;
+                        const cropHeight = endY - startY;
+                        
+                        if (cropWidth > 0 && cropHeight > 0) {
+                            const cropCanvas = document.createElement('canvas');
+                            cropCanvas.width = cropWidth;
+                            cropCanvas.height = cropHeight;
+                            const cropCtx = cropCanvas.getContext('2d');
+                            
+                            cropCtx.drawImage(img, startX, startY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+                            
+                            const cropImageData = cropCtx.getImageData(0, 0, cropWidth, cropHeight);
+                            const cropCode = jsQR(cropImageData.data, cropWidth, cropHeight);
+                            
+                            if (cropCode && cropCode.data) {
+                                console.log("Tìm thấy mã QR từ ảnh cắt:", cropCode.data);
+                                resolve(cropCode.data);
+                                return;
+                            }
+                            
+                            // 3. Tiền xử lý ảnh cắt (nhị phân hóa đơn giản để tăng độ tương phản của QR)
+                            console.log("Thử nhị phân hóa ảnh cắt để tăng độ tương phản quét QR...");
+                            const data = cropImageData.data;
+                            for (let i = 0; i < data.length; i += 4) {
+                                const brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+                                const val = brightness < 120 ? 0 : 255;
+                                data[i] = val;
+                                data[i + 1] = val;
+                                data[i + 2] = val;
+                            }
+                            cropCtx.putImageData(cropImageData, 0, 0);
+                            const threshCode = jsQR(data, cropWidth, cropHeight);
+                            if (threshCode && threshCode.data) {
+                                console.log("Tìm thấy mã QR từ ảnh cắt nhị phân:", threshCode.data);
+                                resolve(threshCode.data);
+                                return;
+                            }
+                        }
+                        
+                        resolve(null);
+                    };
+                    img.onerror = () => resolve(null);
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => resolve(null);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Định dạng ngày ddmmyyyy từ QR sang dd/mm/yyyy
+        function formatQrDate(dateStr) {
+            if (!dateStr || dateStr.length !== 8) return dateStr;
+            const dd = dateStr.substring(0, 2);
+            const mm = dateStr.substring(2, 4);
+            const yyyy = dateStr.substring(4, 8);
+            return `${dd}/${mm}/${yyyy}`;
+        }
+
+        // Phân tích chuỗi QR code CCCD
+        function parseCccdQr(qrData) {
+            if (!qrData) return null;
+            const parts = qrData.split('|');
+            if (parts.length < 5) return null;
+            
+            const cccd = parts[0] ? parts[0].trim() : "";
+            const name = parts[2] ? parts[2].trim() : "";
+            const dob = parts[3] ? formatQrDate(parts[3].trim()) : "";
+            const gender = parts[4] ? parts[4].trim() : "";
+            const address = parts[5] ? parts[5].trim() : "";
+            const issueDate = parts[6] ? formatQrDate(parts[6].trim()) : "";
+            
+            return { cccd, name, dob, gender, address, issueDate };
+        }
+
         // Đọc ảnh và gửi đi nhận diện OCR
         let frontFile = null;
         let backFile = null;
+        let qrScanInProgress = false;
 
         function handleFileSelect(input, side) {
             if (input.files && input.files[0]) {
@@ -867,16 +989,83 @@
 
                     if (side === 'front') {
                         frontFile = input.files[0];
+                        // Chạy thử nhận dạng QR trước
+                        runQrScanProcess(frontFile);
                     } else if (side === 'back') {
                         backFile = input.files[0];
-                    }
-
-                    if (frontFile && backFile) {
-                        runOcrProcess();
+                        if (frontFile && backFile) {
+                            runOcrProcess();
+                        }
                     }
                 }
                 reader.readAsDataURL(input.files[0]);
             }
+        }
+
+        function runQrScanProcess(file) {
+            if (qrScanInProgress) return;
+            qrScanInProgress = true;
+            
+            const progressContainer = document.getElementById('ocr-progress-container');
+            const progressBar = document.getElementById('ocr-progress-bar');
+            const statusText = document.getElementById('ocr-status-text');
+            const percentageText = document.getElementById('ocr-percentage');
+
+            progressContainer.style.display = 'block';
+            statusText.innerText = "Đang quét mã QR trên mặt trước CCCD...";
+            progressBar.style.width = '30%';
+            percentageText.innerText = '30%';
+
+            setTimeout(() => {
+                tryQrScan(file).then(qrData => {
+                    if (qrData) {
+                        progressBar.style.width = '100%';
+                        percentageText.innerText = '100%';
+                        statusText.innerText = "Đã giải mã thành công từ QR code!";
+                        
+                        const qrResult = parseCccdQr(qrData);
+                        if (qrResult && qrResult.cccd) {
+                            console.log("QR Extracted Fields:", qrResult);
+                            
+                            // Gửi dữ liệu về Livewire lưu trữ
+                            @this.call(
+                                'updateCccdFromScan',
+                                qrResult.cccd,
+                                qrResult.issueDate,
+                                qrResult.name,
+                                qrResult.gender,
+                                qrResult.dob,
+                                qrResult.address
+                            );
+                            
+                            setTimeout(() => {
+                                cleanUpScanner();
+                                qrScanInProgress = false;
+                            }, 1000);
+                            return;
+                        }
+                    }
+                    
+                    // Nếu quét QR thất bại, đổi trạng thái và chờ mặt sau để chạy OCR
+                    console.log("Không giải mã được QR từ mặt trước, chuyển sang chế độ OCR.");
+                    statusText.innerText = "Không tìm thấy QR code hợp lệ. Vui lòng chọn thêm ảnh mặt sau để nhận dạng tự động (OCR).";
+                    progressBar.style.width = '0%';
+                    percentageText.innerText = '0%';
+                    qrScanInProgress = false;
+                    
+                    if (frontFile && backFile) {
+                        runOcrProcess();
+                    } else {
+                        // Tắt laser mặt trước tạm thời và chỉ hiển thị preview
+                        document.getElementById('laser-front').style.display = 'none';
+                        setTimeout(() => {
+                            if (!frontFile || !backFile) {
+                                progressContainer.style.display = 'none';
+                            }
+                        }, 2500);
+                    }
+                });
+            }, 500);
         }
 
         function runOcrProcess() {
