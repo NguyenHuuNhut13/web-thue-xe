@@ -87,7 +87,7 @@ Route::get('/test-gemini-nks', function() {
     
     $len = strlen($apiKey);
     $maskedKey = substr($apiKey, 0, min(5, $len)) . '...' . substr($apiKey, max(0, $len - 5));
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $apiKey;
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" . $apiKey;
     
     try {
         $response = \Illuminate\Support\Facades\Http::timeout(10)
