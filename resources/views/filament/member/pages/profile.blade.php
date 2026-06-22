@@ -863,7 +863,7 @@
             return null;
         }
 
-        // Hàm quét mã QR bằng thư viện jsQR
+        // Hàm quét mã QR bằng thư viện jsQR (hỗ trợ nhiều kích thước chuẩn hóa co giãn mượt mà)
         function tryQrScan(file) {
             return new Promise((resolve) => {
                 if (typeof jsQR === 'undefined') {
@@ -896,46 +896,57 @@
                         
                         // 2. Thử cắt vùng chứa mã QR (góc trên cùng bên phải của CCCD)
                         console.log("Quét QR trên ảnh gốc không thành công, thử cắt vùng chứa QR...");
-                        const startY = Math.floor(img.height * 0.02);
+                        const startY = Math.floor(img.height * 0.01);
                         const endY = Math.floor(img.height * 0.38);
                         const startX = Math.floor(img.width * 0.70);
-                        const endX = Math.floor(img.width * 0.98);
+                        const endX = Math.floor(img.width * 0.99);
                         const cropWidth = endX - startX;
                         const cropHeight = endY - startY;
                         
                         if (cropWidth > 0 && cropHeight > 0) {
-                            const cropCanvas = document.createElement('canvas');
-                            cropCanvas.width = cropWidth;
-                            cropCanvas.height = cropHeight;
-                            const cropCtx = cropCanvas.getContext('2d');
+                            // Thử co giãn vùng cắt về các kích thước chuẩn để jsQR nhận dạng tốt nhất
+                            // Thử các kích thước (300x300, 400x400, 500x500) để hỗ trợ nhiều mức độ phân giải của máy ảnh
+                            const targetSizes = [300, 400, 500, 0]; // 0 là kích thước gốc vùng cắt
                             
-                            cropCtx.drawImage(img, startX, startY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
-                            
-                            const cropImageData = cropCtx.getImageData(0, 0, cropWidth, cropHeight);
-                            const cropCode = jsQR(cropImageData.data, cropWidth, cropHeight);
-                            
-                            if (cropCode && cropCode.data) {
-                                console.log("Tìm thấy mã QR từ ảnh cắt:", cropCode.data);
-                                resolve(cropCode.data);
-                                return;
-                            }
-                            
-                            // 3. Tiền xử lý ảnh cắt (nhị phân hóa đơn giản để tăng độ tương phản của QR)
-                            console.log("Thử nhị phân hóa ảnh cắt để tăng độ tương phản quét QR...");
-                            const data = cropImageData.data;
-                            for (let i = 0; i < data.length; i += 4) {
-                                const brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-                                const val = brightness < 120 ? 0 : 255;
-                                data[i] = val;
-                                data[i + 1] = val;
-                                data[i + 2] = val;
-                            }
-                            cropCtx.putImageData(cropImageData, 0, 0);
-                            const threshCode = jsQR(data, cropWidth, cropHeight);
-                            if (threshCode && threshCode.data) {
-                                console.log("Tìm thấy mã QR từ ảnh cắt nhị phân:", threshCode.data);
-                                resolve(threshCode.data);
-                                return;
+                            for (let size of targetSizes) {
+                                const scanCanvas = document.createElement('canvas');
+                                const w = size === 0 ? cropWidth : size;
+                                const h = size === 0 ? cropHeight : size;
+                                scanCanvas.width = w;
+                                scanCanvas.height = h;
+                                const scanCtx = scanCanvas.getContext('2d');
+                                
+                                // Bật chế độ làm mịn ảnh chất lượng cao
+                                scanCtx.imageSmoothingEnabled = true;
+                                scanCtx.imageSmoothingQuality = 'high';
+                                
+                                scanCtx.drawImage(img, startX, startY, cropWidth, cropHeight, 0, 0, w, h);
+                                
+                                const scanImageData = scanCtx.getImageData(0, 0, w, h);
+                                const scanCode = jsQR(scanImageData.data, w, h);
+                                
+                                if (scanCode && scanCode.data) {
+                                    console.log(`Tìm thấy mã QR từ vùng cắt chuẩn hóa kích thước ${w}x${h}:`, scanCode.data);
+                                    resolve(scanCode.data);
+                                    return;
+                                }
+                                
+                                // Thử thêm phương án nhị phân hóa cục bộ trên kích thước co giãn này
+                                const data = scanImageData.data;
+                                for (let i = 0; i < data.length; i += 4) {
+                                    const brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+                                    const val = brightness < 125 ? 0 : 255;
+                                    data[i] = val;
+                                    data[i + 1] = val;
+                                    data[i + 2] = val;
+                                }
+                                scanCtx.putImageData(scanImageData, 0, 0);
+                                const scanCodeBin = jsQR(data, w, h);
+                                if (scanCodeBin && scanCodeBin.data) {
+                                    console.log(`Tìm thấy mã QR từ vùng cắt nhị phân kích thước ${w}x${h}:`, scanCodeBin.data);
+                                    resolve(scanCodeBin.data);
+                                    return;
+                                }
                             }
                         }
                         
