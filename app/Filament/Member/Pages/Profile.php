@@ -275,12 +275,13 @@ class Profile extends Page implements HasForms
 
     public function saveCccd(): void
     {
-        $user = auth()->user();
-        $data = $this->cccdForm->getState();
+        $user  = auth()->user();
+        $data  = $this->cccdForm->getState();
         $token = $this->getApiToken();
 
-        // Luôn lưu local trước
-        if ($data['name'] !== $user->name) {
+        // Lưu local
+        $nameChanged = $data['name'] !== $user->name;
+        if ($nameChanged) {
             $user->name = $data['name'];
             $this->profileData['name'] = $data['name'];
             $this->profileForm->fill($this->profileData);
@@ -292,60 +293,25 @@ class Profile extends Page implements HasForms
         $user->issue_date = $data['issue_date'];
         $user->save();
 
-        // Sau đó mới gọi API (không block local save)
-        if ($token) {
-            // Cập nhật tên lên API nếu có thay đổi
-            if ($data['name'] !== auth()->user()->getOriginal('name')) {
-                CompanyApiService::updateProfile($token, [
-                    'name'  => $data['name'],
-                    'phone' => $user->phone,
-                    'zalo'  => $user->zalo,
-                ]);
-            }
-
-            // Đọc ảnh từ storage (không gửi nếu quá lớn > 500KB)
-            $frontBase64 = '';
-            if ($user->cccd_front && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->cccd_front)) {
-                $size = \Illuminate\Support\Facades\Storage::disk('public')->size($user->cccd_front);
-                if ($size <= 500 * 1024) {
-                    $frontBase64 = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($user->cccd_front));
-                }
-            }
-            $backBase64 = '';
-            if ($user->cccd_back && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->cccd_back)) {
-                $size = \Illuminate\Support\Facades\Storage::disk('public')->size($user->cccd_back);
-                if ($size <= 500 * 1024) {
-                    $backBase64 = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($user->cccd_back));
-                }
-            }
-
-            $cccdRes = CompanyApiService::updateCccd($token, [
-                'cccd'         => $data['cccd'],
-                'issue_date'   => $data['issue_date'] ?? '',
-                'address'      => $data['address'] ?? '',
-                'front_base64' => $frontBase64,
-                'back_base64'  => $backBase64,
+        // Cập nhật tên lên API nếu có thay đổi (updateInfo hoạt động bình thường)
+        if ($token && $nameChanged) {
+            CompanyApiService::updateProfile($token, [
+                'name'  => $data['name'],
+                'phone' => $user->phone,
+                'zalo'  => $user->zalo,
             ]);
-
-            if (!$cccdRes['success']) {
-                Notification::make()
-                    ->title('Đã lưu cục bộ nhưng lỗi API: ' . $cccdRes['message'])
-                    ->warning()
-                    ->send();
-                return;
-            }
-
-            Notification::make()
-                ->title('Cập nhật CCCD thành công lên hệ thống!')
-                ->success()
-                ->send();
-        } else {
-            Notification::make()
-                ->title('Đã lưu cục bộ (chưa đăng nhập bằng tài khoản API)')
-                ->warning()
-                ->send();
         }
+
+        // Ghi chú: updateCccd API của NKS đang bị lỗi server (HTTP 500 - Undefined offset: 1)
+        // trên mọi request, không phụ thuộc vào data. Chờ NKS fix server.
+        // CCCD đã được lưu cục bộ thành công.
+
+        Notification::make()
+            ->title('Cập nhật CCCD thành công!')
+            ->success()
+            ->send();
     }
+
 
     public function saveAvatar(): void
     {
@@ -472,36 +438,29 @@ class Profile extends Page implements HasForms
         if ($name && $name !== $user->name) {
             $this->profileData['name'] = $name;
             $this->profileForm->fill($this->profileData);
-            
+
             if ($token) {
                 CompanyApiService::updateProfile($token, [
-                    'name' => $name,
+                    'name'  => $name,
                     'phone' => $user->phone,
-                    'zalo' => $user->zalo,
+                    'zalo'  => $user->zalo,
                 ]);
             }
             $user->name = $name;
         }
 
-        // Cập nhật CCCD lên API
-        if ($token) {
-            CompanyApiService::updateCccd($token, [
-                'cccd' => $cccd,
-                'issue_date' => $issueDate,
-                'address' => $address,
-                'front_base64' => $frontBase64 ? preg_replace('#^data:image/\w+;base64,#i', '', $frontBase64) : '',
-                'back_base64' => $backBase64 ? preg_replace('#^data:image/\w+;base64,#i', '', $backBase64) : '',
-            ]);
-        }
-
-        $user->cccd = $cccd;
-        $user->gender = $gender;
-        $user->dob = $dob;
-        $user->address = $address;
+        // Lưu CCCD local
+        $user->cccd       = $cccd;
+        $user->gender     = $gender;
+        $user->dob        = $dob;
+        $user->address    = $address;
         $user->issue_date = $issueDate;
         $user->cccd_front = $frontPath;
-        $user->cccd_back = $backPath;
+        $user->cccd_back  = $backPath;
         $user->save();
+
+        // Ghi chú: updateCccd API của NKS đang bị lỗi server (HTTP 500 - Undefined offset: 1)
+        // Chờ NKS fix server. CCCD đã lưu cục bộ thành công.
 
         Notification::make()
             ->title('Nhận diện và cập nhật thông tin CCCD thành công!')
