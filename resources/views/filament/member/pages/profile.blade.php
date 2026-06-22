@@ -606,8 +606,8 @@
                                         <span class="ocr-dropzone-title">Mặt trước CCCD</span>
                                         <span class="ocr-dropzone-subtitle">Nhấp để chụp/chọn hoặc kéo thả ảnh</span>
                                     </div>
-                                    <div class="ocr-preview-container" id="preview-container-front" style="display: none;">
-                                        <img id="preview-front" src="" alt="Mặt trước CCCD" class="ocr-preview-img">
+                                    <div class="ocr-preview-container" id="preview-container-front" style="{{ auth()->user()->cccd_front ? 'display: block;' : 'display: none;' }}">
+                                        <img id="preview-front" src="{{ auth()->user()->cccd_front ? asset('storage/' . auth()->user()->cccd_front) : '' }}" alt="Mặt trước CCCD" class="ocr-preview-img">
                                         <div class="laser-scanner" id="laser-front" style="display: none;"></div>
                                     </div>
                                 </div>
@@ -622,8 +622,8 @@
                                         <span class="ocr-dropzone-title">Mặt sau CCCD</span>
                                         <span class="ocr-dropzone-subtitle">Nhấp để chụp/chọn hoặc kéo thả ảnh</span>
                                     </div>
-                                    <div class="ocr-preview-container" id="preview-container-back" style="display: none;">
-                                        <img id="preview-back" src="" alt="Mặt sau CCCD" class="ocr-preview-img">
+                                    <div class="ocr-preview-container" id="preview-container-back" style="{{ auth()->user()->cccd_back ? 'display: block;' : 'display: none;' }}">
+                                        <img id="preview-back" src="{{ auth()->user()->cccd_back ? asset('storage/' . auth()->user()->cccd_back) : '' }}" alt="Mặt sau CCCD" class="ocr-preview-img">
                                         <div class="laser-scanner" id="laser-back" style="display: none;"></div>
                                     </div>
                                 </div>
@@ -988,6 +988,8 @@
         // Đọc ảnh và gửi đi nhận diện OCR
         let frontFile = null;
         let backFile = null;
+        let frontBase64 = null;
+        let backBase64 = null;
         let qrScanInProgress = false;
 
         function handleFileSelect(input, side) {
@@ -1000,20 +1002,21 @@
 
                     if (side === 'front') {
                         frontFile = input.files[0];
-                        // Chạy thử nhận dạng QR trước
-                        runQrScanProcess(frontFile);
+                        frontBase64 = e.target.result;
                     } else if (side === 'back') {
                         backFile = input.files[0];
-                        if (frontFile && backFile) {
-                            runOcrProcess();
-                        }
+                        backBase64 = e.target.result;
+                    }
+
+                    if (frontFile && backFile) {
+                        runCombinedScanProcess();
                     }
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        function runQrScanProcess(file) {
+        function runCombinedScanProcess() {
             if (qrScanInProgress) return;
             qrScanInProgress = true;
             
@@ -1028,7 +1031,7 @@
             percentageText.innerText = '30%';
 
             setTimeout(() => {
-                tryQrScan(file).then(qrData => {
+                tryQrScan(frontFile).then(qrData => {
                     if (qrData) {
                         progressBar.style.width = '100%';
                         percentageText.innerText = '100%';
@@ -1038,7 +1041,7 @@
                         if (qrResult && qrResult.cccd) {
                             console.log("QR Extracted Fields:", qrResult);
                             
-                            // Gửi dữ liệu về Livewire lưu trữ
+                            // Gửi dữ liệu về Livewire lưu trữ kèm Base64 ảnh mặt trước + sau
                             @this.call(
                                 'updateCccdFromScan',
                                 qrResult.cccd,
@@ -1046,7 +1049,9 @@
                                 qrResult.name,
                                 qrResult.gender,
                                 qrResult.dob,
-                                qrResult.address
+                                qrResult.address,
+                                frontBase64,
+                                backBase64
                             );
                             
                             setTimeout(() => {
@@ -1057,24 +1062,10 @@
                         }
                     }
                     
-                    // Nếu quét QR thất bại, đổi trạng thái và chờ mặt sau để chạy OCR
+                    // Nếu quét QR thất bại, chuyển sang nhận dạng chữ (OCR) trên cả 2 mặt
                     console.log("Không giải mã được QR từ mặt trước, chuyển sang chế độ OCR.");
-                    statusText.innerText = "Không tìm thấy QR code hợp lệ. Vui lòng chọn thêm ảnh mặt sau để nhận dạng tự động (OCR).";
-                    progressBar.style.width = '0%';
-                    percentageText.innerText = '0%';
                     qrScanInProgress = false;
-                    
-                    if (frontFile && backFile) {
-                        runOcrProcess();
-                    } else {
-                        // Tắt laser mặt trước tạm thời và chỉ hiển thị preview
-                        document.getElementById('laser-front').style.display = 'none';
-                        setTimeout(() => {
-                            if (!frontFile || !backFile) {
-                                progressContainer.style.display = 'none';
-                            }
-                        }, 2500);
-                    }
+                    runOcrProcess();
                 });
             }, 500);
         }
@@ -1198,7 +1189,7 @@
                         address: finalAddress
                     });
 
-                    // Gửi dữ liệu về Livewire lưu trữ
+                    // Gửi dữ liệu về Livewire lưu trữ kèm Base64 ảnh
                     @this.call(
                         'updateCccdFromScan',
                         finalCccd,
@@ -1206,7 +1197,9 @@
                         finalName,
                         finalGender,
                         finalDob,
-                        finalAddress
+                        finalAddress,
+                        frontBase64,
+                        backBase64
                     );
 
                     cleanUpScanner();
@@ -1229,7 +1222,7 @@
                         finalAddress = "{{ auth()->user()->address }}" || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
                     }
 
-                    @this.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress);
+                    @this.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress, frontBase64, backBase64);
                     cleanUpScanner();
                 });
 
@@ -1248,9 +1241,8 @@
                 
                 frontFile = null;
                 backFile = null;
-                
-                document.getElementById('preview-container-front').style.display = 'none';
-                document.getElementById('preview-container-back').style.display = 'none';
+                frontBase64 = null;
+                backBase64 = null;
                 
                 document.getElementById('input-front').value = '';
                 document.getElementById('input-back').value = '';

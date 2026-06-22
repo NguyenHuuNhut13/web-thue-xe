@@ -260,16 +260,30 @@ class Profile extends Page implements HasForms
         $data = $this->cccdForm->getState();
         $token = session('company_api_token');
 
-        if ($data['cccd'] !== $user->cccd) {
-            if ($token) {
-                $cccdRes = CompanyApiService::updateCccd($token, $data['cccd']);
-                if (!$cccdRes['success']) {
-                    Notification::make()
-                        ->title('Lỗi cập nhật CCCD lên hệ thống: ' . $cccdRes['message'])
-                        ->danger()
-                        ->send();
-                    return;
-                }
+        if ($token) {
+            $frontBase64 = '';
+            if ($user->cccd_front && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->cccd_front)) {
+                $frontBase64 = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($user->cccd_front));
+            }
+            $backBase64 = '';
+            if ($user->cccd_back && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->cccd_back)) {
+                $backBase64 = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($user->cccd_back));
+            }
+
+            $cccdRes = CompanyApiService::updateCccd($token, [
+                'cccd' => $data['cccd'],
+                'issue_date' => $data['issue_date'] ?? '',
+                'address' => $data['address'] ?? '',
+                'front_base64' => $frontBase64,
+                'back_base64' => $backBase64,
+            ]);
+
+            if (!$cccdRes['success']) {
+                Notification::make()
+                    ->title('Lỗi cập nhật CCCD lên hệ thống: ' . $cccdRes['message'])
+                    ->danger()
+                    ->send();
+                return;
             }
         }
 
@@ -382,10 +396,32 @@ class Profile extends Page implements HasForms
         ?string $name = null,
         ?string $gender = null,
         ?string $dob = null,
-        ?string $address = null
+        ?string $address = null,
+        ?string $frontBase64 = null,
+        ?string $backBase64 = null
     ): void {
         $user = auth()->user();
         $token = session('company_api_token');
+
+        // Lưu ảnh mặt trước và mặt sau cục bộ vào storage
+        $frontPath = $user->cccd_front;
+        $backPath = $user->cccd_back;
+
+        // Tạo thư mục nếu chưa tồn tại
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('cccds')) {
+            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('cccds');
+        }
+
+        if ($frontBase64) {
+            $frontData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $frontBase64));
+            $frontPath = 'cccds/' . $user->id . '_front.jpg';
+            \Illuminate\Support\Facades\Storage::disk('public')->put($frontPath, $frontData);
+        }
+        if ($backBase64) {
+            $backData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $backBase64));
+            $backPath = 'cccds/' . $user->id . '_back.jpg';
+            \Illuminate\Support\Facades\Storage::disk('public')->put($backPath, $backData);
+        }
 
         // Cập nhật CCCD form state
         $this->cccdData = [
@@ -413,11 +449,15 @@ class Profile extends Page implements HasForms
             $user->name = $name;
         }
 
-        // Cập nhật CCCD
-        if ($cccd !== $user->cccd) {
-            if ($token) {
-                CompanyApiService::updateCccd($token, $cccd);
-            }
+        // Cập nhật CCCD lên API
+        if ($token) {
+            CompanyApiService::updateCccd($token, [
+                'cccd' => $cccd,
+                'issue_date' => $issueDate,
+                'address' => $address,
+                'front_base64' => $frontBase64 ? preg_replace('#^data:image/\w+;base64,#i', '', $frontBase64) : '',
+                'back_base64' => $backBase64 ? preg_replace('#^data:image/\w+;base64,#i', '', $backBase64) : '',
+            ]);
         }
 
         $user->cccd = $cccd;
@@ -425,6 +465,8 @@ class Profile extends Page implements HasForms
         $user->dob = $dob;
         $user->address = $address;
         $user->issue_date = $issueDate;
+        $user->cccd_front = $frontPath;
+        $user->cccd_back = $backPath;
         $user->save();
 
         Notification::make()

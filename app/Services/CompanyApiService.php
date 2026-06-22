@@ -213,12 +213,17 @@ class CompanyApiService
     /**
      * Cập nhật CCCD (POST /api/nks/user/updateCccd)
      */
-    public static function updateCccd($token, $cccd)
+    public static function updateCccd($token, array $data)
     {
         try {
             $response = self::post('nks/user/updateCccd', [
-                'cccd' => $cccd,
-                'cccd_number' => $cccd // Dự phòng key khác nhau
+                'front' => $data['front_base64'] ?? '',
+                'back' => $data['back_base64'] ?? '',
+                'number' => $data['cccd'] ?? '',
+                'date' => $data['issue_date'] ?? '',
+                'place' => $data['address'] ?? '',
+                'cccd' => $data['cccd'] ?? '',         // Dự phòng tương thích ngược
+                'cccd_number' => $data['cccd'] ?? ''   // Dự phòng tương thích ngược
             ], $token);
 
             if ($response->successful()) {
