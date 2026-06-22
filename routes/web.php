@@ -26,6 +26,14 @@ Route::get('/blogs/{slug}', [BlogController::class, 'show'])->name('blogs.show')
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
+// FAQ routes
+Route::get('/faq', [App\Http\Controllers\FaqController::class, 'index'])->name('faq');
+Route::post('/faq/ai-answer', [App\Http\Controllers\FaqController::class, 'getAiAnswer'])->name('faq.ai-answer');
+
+// Chatbot routes
+Route::post('/api/chatbot/message', [App\Http\Controllers\ChatbotController::class, 'message'])->name('chatbot.message');
+Route::post('/api/chatbot/clear', [App\Http\Controllers\ChatbotController::class, 'clearHistory'])->name('chatbot.clear');
+
 // Temporary route for Vercel database migration and seeding
 Route::get('/run-migrations-nks', function () {
     try {

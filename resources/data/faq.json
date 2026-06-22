@@ -1,0 +1,602 @@
+[
+    {
+        "id": "engine-1",
+        "category": "engine",
+        "question": "Bao lâu thì cần thay xích cam động cơ?",
+        "answer": "Xích cam động cơ thường có tuổi thọ rất cao, dao động từ 150.000 - 200.000 km. Tuy nhiên, nếu bạn nghe thấy tiếng gõ lạ ở khoang động cơ, hãy đưa xe đi kiểm tra ngay."
+    },
+    {
+        "id": "engine-2",
+        "category": "engine",
+        "question": "Tại sao động cơ xe có tiếng kêu lạch cạch khi tăng tốc?",
+        "answer": "Hiện tượng này thường do kích nổ hoặc bugi đánh lửa yếu, nhiên liệu kém chất lượng hoặc thiếu nhớt bôi trơn. Cần mang xe đi kiểm tra xupap và áp suất buồng đốt."
+    },
+    {
+        "id": "engine-3",
+        "category": "engine",
+        "question": "Khi nào cần vệ sinh kim phun xăng điện tử?",
+        "answer": "Nên vệ sinh kim phun xăng định kỳ sau mỗi 20.000 - 30.000 km để đảm bảo nhiên liệu phun tơi, xe chạy bốc và tiết kiệm nhiên liệu hơn."
+    },
+    {
+        "id": "engine-4",
+        "category": "engine",
+        "question": "Làm sao nhận biết động cơ bị bỏ máy?",
+        "answer": "Động cơ bị bỏ máy sẽ rung giật mạnh khi chạy không tải, công suất giảm, tiếng pô kêu lục cục và đèn Check Engine nhấp nháy liên tục."
+    },
+    {
+        "id": "engine-5",
+        "category": "engine",
+        "question": "Bugi xe ô tô chạy được bao nhiêu km thì cần thay?",
+        "answer": "Bugi thường (niken) nên thay sau 30.000 - 40.000 km, còn bugi cao cấp (Iridium/Platinum) có thể chạy đến 80.000 - 100.000 km mới cần thay."
+    },
+    {
+        "id": "engine-6",
+        "category": "engine",
+        "question": "Tại sao khói xe có màu đen?",
+        "answer": "Khói đen là dấu hiệu nhiên liệu không cháy hết (giàu hỗn hợp khí). Nguyên nhân có thể do lọc gió bẩn, kim phun tắc hoặc cảm biến oxy bị hỏng."
+    },
+    {
+        "id": "engine-7",
+        "category": "engine",
+        "question": "Khói xe màu xanh lam báo hiệu điều gì?",
+        "answer": "Khói xanh lam báo hiệu dầu nhớt lọt vào buồng đốt và bị cháy cùng nhiên liệu. Thường do hở xéc-măng hoặc mòn phớt ghít xupap."
+    },
+    {
+        "id": "engine-8",
+        "category": "engine",
+        "question": "Nguyên nhân khiến xe ô tô hao dầu động cơ bất thường?",
+        "answer": "Có thể do rò rỉ gioăng cao su, mòn xéc-măng hoặc nhớt động cơ có độ nhớt quá loãng so với khuyến cáo của nhà sản xuất."
+    },
+    {
+        "id": "engine-9",
+        "category": "engine",
+        "question": "Bao lâu nên bảo dưỡng bộ tăng áp (Turbocharger)?",
+        "answer": "Bộ tăng áp cần được kiểm tra rò rỉ dầu nhớt và vệ sinh hệ thống nạp khí sau mỗi 40.000 km để tránh tình trạng giảm công suất động cơ."
+    },
+    {
+        "id": "engine-10",
+        "category": "engine",
+        "question": "Tại sao động cơ quá nhiệt khi chạy quãng đường dài?",
+        "answer": "Thường do thiếu nước làm mát, két nước bị bám cặn, quạt gió làm mát hỏng hoặc hỏng van hằng nhiệt khiến nước không thể tuần hoàn."
+    },
+    {
+        "id": "engine-11",
+        "category": "engine",
+        "question": "Làm gì khi đèn báo áp suất dầu nhớt sáng đỏ?",
+        "answer": "Hãy tấp xe vào lề an toàn ngay lập tức, tắt máy và kiểm tra que thăm nhớt. Không được tiếp tục chạy xe vì có thể làm lột dên, bó máy động cơ."
+    },
+    {
+        "id": "engine-12",
+        "category": "engine",
+        "question": "Tại sao xe số tự động bị giật khi chuyển số?",
+        "answer": "Hiện tượng này có thể do thiếu dầu hộp số, dầu hộp số quá bẩn hoặc hỏng bộ điều khiển thủy lực bên trong hộp số."
+    },
+    {
+        "id": "engine-13",
+        "category": "engine",
+        "question": "Bao lâu thì cần thay dầu hộp số tự động?",
+        "answer": "Nên thay dầu hộp số tự động sau mỗi 80.000 - 100.000 km tùy vào khuyến cáo của nhà sản xuất và điều kiện vận hành."
+    },
+    {
+        "id": "engine-14",
+        "category": "engine",
+        "question": "Làm thế nào để kéo dài tuổi thọ hộp số sàn?",
+        "answer": "Nên cắt côn dứt điểm khi sang số, không tì tay lên cần số khi đang chạy và thay dầu hộp số sàn định kỳ sau mỗi 50.000 km."
+    },
+    {
+        "id": "engine-15",
+        "category": "engine",
+        "question": "Bộ ly hợp xe số sàn khi nào cần thay?",
+        "answer": "Bộ ly hợp thường cần thay mới sau 80.000 - 100.000 km. Dấu hiệu hỏng gồm chân côn bị nặng, có mùi khét hoặc xe bị trượt côn khi lên dốc."
+    },
+    {
+        "id": "engine-16",
+        "category": "engine",
+        "question": "Trục các-đăng trên xe dẫn động cầu sau cần bảo dưỡng thế nào?",
+        "answer": "Cần bơm mỡ bôi trơn chữ thập và kiểm tra cao su đệm trục các-đăng sau mỗi 20.000 km để tránh rung giật gầm xe."
+    },
+    {
+        "id": "engine-17",
+        "category": "engine",
+        "question": "Dây đai truyền động trục cam (Curoa cam) bao lâu phải thay?",
+        "answer": "Dây curoa cam cần thay mới định kỳ sau 80.000 - 100.000 km để phòng ngừa rủi ro đứt dây curoa làm cong vỡ xupap và hỏng pittông."
+    },
+    {
+        "id": "engine-18",
+        "category": "engine",
+        "question": "Tại sao xe khó nổ máy vào buổi sáng?",
+        "answer": "Nguyên nhân có thể do bình ắc quy yếu, bugi bẩn, bơm xăng yếu hoặc cảm biến nhiệt độ nước làm mát động cơ báo sai thông tin."
+    },
+    {
+        "id": "engine-19",
+        "category": "engine",
+        "question": "Tác dụng của van hằng nhiệt trong hệ thống làm mát động cơ?",
+        "answer": "Van hằng nhiệt điều chỉnh lưu lượng nước làm mát tuần hoàn từ động cơ về két nước, giúp động cơ nhanh chóng đạt được nhiệt độ vận hành lý tưởng."
+    },
+    {
+        "id": "engine-20",
+        "category": "engine",
+        "question": "Cao su chân máy hỏng có biểu hiện gì?",
+        "answer": "Cao su chân máy bị nứt vỡ sẽ truyền độ rung lắc dữ dội từ động cơ vào khoang lái, đặc biệt rõ rệt khi nổ máy tại chỗ hoặc khi vào số D."
+    },
+    {
+        "id": "tires-1",
+        "category": "tires",
+        "question": "Áp suất lốp tiêu chuẩn cho xe ô tô là bao nhiêu?",
+        "answer": "Áp suất lốp tiêu chuẩn thường ghi trên nhãn dán ở khung cửa bên lái, thường dao động từ 2.2 đến 2.5 bar (31 - 36 PSI)."
+    },
+    {
+        "id": "tires-2",
+        "category": "tires",
+        "question": "Tại sao lốp xe bị mòn không đều?",
+        "answer": "Lốp mòn không đều thường do góc đặt bánh xe bị lệch, lốp không được cân bằng động hoặc áp suất lốp quá căng/quá non kéo dài."
+    },
+    {
+        "id": "tires-3",
+        "category": "tires",
+        "question": "Bao lâu nên đảo lốp xe ô tô một lần?",
+        "answer": "Nên đảo lốp xe định kỳ sau mỗi 8.000 - 10.000 km để đảm bảo các lốp mòn đều và kéo dài tuổi thọ cho lốp."
+    },
+    {
+        "id": "tires-4",
+        "category": "tires",
+        "question": "Dấu hiệu nhận biết hệ thống phanh bị e gió (lẫn bọt khí)?",
+        "answer": "Chân phanh bị mềm, nhấn phanh sâu sát sàn nhưng lực phanh rất yếu hoặc không ăn phanh là dấu hiệu đặc trưng của e gió phanh."
+    },
+    {
+        "id": "tires-5",
+        "category": "tires",
+        "question": "Bao lâu nên thay đĩa phanh ô tô?",
+        "answer": "Đĩa phanh nên thay mới sau khoảng 80.000 - 100.000 km hoặc khi đĩa phanh bị mòn quá giới hạn độ dày cho phép hoặc bị cong vênh."
+    },
+    {
+        "id": "tires-6",
+        "category": "tires",
+        "question": "Tại sao khi đạp phanh lại nghe tiếng rít kin kít?",
+        "answer": "Tiếng rít báo hiệu má phanh đã mòn hết lớp ma sát và chớm chạm vào cảnh báo kim loại, hoặc do đất cát bám vào kẽ phanh."
+    },
+    {
+        "id": "tires-7",
+        "category": "tires",
+        "question": "Má phanh ô tô chạy được bao nhiêu km thì cần thay?",
+        "answer": "Má phanh trước thường mòn nhanh hơn, cần thay sau 40.000 - 50.000 km, còn má phanh sau có thể bền đến 70.000 km mới cần thay."
+    },
+    {
+        "id": "tires-8",
+        "category": "tires",
+        "question": "Tại sao vô lăng bị rung lắc dữ dội khi phanh ở tốc độ cao?",
+        "answer": "Đây là dấu hiệu đĩa phanh bị cong vênh, mòn không đều. Cần đưa xe đi láng lại bề mặt đĩa phanh hoặc thay đĩa phanh mới."
+    },
+    {
+        "id": "tires-9",
+        "category": "tires",
+        "question": "Bao lâu thì cần thay dầu phanh ô tô?",
+        "answer": "Nên thay dầu phanh định kỳ sau mỗi 2 năm hoặc chạy được 40.000 km để tránh dầu phanh hút ẩm gây rỉ sét và giảm hiệu quả phanh."
+    },
+    {
+        "id": "tires-10",
+        "category": "tires",
+        "question": "Lốp xe ô tô sử dụng tối đa bao nhiêu năm?",
+        "answer": "Ngay cả khi lốp còn gai, bạn không nên sử dụng lốp quá 6 năm kể từ ngày sản xuất vì cao su lốp sẽ bị lão hóa, nứt nẻ và dễ nổ."
+    },
+    {
+        "id": "tires-11",
+        "category": "tires",
+        "question": "Ý nghĩa các thông số ghi trên lốp xe (Ví dụ: 205/55R16)?",
+        "answer": "205 là chiều rộng mặt lốp (mm), 55 là tỷ lệ chiều cao thành lốp so với chiều rộng mặt lốp (%), R là cấu trúc lốp bố hướng tâm, và 16 là đường kính mâm xe (inch)."
+    },
+    {
+        "id": "tires-12",
+        "category": "tires",
+        "question": "Khi nào cần cân chỉnh thước lái và độ chụm bánh xe?",
+        "answer": "Nên cân chỉnh thước lái sau mỗi 10.000 - 15.000 km, hoặc khi thấy xe bị nhao lái (tự lệch sang một bên) hoặc sau khi sập ổ gà mạnh."
+    },
+    {
+        "id": "tires-13",
+        "category": "tires",
+        "question": "Tại sao lốp xe bị phồng bên thành (bị chửa lốp)?",
+        "answer": "Hiện tượng chửa lốp do các sợi bố thép bên trong bị đứt sau khi xe va chạm mạnh với ổ gà, đá nhọn hoặc vỉa hè. Cần thay lốp ngay để tránh nổ lốp."
+    },
+    {
+        "id": "tires-14",
+        "category": "tires",
+        "question": "Có nên bơm lốp bằng khí Nitơ không?",
+        "answer": "Khí Nitơ tinh khiết giúp lốp giữ áp suất ổn định lâu hơn, giảm thất thoát hơi và giảm biến động áp suất khi nhiệt độ lốp tăng cao."
+    },
+    {
+        "id": "tires-15",
+        "category": "tires",
+        "question": "Hệ thống chống bó cứng phanh (ABS) hoạt động như thế nào?",
+        "answer": "Hệ thống ABS sử dụng cảm biến tốc độ để phát hiện bánh xe sắp bị khóa cứng khi phanh gấp, sau đó nhấp nhả má phanh liên tục giúp tài xế giữ lái tránh chướng ngại vật."
+    },
+    {
+        "id": "tires-16",
+        "category": "tires",
+        "question": "Làm thế nào để kiểm tra độ mòn má phanh bằng mắt thường?",
+        "answer": "Bạn có thể quan sát qua khe mâm xe, nếu độ dày má phanh còn lại dưới 3mm thì bạn nên chủ động lên kế hoạch thay mới má phanh."
+    },
+    {
+        "id": "tires-17",
+        "category": "tires",
+        "question": "Tác hại của việc chạy xe với lốp quá non hơi?",
+        "answer": "Lốp non hơi làm tăng ma sát làm hao xăng, thành lốp bị uốn cong quá mức gây tích nhiệt và có nguy cơ gây nổ lốp rất nguy hiểm."
+    },
+    {
+        "id": "tires-18",
+        "category": "tires",
+        "question": "Khi nào lốp dự phòng cần được thay thế?",
+        "answer": "Lốp dự phòng cũng lão hóa theo thời gian. Nên thay thế lốp dự phòng sau 6 - 8 năm kể từ ngày sản xuất để đảm bảo an toàn khi cần dùng."
+    },
+    {
+        "id": "tires-19",
+        "category": "tires",
+        "question": "Dấu hiệu giảm chấn (phuộc nhún) của xe bị hỏng?",
+        "answer": "Xe bị bồng bềnh khi đi qua vạch giảm tốc, có vết dầu rò rỉ dọc theo thân phuộc nhún, hoặc đầu xe bị chúi mạnh khi phanh gấp."
+    },
+    {
+        "id": "tires-20",
+        "category": "tires",
+        "question": "Tại sao xe bị kêu lục cục ở gầm khi đi qua đường gồ ghề?",
+        "answer": "Có thể do các rotuyn lái, rotuyn cân bằng hoặc cao su tăm giang, cao su đệm thanh cân bằng đã bị rơ lỏng, mòn vỡ."
+    },
+    {
+        "id": "electrical-1",
+        "category": "electrical",
+        "question": "Bình ắc quy ô tô thông thường sử dụng được bao lâu?",
+        "answer": "Tuổi thọ bình ắc quy thường kéo dài từ 2 đến 4 năm tùy vào tần suất sử dụng xe và chế độ bảo dưỡng định kỳ."
+    },
+    {
+        "id": "electrical-2",
+        "category": "electrical",
+        "question": "Làm thế nào để nhận biết bình ắc quy sắp hỏng?",
+        "answer": "Dấu hiệu gồm: xe khởi động chậm (đề dai), còi kêu yếu, đèn xe mờ khi không nổ máy và có bột trắng/xanh bám quanh đầu cọc bình."
+    },
+    {
+        "id": "electrical-3",
+        "category": "electrical",
+        "question": "Tại sao điều hòa ô tô có mùi hôi khó chịu?",
+        "answer": "Mùi hôi thường do dàn lạnh bị ẩm mốc, tích tụ vi khuẩn, lọc gió điều hòa quá bẩn hoặc có xác côn trùng chết bên trong đường gió nạp."
+    },
+    {
+        "id": "electrical-4",
+        "category": "electrical",
+        "question": "Bao lâu thì nên thay lọc gió điều hòa (lọc cabin)?",
+        "answer": "Nên thay lọc gió điều hòa sau mỗi 15.000 - 20.000 km, hoặc thay sớm hơn nếu bạn thường xuyên chạy xe trong môi trường ô nhiễm, bụi bẩn."
+    },
+    {
+        "id": "electrical-5",
+        "category": "electrical",
+        "question": "Tại sao điều hòa ô tô mát không sâu hoặc chỉ có gió nóng?",
+        "answer": "Nguyên nhân có thể do thiếu ga lạnh (rò rỉ hệ thống), hỏng lốc điều hòa (lốc nén), hỏng quạt dàn nóng hoặc lọc gió điều hòa bị tắc nghẽn hoàn toàn."
+    },
+    {
+        "id": "electrical-6",
+        "category": "electrical",
+        "question": "Làm thế nào để tự kiểm tra cầu chì bị đứt?",
+        "answer": "Hãy mở hộp cầu chì, tìm cầu chì của hệ thống bị hỏng dựa trên sơ đồ nắp hộp, dùng kẹp rút ra và quan sát dây kim loại bên trong có bị đứt hay không."
+    },
+    {
+        "id": "electrical-7",
+        "category": "electrical",
+        "question": "Máy phát điện ô tô (Alternator) hỏng có biểu hiện gì?",
+        "answer": "Biểu hiện rõ nhất là đèn báo hình ắc quy sáng trên bảng táp-lô khi động cơ đang nổ máy, đèn pha tối dần và bình ắc quy liên tục bị hết điện."
+    },
+    {
+        "id": "electrical-8",
+        "category": "electrical",
+        "question": "Tại sao đèn pha ô tô bị hấp hơi nước bên trong?",
+        "answer": "Hơi nước bám do gioăng cao su bị hở, nứt mặt kính pha hoặc tắc lỗ thoát khí thiết kế của đèn làm chênh lệch nhiệt độ bên trong và ngoài."
+    },
+    {
+        "id": "electrical-9",
+        "category": "electrical",
+        "question": "Bao lâu nên kiểm tra và vệ sinh hệ thống điều hòa?",
+        "answer": "Nên bảo dưỡng và vệ sinh hệ thống điều hòa ô tô chuyên sâu sau mỗi 2 năm hoặc 40.000 km để dàn lạnh chạy bền bỉ."
+    },
+    {
+        "id": "electrical-10",
+        "category": "electrical",
+        "question": "Có nên tự câu bình ắc quy khi xe hết điện không?",
+        "answer": "Hoàn toàn có thể. Hãy đấu cọc dương (+) của bình khỏe với cọc dương (+) bình yếu, cọc âm (-) bình khỏe đấu vào phần kim loại trần trên xe yếu."
+    },
+    {
+        "id": "electrical-11",
+        "category": "electrical",
+        "question": "Dấu hiệu cảm biến vị trí trục cam (CMP) bị hỏng?",
+        "answer": "Xe giật cục khi tăng tốc, khó nổ máy, hao xăng bất thường và đèn check engine báo sáng cảnh báo trên bảng điều khiển."
+    },
+    {
+        "id": "electrical-12",
+        "category": "electrical",
+        "question": "Hệ thống khởi động nút bấm (Start/Stop) không nhận chìa khóa phải làm sao?",
+        "answer": "Thường do chìa khóa thông minh hết pin. Hãy dùng chìa khóa áp sát trực tiếp vào nút bấm Start/Stop và nhấn đề nổ máy."
+    },
+    {
+        "id": "electrical-13",
+        "category": "electrical",
+        "question": "Tại sao cửa kính điện của xe bị kẹt hoặc lên xuống rất chậm?",
+        "answer": "Nguyên nhân do rãnh trượt kính bị bám bụi bẩn khô ráp. Nên xịt dung dịch dưỡng cao su hoặc RP7 vào các kẽ rãnh cao su chân kính."
+    },
+    {
+        "id": "electrical-14",
+        "category": "electrical",
+        "question": "Bao lâu nên thay chổi gạt mưa kính lái?",
+        "answer": "Gạt mưa nên thay định kỳ từ 6 đến 12 tháng. Thay ngay khi gạt để lại vệt nước mờ trên kính lái hoặc cao su gạt mưa bị xơ nứt."
+    },
+    {
+        "id": "electrical-15",
+        "category": "electrical",
+        "question": "Đèn Check Engine sáng cảnh báo những lỗi gì?",
+        "answer": "Check Engine báo sáng khi có lỗi ở hệ thống động cơ hoặc khí thải như hỏng cảm biến oxy, nắp xăng hở, lỗi đánh lửa hoặc hỏng bộ xúc tác khí thải."
+    },
+    {
+        "id": "electrical-16",
+        "category": "electrical",
+        "question": "Hệ thống sưởi kính sau hoạt động như thế nào?",
+        "answer": "Hệ thống sưởi sử dụng các đường chỉ dẫn điện mỏng dán trên kính sau để tỏa nhiệt nhẹ, làm tan sương mù bám trên bề mặt kính."
+    },
+    {
+        "id": "electrical-17",
+        "category": "electrical",
+        "question": "Tại sao còi xe ô tô đột ngột không kêu?",
+        "answer": "Nguyên nhân có thể do đứt cầu chì còi, lỏng giắc cắm ở còi, hỏng cuộn dây cáp còi trên vô lăng (cuộn kèn) hoặc bản thân còi bị vào nước."
+    },
+    {
+        "id": "electrical-18",
+        "category": "electrical",
+        "question": "Làm thế nào để bảo quản giắc cắm điện động cơ không bị rỉ sét?",
+        "answer": "Tránh xịt nước trực tiếp áp lực cao vào các hộp điều khiển điện khi rửa khoang máy, có thể dùng mỡ dielectric bôi trơn bảo vệ cọc giắc."
+    },
+    {
+        "id": "electrical-19",
+        "category": "electrical",
+        "question": "Tính năng tự động tắt máy khi dừng đèn đỏ (Auto Start/Stop) hoạt động thế nào?",
+        "answer": "Tính năng ngắt tạm thời động cơ khi xe dừng hẳn để tiết kiệm xăng và giảm khí thải, tự động nổ máy lại ngay khi tài xế nhả chân phanh."
+    },
+    {
+        "id": "electrical-20",
+        "category": "electrical",
+        "question": "Tại sao camera lùi của xe bị mờ hoặc nhiễu hình ảnh?",
+        "answer": "Thường do mặt kính camera bị bám bụi bẩn, nước mưa hoặc giắc nối tín hiệu phía sau đầu DVD bị lỏng."
+    },
+    {
+        "id": "fluids-1",
+        "category": "fluids",
+        "question": "Bao lâu nên thay dầu nhớt động cơ ô tô một lần?",
+        "answer": "Đối với dầu khoáng thông thường thay sau 5.000 km. Dầu tổng hợp toàn phần chất lượng cao thay sau 10.000 km hoặc sau mỗi 6 tháng."
+    },
+    {
+        "id": "fluids-2",
+        "category": "fluids",
+        "question": "Tại sao cần thay lọc dầu nhớt mỗi khi thay nhớt động cơ?",
+        "answer": "Lọc dầu giữ lại cặn bẩn, mạt kim loại. Nếu không thay lọc dầu mới, dầu sạch mới đổ vào sẽ nhanh chóng bị nhiễm bẩn bởi cặn bám trong lọc cũ."
+    },
+    {
+        "id": "fluids-3",
+        "category": "fluids",
+        "question": "Nước làm mát màu xanh và màu hồng khác nhau thế nào?",
+        "answer": "Khác nhau về công nghệ phụ gia chống ăn mòn. Không được tự ý trộn lẫn các màu nước làm mát khác nhau vì có thể gây kết tủa làm tắc két nước."
+    },
+    {
+        "id": "fluids-4",
+        "category": "fluids",
+        "question": "Bao lâu nên thay nước làm mát động cơ định kỳ?",
+        "answer": "Nên súc rửa két nước và thay mới nước làm mát sau mỗi 40.000 - 50.000 km hoặc định kỳ sau mỗi 2 - 3 năm sử dụng."
+    },
+    {
+        "id": "fluids-5",
+        "category": "fluids",
+        "question": "Làm sao để tự kiểm tra mức dầu trợ lực lái?",
+        "answer": "Mở nắp bình chứa dầu trợ lực (có ký hiệu vô lăng), kiểm tra mức dầu nằm giữa vạch MIN và MAX trên thành bình nhựa trong suốt."
+    },
+    {
+        "id": "fluids-6",
+        "category": "fluids",
+        "question": "Tại sao nhớt động cơ bị chuyển sang màu trắng đục như cà phê sữa?",
+        "answer": "Đây là dấu hiệu nước làm mát lọt vào hệ thống bôi trơn do thổi gioăng nắp máy. Cần cẩu máy kiểm tra ngay để tránh phá hỏng hoàn toàn động cơ."
+    },
+    {
+        "id": "fluids-7",
+        "category": "fluids",
+        "question": "Bao lâu thì cần thay lọc nhiên liệu (lọc xăng/lọc dầu diesel)?",
+        "answer": "Nên thay lọc nhiên liệu sau mỗi 40.000 km để đảm bảo nhiên liệu luôn sạch trước khi đi vào kim phun xăng động cơ."
+    },
+    {
+        "id": "fluids-8",
+        "category": "fluids",
+        "question": "Làm sao nhận biết dầu hộp số cần thay mới?",
+        "answer": "Dầu hộp số mới thường có màu đỏ tươi hoặc vàng trong. Nếu dầu chuyển sang màu đen sẫm, đục và có mùi khét thì cần phải thay thế ngay."
+    },
+    {
+        "id": "fluids-9",
+        "category": "fluids",
+        "question": "Tại sao xe thiếu nước rửa kính liên tục?",
+        "answer": "Có thể do rò rỉ đường ống dẫn nước, nứt bình chứa nước rửa kính hoặc hỏng gioăng cao su ở vị trí motor bơm nước."
+    },
+    {
+        "id": "fluids-10",
+        "category": "fluids",
+        "question": "Có nên dùng nước lã bình thường làm nước rửa kính không?",
+        "answer": "Không nên vì nước lã chứa nhiều canxi dễ kết tủa làm tắc nghẽn béc phun kính. Nên pha thêm dung dịch nước rửa kính chuyên dụng."
+    },
+    {
+        "id": "fluids-11",
+        "category": "fluids",
+        "question": "Ý nghĩa của chỉ số độ nhớt động cơ (Ví dụ: 5W-30)?",
+        "answer": "Chỉ số 5W chỉ khả năng khởi động lạnh mùa đông (càng nhỏ càng tốt), chỉ số 30 chỉ độ đặc của nhớt ở nhiệt độ 100 độ C (càng lớn nhớt càng đặc)."
+    },
+    {
+        "id": "fluids-12",
+        "category": "fluids",
+        "question": "Mức dầu động cơ bao nhiêu là an toàn trên que thăm nhớt?",
+        "answer": "Mức nhớt bôi trơn tối ưu nhất là nằm ở khoảng giữa hai lỗ chấm/vạch ký hiệu MIN và MAX trên que thăm nhớt động cơ."
+    },
+    {
+        "id": "fluids-13",
+        "category": "fluids",
+        "question": "Nước làm mát bị cạn nhanh chóng là do nguyên nhân gì?",
+        "answer": "Rò rỉ ở đường ống, nứt két nước làm mát, rách gioăng quy-lát làm nước làm mát lọt thẳng vào buồng đốt và bốc hơi."
+    },
+    {
+        "id": "fluids-14",
+        "category": "fluids",
+        "question": "Tại sao dầu phanh ô tô bị tụt mực nhanh chóng?",
+        "answer": "Do má phanh bị mòn dần khiến piston phanh đẩy sâu hơn cần thêm dầu, hoặc hệ thống đường ống phanh bị rò rỉ rạn nứt."
+    },
+    {
+        "id": "fluids-15",
+        "category": "fluids",
+        "question": "Dầu cầu ô tô (cầu sau/cầu trước) bao lâu phải thay?",
+        "answer": "Nên thay dầu cầu định kỳ sau mỗi 40.000 - 50.000 km để bảo vệ bánh răng vi sai gầm xe tránh bị mài mòn ăn mòn."
+    },
+    {
+        "id": "fluids-16",
+        "category": "fluids",
+        "question": "Tác hại khi đổ quá nhiều nhớt cho động cơ ô tô?",
+        "answer": "Nhớt quá đầy làm tăng áp suất cacte, gây nặng máy hao xăng, nhớt sục bọt và có nguy cơ bị đẩy ngược lên buồng đốt làm hỏng bugi."
+    },
+    {
+        "id": "fluids-17",
+        "category": "fluids",
+        "question": "Làm thế nào để xả e khí hệ thống nước làm mát động cơ?",
+        "answer": "Khi thay nước làm mát, cần mở nắp két nước, nổ máy chạy không tải cho đến khi van hằng nhiệt mở và bọt khí thoát ra hoàn toàn."
+    },
+    {
+        "id": "fluids-18",
+        "category": "fluids",
+        "question": "Que thăm dầu nhớt hộp số tự động nằm ở đâu?",
+        "answer": "Que thăm nhớt hộp số tự động (nếu có) thường nằm sâu trong khoang máy, có màu sắc nổi bật (thường là màu vàng hoặc cam đỏ)."
+    },
+    {
+        "id": "fluids-19",
+        "category": "fluids",
+        "question": "Dầu trợ lực lái bao lâu thì cần phải thay thế?",
+        "answer": "Nên thay thế dầu trợ lực lái định kỳ sau mỗi 60.000 - 80.000 km hoặc khi phát hiện dầu chuyển màu tối sẫm bẩn."
+    },
+    {
+        "id": "fluids-20",
+        "category": "fluids",
+        "question": "Có nên dùng phụ gia súc rửa động cơ (Engine Flush) không?",
+        "answer": "Có nên dùng định kỳ sau mỗi 20.000 km trước khi xả nhớt cũ để đánh tan cặn bùn, muội than bám sâu trong ngóc ngách động cơ."
+    },
+    {
+        "id": "exterior-1",
+        "category": "exterior",
+        "question": "Nên rửa xe ô tô bao nhiêu lần một tuần là tốt nhất?",
+        "answer": "Rửa xe 1 lần/tuần là hợp lý nhất để bảo vệ lớp sơn bóng của xe khỏi các chất bẩn axit, bụi bặm tàn phá."
+    },
+    {
+        "id": "exterior-2",
+        "category": "exterior",
+        "question": "Có nên tự rửa khoang máy động cơ tại nhà không?",
+        "answer": "Nên hạn chế tự rửa tại nhà trừ khi bạn che chắn kỹ hộp đen, giắc cắm và hệ thống điện. Tốt nhất là dùng hơi nước nóng tại các spa chuyên nghiệp."
+    },
+    {
+        "id": "exterior-3",
+        "category": "exterior",
+        "question": "Làm sao để loại bỏ các vết trầy xước nhẹ trên bề mặt sơn xe?",
+        "answer": "Với vết xước nhẹ ngoài da (chỉ xước lớp bóng), bạn có thể tự đánh bóng bằng bát đánh bóng chuyên dụng và khăn microfiber mềm."
+    },
+    {
+        "id": "exterior-4",
+        "category": "exterior",
+        "question": "Tại sao kính lái ô tô bị ố mốc và cách xử lý hiệu quả?",
+        "answer": "Ố mốc do nước mưa tích tụ chất bẩn sấy khô dưới nắng gắt. Có thể tẩy ố mốc bằng hóa chất tẩy ố kính chuyên dụng chuyên nghiệp."
+    },
+    {
+        "id": "exterior-5",
+        "category": "exterior",
+        "question": "Lợi ích của việc phủ gốm Ceramic cho bề mặt sơn xe ô tô?",
+        "answer": "Phủ Ceramic giúp tạo lớp màng cứng bảo vệ lớp sơn bóng tránh phai màu dưới tia UV, tạo hiệu ứng lá sen chống bám nước bụi bẩn."
+    },
+    {
+        "id": "exterior-6",
+        "category": "exterior",
+        "question": "Cách xử lý và ngăn ngừa rỉ sét ở gầm xe ô tô?",
+        "answer": "Cách tốt nhất là xịt phủ gầm bằng dung dịch chuyên dụng gốc cao su non để cách âm gầm và tạo lớp bảo vệ gầm tránh đá văng muối mặn."
+    },
+    {
+        "id": "exterior-7",
+        "category": "exterior",
+        "question": "Làm thế nào để vệ sinh ghế da nội thất sạch sẽ mà không làm nứt nẻ da?",
+        "answer": "Dùng dung dịch vệ sinh da pH trung tính lau nhẹ bằng khăn mềm ẩm, sau đó bôi kem dưỡng ẩm chuyên dùng cho chất liệu da ghế."
+    },
+    {
+        "id": "exterior-8",
+        "category": "exterior",
+        "question": "Tại sao lốp xe bị bạc màu và làm cách nào để lốp đen bóng như mới?",
+        "answer": "Lốp bạc màu do tia cực tím và xà phòng rửa xe tẩy mòn. Nên vệ sinh sạch lốp và quét dung dịch gel dưỡng bóng bảo dưỡng lốp."
+    },
+    {
+        "id": "exterior-9",
+        "category": "exterior",
+        "question": "Cách làm sạch nhựa nhám ngoài xe bị bạc màu do nắng?",
+        "answer": "Dùng dung dịch phục hồi nhựa nhám chuyên dụng quét đều lên bề mặt nhựa giúp nhựa nhám lấy lại màu đen đậm tự nhiên."
+    },
+    {
+        "id": "exterior-10",
+        "category": "exterior",
+        "question": "Làm thế nào để khử mùi sầu riêng, hải sản cứng đầu trong khoang nội thất?",
+        "answer": "Dùng dung dịch khử mùi sinh học, kết hợp bật điều hòa lấy gió ngoài hết công suất, đặt máy khử ozone khử mùi chuyên dụng."
+    },
+    {
+        "id": "exterior-11",
+        "category": "exterior",
+        "question": "Tại sao phim cách nhiệt dán trên kính xe bị bong tróc phồng rộp?",
+        "answer": "Phim bị phồng do keo dán phim bị lão hóa thoái hóa sau thời gian dài sử dụng dưới nắng gắt hoặc kỹ thuật dán lúc đầu chưa chuẩn."
+    },
+    {
+        "id": "exterior-12",
+        "category": "exterior",
+        "question": "Nước sơn xe ô tô nhanh phai màu do đâu?",
+        "answer": "Do đậu xe thường xuyên trực tiếp dưới nắng gắt mà không trùm bạt bảo vệ, và dùng xà phòng chứa tính tẩy rửa axit quá cao khi rửa."
+    },
+    {
+        "id": "exterior-13",
+        "category": "exterior",
+        "question": "Lọc gió động cơ bao lâu thì cần vệ sinh và thay thế?",
+        "answer": "Nên vệ sinh lọc gió sau mỗi 5.000 km và thay mới định kỳ sau 20.000 km để động cơ luôn được cấp gió sạch."
+    },
+    {
+        "id": "exterior-14",
+        "category": "exterior",
+        "question": "Làm gì khi kính chắn gió bị rạn nứt nhỏ do đá văng?",
+        "answer": "Cần dán băng keo trong che vết nứt tránh bụi bẩn chui vào kẽ, sau đó đưa xe đến cơ sở sửa chữa hàn kính chắn gió sớm nhất có thể."
+    },
+    {
+        "id": "exterior-15",
+        "category": "exterior",
+        "question": "Cách bảo dưỡng gioăng cao su viền cửa kính không bị chai cứng?",
+        "answer": "Thường xuyên lau sạch bụi cát bám kẽ viền gioăng cửa và bôi dung dịch dưỡng cao su silicon định kỳ 6 tháng một lần."
+    },
+    {
+        "id": "exterior-16",
+        "category": "exterior",
+        "question": "Tại sao thảm lót sàn da 5D/6D dễ gây hôi cabin?",
+        "answer": "Thảm da 5D/6D dễ bám giữ nước ẩm ẩm mốc dưới gầm thảm dẫn đến mùi hôi ẩm thấp tích tụ vi khuẩn. Cần giặt phơi thật khô định kỳ."
+    },
+    {
+        "id": "exterior-17",
+        "category": "exterior",
+        "question": "Làm sao để làm sạch vết nhựa đường bám chặt trên thành sơn xe?",
+        "answer": "Không nên cạo xước sơn. Hãy dùng chai xịt tẩy nhựa đường chuyên dụng (như bọt 3M) xịt trực tiếp lau nhẹ bằng khăn mềm sạch."
+    },
+    {
+        "id": "exterior-18",
+        "category": "exterior",
+        "question": "Đèn pha bị ố vàng bẩn đục làm thế nào để khôi phục độ sáng?",
+        "answer": "Đèn pha ố do nắng nóng làm lão hóa bề mặt nhựa. Cần đánh bóng chà nhám mịn và phun lớp phủ bảo vệ nano mới."
+    },
+    {
+        "id": "exterior-19",
+        "category": "exterior",
+        "question": "Cách xử lý kính lái bị mờ mịt sương khi đi trời mưa lớn?",
+        "answer": "Bật điều hòa lạnh nút A/C, hướng luồng gió thổi trực tiếp lên kính chắn gió và chọn chế độ sấy kính lái sấy kính nhanh chóng."
+    },
+    {
+        "id": "exterior-20",
+        "category": "exterior",
+        "question": "Làm sao để vệ sinh bụi phanh bám cháy đen trên mâm xe hợp kim?",
+        "answer": "Dùng dung dịch tẩy rửa chất bẩn mâm sắt chuyên dùng xịt trực tiếp lên mâm, đợi dung dịch đổi màu tím đỏ phản ứng rồi dùng cọ xịt rửa sạch."
+    }
+]
