@@ -974,7 +974,7 @@
                     });
 
                     // Gửi dữ liệu về Livewire lưu trữ
-                    $wire.call(
+                    @this.call(
                         'updateCccdFromScan',
                         finalCccd,
                         finalIssueDate,
@@ -1004,7 +1004,7 @@
                         finalAddress = "{{ auth()->user()->address }}" || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
                     }
 
-                    $wire.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress);
+                    @this.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress);
                     cleanUpScanner();
                 });
 
