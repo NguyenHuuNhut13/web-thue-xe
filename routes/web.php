@@ -102,47 +102,46 @@ Route::get('/test-cccd-api', function () {
 
     $base = ['access_token' => $token];
 
-    // Test 1: Chỉ số CCCD
-    $r1 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
-        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, ['number' => $user->cccd]));
-
-    // Test 2: Chỉ ngày cấp (đã convert)
-    $r2 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
-        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, ['date' => $parsedDate]));
-
-    // Test 3: Chỉ nơi cấp (address)
-    $r3 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
-        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, ['place' => $user->address]));
-
-    // Test 4: Tất cả fields text cùng lúc
-    $r4 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
+    // Test A: JSON (như cũ - luôn 500)
+    $rA = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
         ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, [
             'number' => $user->cccd,
             'date'   => $parsedDate,
             'place'  => $user->address,
         ]));
 
-    // Test 5: Chỉ field "cccd" (theo spec gốc api_tests.http)
-    $r5 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
-        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, ['cccd' => $user->cccd]));
-
-    // Test 6: KHÔNG có access_token trong body, chỉ Bearer header
-    $r6 = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
-        ->post('https://account.nks.vn/api/nks/user/updateCccd', [
+    // Test B: Form data (asForm thay vì asJson)
+    $rB = \Illuminate\Support\Facades\Http::asForm()->withToken($token)
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, [
             'number' => $user->cccd,
             'date'   => $parsedDate,
             'place'  => $user->address,
-        ]);
+        ]));
+
+    // Test C: Chỉ access_token (không data gì khác) - kiểm tra auth có OK không
+    $rC = \Illuminate\Support\Facades\Http::asJson()->withToken($token)
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', ['access_token' => $token]);
+
+    // Test D: Form data - chỉ access_token
+    $rD = \Illuminate\Support\Facades\Http::asForm()->withToken($token)
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', ['access_token' => $token]);
+
+    // Test E: Form data với field "cccd" thay vì "number"
+    $rE = \Illuminate\Support\Facades\Http::asForm()->withToken($token)
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', array_merge($base, [
+            'cccd'   => $user->cccd,
+            'date'   => $parsedDate,
+            'place'  => $user->address,
+        ]));
 
     return response()->json([
-        'test1_only_number'   => ['status' => $r1->status(), 'response' => $r1->json()],
-        'test2_only_date'     => ['status' => $r2->status(), 'response' => $r2->json()],
-        'test3_only_place'    => ['status' => $r3->status(), 'response' => $r3->json()],
-        'test4_all_text'      => ['status' => $r4->status(), 'response' => $r4->json()],
-        'test5_field_cccd'    => ['status' => $r5->status(), 'response' => $r5->json()],
-        'test6_no_body_token' => ['status' => $r6->status(), 'response' => $r6->json()],
-        'date_raw'            => $rawDate,
-        'date_converted'      => $parsedDate,
+        'testA_json_with_data'       => ['status' => $rA->status(), 'response' => $rA->json()],
+        'testB_form_with_data'       => ['status' => $rB->status(), 'response' => $rB->json()],
+        'testC_json_only_token'      => ['status' => $rC->status(), 'response' => $rC->json()],
+        'testD_form_only_token'      => ['status' => $rD->status(), 'response' => $rD->json()],
+        'testE_form_cccd_field'      => ['status' => $rE->status(), 'response' => $rE->json()],
+        'date_raw'                   => $rawDate,
+        'date_converted'             => $parsedDate,
     ]);
 })->middleware('auth');
 
