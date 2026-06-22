@@ -94,8 +94,14 @@ class MemberLogin extends BaseLogin
 
             // 3. Lưu Access Token vào session VÀ database (để bền vững hơn trên serverless)
             session(['company_api_token' => $token]);
-            $user->company_api_token = $token;
-            $user->save();
+            try {
+                $user->company_api_token = $token;
+                $user->save();
+            } catch (\Exception $e) {
+                // Cột company_api_token có thể chưa tồn tại nếu migration chưa chạy
+                // Token đã được lưu trong session, đăng nhập vẫn thành công
+                \Illuminate\Support\Facades\Log::warning('Could not save company_api_token to DB: ' . $e->getMessage());
+            }
         } else {
             // Kiểm tra trạng thái khóa tài khoản cục bộ đối với tài khoản local
             if ($user->status === 'blocked') {
