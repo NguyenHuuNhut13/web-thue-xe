@@ -219,14 +219,33 @@ class CompanyApiService
     public static function updateCccd($token, array $data)
     {
         try {
+            // Convert date sang YYYY-MM-DD (API công ty yêu cầu format này)
+            // Xử lý cả DD/MM/YYYY và DD-MM-YYYY và YYYY-MM-DD
+            $rawDate   = $data['issue_date'] ?? '';
+            $parsedDate = '';
+            if ($rawDate) {
+                // Thử parse nhiều format phổ biến
+                foreach (['d/m/Y', 'd-m-Y', 'Y-m-d', 'm/d/Y', 'd/m/y'] as $fmt) {
+                    $dt = \DateTime::createFromFormat($fmt, $rawDate);
+                    if ($dt && $dt->format($fmt) === $rawDate) {
+                        $parsedDate = $dt->format('Y-m-d');
+                        break;
+                    }
+                }
+                // Nếu không parse được thì giữ nguyên
+                if (!$parsedDate) {
+                    $parsedDate = $rawDate;
+                }
+            }
+
             $response = self::post('nks/user/updateCccd', [
-                'front' => $data['front_base64'] ?? '',
-                'back' => $data['back_base64'] ?? '',
-                'number' => $data['cccd'] ?? '',
-                'date' => $data['issue_date'] ?? '',
-                'place' => $data['address'] ?? '',
-                'cccd' => $data['cccd'] ?? '',         // Dự phòng tương thích ngược
-                'cccd_number' => $data['cccd'] ?? ''   // Dự phòng tương thích ngược
+                'front'       => $data['front_base64'] ?? '',
+                'back'        => $data['back_base64'] ?? '',
+                'number'      => $data['cccd'] ?? '',
+                'date'        => $parsedDate,
+                'place'       => $data['address'] ?? '',
+                'cccd'        => $data['cccd'] ?? '',
+                'cccd_number' => $data['cccd'] ?? '',
             ], $token);
 
             if ($response->successful()) {
@@ -236,9 +255,10 @@ class CompanyApiService
                 ];
             }
 
+            $body = $response->json();
             return [
                 'success' => false,
-                'message' => $response->json()['error'] ?? $response->json()['message'] ?? 'Cập nhật CCCD thất bại.'
+                'message' => '[HTTP ' . $response->status() . '] ' . ($body['error'] ?? $body['message'] ?? 'Cập nhật CCCD thất bại.')
             ];
         } catch (\Exception $e) {
             return [

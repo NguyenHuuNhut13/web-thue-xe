@@ -86,25 +86,41 @@ Route::get('/test-cccd-api', function () {
         return response()->json(['error' => 'Không có API token. Đăng nhập bằng tài khoản API trước.'], 403);
     }
 
+    // Convert date sang YYYY-MM-DD
+    $rawDate    = $user->issue_date ?? '';
+    $parsedDate = '';
+    if ($rawDate) {
+        foreach (['d/m/Y', 'd-m-Y', 'Y-m-d', 'm/d/Y'] as $fmt) {
+            $dt = \DateTime::createFromFormat($fmt, $rawDate);
+            if ($dt && $dt->format($fmt) === $rawDate) {
+                $parsedDate = $dt->format('Y-m-d');
+                break;
+            }
+        }
+        if (!$parsedDate) $parsedDate = $rawDate;
+    }
+
     // Gọi updateCccd chỉ với text fields (không ảnh) để test
     $response = \Illuminate\Support\Facades\Http::asJson()
         ->withToken($token)
         ->post('https://account.nks.vn/api/nks/user/updateCccd', [
             'access_token' => $token,
-            'number'       => $user->cccd ?? '079195000000',
-            'date'         => $user->issue_date ?? '',
+            'number'       => $user->cccd ?? '',
+            'date'         => $parsedDate,
             'place'        => $user->address ?? '',
-            'cccd'         => $user->cccd ?? '079195000000',
+            'cccd'         => $user->cccd ?? '',
             'front'        => '',
             'back'         => '',
         ]);
 
     return response()->json([
-        'token_used'    => substr($token, 0, 20) . '...',
-        'http_status'   => $response->status(),
-        'api_response'  => $response->json(),
-        'user_cccd'     => $user->cccd,
-        'user_address'  => $user->address,
-        'user_issue_date' => $user->issue_date,
+        'token_used'      => substr($token, 0, 20) . '...',
+        'http_status'     => $response->status(),
+        'api_response'    => $response->json(),
+        'date_raw'        => $rawDate,
+        'date_converted'  => $parsedDate,
+        'user_cccd'       => $user->cccd,
+        'user_address'    => $user->address,
     ]);
 })->middleware('auth');
+
