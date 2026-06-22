@@ -84,37 +84,47 @@ Route::get('/test-cccd-api', function () {
         if ($dt && $dt->format($fmt) === $rawDate) { $parsedDate = $dt->format('Y-m-d'); break; }
     }
 
-    $payload = [
-        'access_token' => $token,
-        'number'       => $user->cccd ?? '',
-        'date'         => $parsedDate,
-        'place'        => $user->address ?? '',
-    ];
+    // Ảnh GIF 1x1 pixel trong suốt - nhỏ nhất có thể nhưng là data URL hợp lệ
+    $tiny = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-    // Test X: Không dùng withToken() - chỉ body access_token (không Bearer header)
-    $rX = \Illuminate\Support\Facades\Http::asJson()
-        ->post('https://account.nks.vn/api/nks/user/updateCccd', $payload);
-
-    // Test Y: Form data + chỉ body access_token (không Bearer header)
-    $rY = \Illuminate\Support\Facades\Http::asForm()
-        ->post('https://account.nks.vn/api/nks/user/updateCccd', $payload);
-
-    // Test Z: JSON + không Bearer + chỉ field "cccd" (tên khác)
-    $rZ = \Illuminate\Support\Facades\Http::asJson()
+    // Test P: Gửi front/back là data URL hợp lệ (giả thuyết: API parse explode(',', $front)[1])
+    $rP = \Illuminate\Support\Facades\Http::asJson()
         ->post('https://account.nks.vn/api/nks/user/updateCccd', [
             'access_token' => $token,
-            'cccd'         => $user->cccd ?? '',
+            'number'       => $user->cccd ?? '',
             'date'         => $parsedDate,
             'place'        => $user->address ?? '',
+            'front'        => $tiny,
+            'back'         => $tiny,
+        ]);
+
+    // Test Q: Form data + ảnh hợp lệ
+    $rQ = \Illuminate\Support\Facades\Http::asForm()
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', [
+            'access_token' => $token,
+            'number'       => $user->cccd ?? '',
+            'date'         => $parsedDate,
+            'place'        => $user->address ?? '',
+            'front'        => $tiny,
+            'back'         => $tiny,
+        ]);
+
+    // Test R: So sánh - gửi updateInfo (biết là hoạt động)
+    $rR = \Illuminate\Support\Facades\Http::asJson()
+        ->post('https://account.nks.vn/api/nks/user/updateInfo', [
+            'access_token' => $token,
+            'name'         => $user->name,
+            'phone'        => $user->phone ?? '',
+            'zalo'         => $user->zalo ?? '',
         ]);
 
     return response()->json([
-        'testX_json_no_bearer'       => ['status' => $rX->status(), 'body' => $rX->json()],
-        'testY_form_no_bearer'       => ['status' => $rY->status(), 'body' => $rY->json()],
-        'testZ_json_cccd_no_bearer'  => ['status' => $rZ->status(), 'body' => $rZ->json()],
-        'date_raw'        => $rawDate,
-        'date_converted'  => $parsedDate,
-        'token_prefix'    => substr($token, 0, 20) . '...',
+        'testP_cccd_with_valid_image_json'  => ['status' => $rP->status(), 'body' => $rP->json()],
+        'testQ_cccd_with_valid_image_form'  => ['status' => $rQ->status(), 'body' => $rQ->json()],
+        'testR_updateInfo_json_no_bearer'   => ['status' => $rR->status(), 'body' => $rR->json()],
+        'date_raw'       => $rawDate,
+        'date_converted' => $parsedDate,
     ]);
 })->middleware('auth');
+
 
