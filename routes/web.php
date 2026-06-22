@@ -74,3 +74,37 @@ Route::get('/storage/{path}', [App\Http\Controllers\StorageController::class, 's
 
 
 
+// Debug: Test CCCD API trực tiếp (chỉ dùng khi debug, xóa sau)
+Route::get('/test-cccd-api', function () {
+    if (!auth()->check()) {
+        return response()->json(['error' => 'Chưa đăng nhập'], 401);
+    }
+    $user  = auth()->user();
+    $token = session('company_api_token') ?? $user->company_api_token ?? null;
+
+    if (!$token) {
+        return response()->json(['error' => 'Không có API token. Đăng nhập bằng tài khoản API trước.'], 403);
+    }
+
+    // Gọi updateCccd chỉ với text fields (không ảnh) để test
+    $response = \Illuminate\Support\Facades\Http::asJson()
+        ->withToken($token)
+        ->post('https://account.nks.vn/api/nks/user/updateCccd', [
+            'access_token' => $token,
+            'number'       => $user->cccd ?? '079195000000',
+            'date'         => $user->issue_date ?? '',
+            'place'        => $user->address ?? '',
+            'cccd'         => $user->cccd ?? '079195000000',
+            'front'        => '',
+            'back'         => '',
+        ]);
+
+    return response()->json([
+        'token_used'    => substr($token, 0, 20) . '...',
+        'http_status'   => $response->status(),
+        'api_response'  => $response->json(),
+        'user_cccd'     => $user->cccd,
+        'user_address'  => $user->address,
+        'user_issue_date' => $user->issue_date,
+    ]);
+})->middleware('auth');
