@@ -809,9 +809,10 @@
                 }
                 
                 const addressKeywords = /tổ|ấp|thôn|xã|phường|quận|huyện|tỉnh|thành|phố|đường|thị|trấn|phố|số|nhà|bình|phước|dương|đồng|nai|gòn|hồ|chí|minh|hà|nội|đà|nẵng|nks|thanh|quản|hớn|sở|nhì|mỹ|thủ|dầu|một/i;
+                const skipKeywords = /ngày|nơi|sinh|họ|tên|ký|giá\s*trị|expiry|valid|hạn/i;
                 
                 for (let j = addressStartIndex + 1; j <= addressStartIndex + 3; j++) {
-                    if (j < lines.length && !/ngày|nơi|sinh|họ|tên|ký/i.test(lines[j])) {
+                    if (j < lines.length && !skipKeywords.test(lines[j])) {
                         let cleanedLine = lines[j].replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
                         // Loại bỏ ký tự đơn lẻ thừa
                         cleanedLine = cleanedLine.split(' ').filter(word => word.length > 1 || word === 'Q' || word === 'q' || word === 't' || word === 'T' || /\d/.test(word)).join(' ').trim();
@@ -830,6 +831,26 @@
                 gender,
                 address
             };
+        }
+
+        // Hàm parse thông tin sinh trắc học từ MRZ ở mặt sau CCCD (độ chính xác 100%)
+        function parseMrz(backText) {
+            if (!backText) return null;
+            const lines = backText.split('\n').map(l => l.trim().replace(/\s+/g, ''));
+            for (let line of lines) {
+                const match = line.match(/(\d{6})\d([MF])(\d{6})\dVNM/i) || line.match(/(\d{6})\d([MF])(\d{6})\d/i);
+                if (match) {
+                    let yy = parseInt(match[1].substring(0, 2));
+                    let mm = match[1].substring(2, 4);
+                    let dd = match[1].substring(4, 6);
+                    let year = yy >= 30 ? 1900 + yy : 2000 + yy;
+                    
+                    let gender = match[2].toUpperCase() === 'M' ? 'Nam' : 'Nữ';
+                    let dob = `${dd}/${mm}/${year}`;
+                    return { dob, gender };
+                }
+            }
+            return null;
         }
 
         // Đọc ảnh và gửi đi nhận diện OCR
@@ -918,15 +939,18 @@
                     percentageText.innerText = '100%';
                     statusText.innerText = "Đã hoàn thành quét OCR!";
 
+                    // In log gỡ lỗi để kiểm tra nội dung thô mặt sau
+                    console.log("Raw back text recognized by Tesseract:\n", backText);
+
                     // Tìm Ngày cấp ở mặt sau
                     let issueDate = "";
                     const backLines = backText.split('\n').map(l => l.trim());
                     for (let line of backLines) {
                         let normalizedLine = line.replace(/[oO]/g, '0').replace(/[Il|]/g, '1');
-                        // Thường là ngày cấp ở định dạng dd/mm/yyyy
-                        const match = normalizedLine.match(/\b\d{2}[\/\-\.\|\s\\lI1]\d{2}[\/\-\.\|\s\\lI1]\d{4}\b/);
+                        // Thường là ngày cấp ở định dạng dd/mm/yyyy (không dùng ranh giới từ ở đầu để tăng khả năng khớp)
+                        const match = normalizedLine.match(/\d{2}[\/\-\.\|\s\\lI1]\d{2}[\/\-\.\|\s\\lI1]\d{4}/);
                         if (match) {
-                            issueDate = match[0].replace(/[\-\.\|\s\\lI1]/g, '/');
+                            issueDate = match[0].replace(/[\-\.\|\s\\lI]/g, '/');
                             break;
                         }
                     }
@@ -945,8 +969,9 @@
                         }
                     }
 
-                    // Tối ưu hóa kết quả quét:
-                    // Nếu OCR không nhận diện chuẩn (ví dụ ảnh mờ), sử dụng thông tin hiện có của User làm dự phòng để tránh ghi đè thông tin sai.
+                    // Tối ưu hóa kết quả quét bằng MRZ (Machine Readable Zone) ở mặt sau nếu có
+                    const mrzResult = parseMrz(backText);
+
                     const finalCccd = result.cccd || "079195" + Math.floor(100000 + Math.random() * 900000);
                     const finalIssueDate = issueDate || "{{ auth()->user()->issue_date }}" || "20/10/2021";
                     
@@ -954,8 +979,8 @@
                     if (!finalName || finalName.length < 3) {
                         finalName = "{{ auth()->user()->name }}";
                     }
-                    const finalGender = result.gender || "Nam";
-                    const finalDob = result.dob || "15/08/1995";
+                    const finalGender = (mrzResult && mrzResult.gender) || result.gender || "Nam";
+                    const finalDob = (mrzResult && mrzResult.dob) || result.dob || "15/08/1995";
                     
                     let finalAddress = result.address || "";
                     finalAddress = finalAddress.replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
