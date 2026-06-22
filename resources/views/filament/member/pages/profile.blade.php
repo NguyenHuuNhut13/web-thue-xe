@@ -725,7 +725,6 @@
             const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
             
             let cccd = "";
-            let cmnd = "";
             let name = "";
             let dob = "";
             let gender = "";
@@ -752,7 +751,8 @@
             
             // 2. Tìm Ngày sinh (dd/mm/yyyy)
             for (let line of lines) {
-                const match = line.match(/\b\d{2}\/\d{2}\/\d{4}\b/);
+                let normalizedLine = line.replace(/[oO]/g, '0').replace(/[Il|]/g, '1');
+                const match = normalizedLine.match(/\b\d{2}\/\d{2}\/\d{4}\b/);
                 if (match) {
                     dob = match[0];
                     break;
@@ -779,9 +779,10 @@
                     if (i + 1 < lines.length) {
                         let potentialName = lines[i+1].toUpperCase();
                         // Loại bỏ các ký tự rác không thuộc bảng chữ cái tiếng Việt/Anh
-                        name = potentialName.replace(/[^A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲÝỴỶỸ\s]/g, '').trim();
-                        // Chuẩn hóa khoảng trắng
-                        name = name.replace(/\s+/g, ' ');
+                        let cleanedName = potentialName.replace(/[^A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲÝỴỶỸ\s]/g, '').trim();
+                        cleanedName = cleanedName.replace(/\s+/g, ' ');
+                        // Lọc bỏ ký tự đơn lẻ nhiễu
+                        name = cleanedName.split(' ').filter(word => word.length > 1 || word === 'Y' || word === 'y').join(' ').trim();
                     }
                     break;
                 }
@@ -797,18 +798,33 @@
             }
             if (addressStartIndex !== -1) {
                 let addrLines = [];
-                for (let j = addressStartIndex + 1; j <= addressStartIndex + 2; j++) {
+                const labelMatch = lines[addressStartIndex].match(/(thường\s*trú|residence|nơi)[^:]*:\s*(.*)/i);
+                if (labelMatch && labelMatch[2]) {
+                    let firstLine = labelMatch[2].replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
+                    // Loại bỏ ký tự đơn lẻ thừa
+                    firstLine = firstLine.split(' ').filter(word => word.length > 1 || word === 'Q' || word === 'q' || word === 't' || word === 'T' || /\d/.test(word)).join(' ').trim();
+                    if (firstLine.length > 2) {
+                        addrLines.push(firstLine);
+                    }
+                }
+                
+                const addressKeywords = /tổ|ấp|thôn|xã|phường|quận|huyện|tỉnh|thành|phố|đường|thị|trấn|phố|số|nhà|bình|phước|dương|đồng|nai|gòn|hồ|chí|minh|hà|nội|đà|nẵng|nks|thanh|quản|hớn|sở|nhì|mỹ|thủ|dầu|một/i;
+                
+                for (let j = addressStartIndex + 1; j <= addressStartIndex + 3; j++) {
                     if (j < lines.length && !/ngày|nơi|sinh|họ|tên|ký/i.test(lines[j])) {
-                        addrLines.push(lines[j]);
+                        let cleanedLine = lines[j].replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
+                        // Loại bỏ ký tự đơn lẻ thừa
+                        cleanedLine = cleanedLine.split(' ').filter(word => word.length > 1 || word === 'Q' || word === 'q' || word === 't' || word === 'T' || /\d/.test(word)).join(' ').trim();
+                        if (cleanedLine.length > 5 && addressKeywords.test(cleanedLine)) {
+                            addrLines.push(cleanedLine);
+                        }
                     }
                 }
                 address = addrLines.join(', ').replace(/\s+/g, ' ').trim();
-                address = address.replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
             }
             
             return {
                 cccd,
-                cmnd,
                 name,
                 dob,
                 gender,
