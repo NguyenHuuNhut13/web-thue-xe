@@ -20,45 +20,67 @@ class GeminiService
             return null;
         }
 
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" . $apiKey;
-
-        $body = [
-            'contents' => $contents,
-            'generationConfig' => [
-                'thinkingConfig' => [
-                    'thinkingLevel' => 'minimal'
-                ]
-            ]
+        $models = [
+            'gemini-3.5-flash' => ['timeout' => 4, 'thinking' => true],
+            'gemini-2.5-flash' => ['timeout' => 8, 'thinking' => false],
+            'gemini-3.1-flash-lite' => ['timeout' => 8, 'thinking' => true],
+            'gemini-2.5-flash-lite' => ['timeout' => 8, 'thinking' => false]
         ];
 
-        if ($systemInstruction) {
-            $body['systemInstruction'] = [
-                'parts' => [
-                    ['text' => $systemInstruction]
-                ]
+        foreach ($models as $model => $config) {
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . $apiKey;
+
+            $body = [
+                'contents' => $contents
             ];
-        }
 
-        try {
-            $response = Http::timeout(25)
-                ->withHeaders(['Content-Type' => 'application/json'])
-                ->post($url, $body);
-
-            if ($response->failed()) {
-                Log::error('Gemini API request failed: ' . $response->body());
-                return null;
+            if ($config['thinking']) {
+                $body['generationConfig'] = [
+                    'thinkingConfig' => [
+                        'thinkingLevel' => 'minimal'
+                    ]
+                ];
             }
 
-            $result = $response->json();
-            
-            // Trích xuất văn bản phản hồi từ cấu trúc JSON của Gemini
-            $text = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
-            
-            return $text;
-        } catch (\Exception $e) {
-            Log::error('Error calling Gemini API: ' . $e->getMessage());
-            return null;
+            if ($systemInstruction) {
+                $body['systemInstruction'] = [
+                    'parts' => [
+                        ['text' => $systemInstruction]
+                    ]
+                ];
+            }
+
+            try {
+                Log::info("Attempting to call Gemini API with model: {$model}");
+                
+                $response = Http::timeout($config['timeout'])
+                    ->withHeaders(['Content-Type' => 'application/json'])
+                    ->post($url, $body);
+
+                if ($response->failed()) {
+                    Log::warning("Gemini API request failed for model {$model}. Status: {$response->status()}. Response: " . $response->body());
+                    continue; // Try next model
+                }
+
+                $result = $response->json();
+                
+                // Extract response text
+                $text = $result['candidates'][0]['content']['parts'][0]['text'] ?? null;
+                
+                if (!empty($text)) {
+                    Log::info("Successfully generated content using model: {$model}");
+                    return $text;
+                } else {
+                    Log::warning("Gemini API returned empty text for model {$model}");
+                }
+            } catch (\Exception $e) {
+                Log::warning("Exception when calling Gemini API with model {$model}: " . $e->getMessage());
+                continue; // Try next model
+            }
         }
+
+        Log::error("All Gemini fallback models failed.");
+        return null;
     }
 
     /**
