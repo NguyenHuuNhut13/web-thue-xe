@@ -146,4 +146,12 @@ Route::get('/test-gemini-nks', function() {
     ], 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 });
 
+// Session status check endpoint
+Route::get('/session-status', function () {
+    return response()->json([
+        'authenticated' => auth()->check()
+    ]);
+});
+
+
 

@@ -440,8 +440,19 @@
                         },
                         body: JSON.stringify({ message: userText })
                     })
-                    .then(res => res.json())
+                    .then(res => {
+                        if (res.status === 419 || res.status === 401) {
+                            localStorage.removeItem("nks_last_user_email");
+                            localStorage.removeItem("nks_last_user_name");
+                            localStorage.removeItem("nks_last_user_avatar");
+                            alert('Phiên làm việc của bạn đã hết hạn. Hệ thống sẽ tự động tải lại trang.');
+                            window.location.reload();
+                            return;
+                        }
+                        return res.json();
+                    })
                     .then(data => {
+                        if (!data) return;
                         if (data.success) {
                             this.messages.push({
                                 id: Date.now() + 1,
@@ -575,10 +586,16 @@
             </div>
 
             <!-- Suggested Prompts -->
-            <div class="px-4 py-2 border-t border-slate-100 bg-white flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-none" x-show="messages.length === 0">
-                <button @click="sendSuggested('Có xe 7 chỗ tự lái nào không?')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-3 py-1.5 rounded-full transition-colors font-medium border border-slate-100">🚙 Thuê xe 7 chỗ</button>
-                <button @click="sendSuggested('Giá xe VinFast Fadil lăn bánh khoảng bao nhiêu?')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-3 py-1.5 rounded-full transition-colors font-medium border border-slate-100">⚡ Giá xe VinFast</button>
-                <button @click="sendSuggested('Bảo dưỡng xe ô tô cần làm gì định kỳ?')" class="text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-3 py-1.5 rounded-full transition-colors font-medium border border-slate-100">🔧 Bảo dưỡng xe</button>
+            <div class="px-4 py-2 border-t border-slate-100 bg-white flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-none select-none cursor-grab active:cursor-grabbing" 
+                 x-show="messages.length === 0"
+                 x-data="{ isDown: false, startX: 0, scrollLeft: 0 }"
+                 @mousedown="isDown = true; startX = $event.pageX - $el.offsetLeft; scrollLeft = $el.scrollLeft"
+                 @mouseleave="isDown = false"
+                 @mouseup="isDown = false"
+                 @mousemove="if(!isDown) return; $event.preventDefault(); const x = $event.pageX - $el.offsetLeft; const walk = (x - startX) * 1.5; $el.scrollLeft = scrollLeft - walk">
+                <button @click="sendSuggested('Có xe 7 chỗ tự lái nào không?')" class="flex-shrink-0 text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-3 py-1.5 rounded-full transition-colors font-medium border border-slate-100">🚙 Thuê xe 7 chỗ</button>
+                <button @click="sendSuggested('Giá xe VinFast Fadil lăn bánh khoảng bao nhiêu?')" class="flex-shrink-0 text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-3 py-1.5 rounded-full transition-colors font-medium border border-slate-100">⚡ Giá xe VinFast</button>
+                <button @click="sendSuggested('Bảo dưỡng xe ô tô cần làm gì định kỳ?')" class="flex-shrink-0 text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-3 py-1.5 rounded-full transition-colors font-medium border border-slate-100">🔧 Bảo dưỡng xe</button>
             </div>
 
             <!-- Input area -->
@@ -596,5 +613,53 @@
             </form>
         </div>
     </div>
+    <script>
+        // Check session status when page gets focus or becomes visible
+        (function() {
+            @auth
+                const wasAuthenticated = true;
+            @else
+                const wasAuthenticated = false;
+            @endauth
+
+            function checkSessionStatus() {
+                if (!wasAuthenticated) return;
+                
+                fetch('/session-status')
+                    .then(res => {
+                        if (res.status === 401 || res.status === 419) {
+                            handleSessionExpiry();
+                            return;
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data && data.authenticated === false) {
+                            handleSessionExpiry();
+                        }
+                    })
+                    .catch(() => {
+                        // Ignore network failures for background status check
+                    });
+            }
+
+            function handleSessionExpiry() {
+                localStorage.removeItem("nks_last_user_email");
+                localStorage.removeItem("nks_last_user_name");
+                localStorage.removeItem("nks_last_user_avatar");
+                
+                alert('Phiên làm việc của bạn đã hết hạn. Hệ thống sẽ tự động tải lại trang.');
+                window.location.reload();
+            }
+
+            // Check when user returns to the tab
+            window.addEventListener('focus', checkSessionStatus);
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    checkSessionStatus();
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
