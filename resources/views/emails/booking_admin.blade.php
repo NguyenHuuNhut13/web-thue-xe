@@ -6,7 +6,7 @@
     <title>Yêu cầu đặt xe mới</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             background-color: #f8fafc;
             color: #1e293b;
             margin: 0;

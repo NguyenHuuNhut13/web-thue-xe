@@ -6,7 +6,7 @@
     <title>Xác nhận đặt xe thành công</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             background-color: #f8fafc;
             color: #1e293b;
             margin: 0;
@@ -139,32 +139,7 @@
             padding: 20px;
             margin-bottom: 10px;
         }
-        .step-item {
-            display: flex;
-            margin-bottom: 15px;
-        }
-        .step-item:last-child {
-            margin-bottom: 0;
-        }
-        .step-number {
-            width: 24px;
-            height: 24px;
-            background-color: #0284c7;
-            color: #ffffff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 800;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-        .step-content {
-            font-size: 13px;
-            line-height: 1.5;
-            color: #44403c;
-        }
+
         .footer {
             background-color: #f8fafc;
             padding: 25px 30px;
@@ -249,18 +224,53 @@
             <!-- Hướng dẫn tiếp theo -->
             <div class="section-title">Các bước tiếp theo</div>
             <div class="next-steps">
-                <div class="step-item">
-                    <div class="step-number">1</div>
-                    <div class="step-content">Chủ xe sẽ nhận được thông báo đặt xe và gọi điện/nhắn tin Zalo trực tiếp cho bạn để thống nhất thời gian và địa điểm giao xe cụ thể.</div>
-                </div>
-                <div class="step-item">
-                    <div class="step-number">2</div>
-                    <div class="step-content">Ký hợp đồng thuê xe, giao nhận giấy tờ liên quan (ví dụ: CCCD/Hộ chiếu, xe máy cọc nếu có).</div>
-                </div>
-                <div class="step-item">
-                    <div class="step-number">3</div>
-                    <div class="step-content">Nhận bàn giao xe thực tế, kiểm tra tình trạng xe và bắt đầu hành trình của bạn!</div>
-                </div>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+                    <!-- Step 1 -->
+                    <tr>
+                        <td valign="top" width="28" style="padding-bottom: 15px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="24" height="24" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+                                <tr>
+                                    <td align="center" valign="middle" bgcolor="#0284c7" width="24" height="24" style="border-radius: 12px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #ffffff; line-height: 24px; text-align: center; display: block;">
+                                        1
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td valign="top" style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.5; color: #44403c; padding-left: 10px; padding-bottom: 15px;">
+                            Chủ xe sẽ nhận được thông báo đặt xe và gọi điện/nhắn tin Zalo trực tiếp cho bạn để thống nhất thời gian và địa điểm giao xe cụ thể.
+                        </td>
+                    </tr>
+                    <!-- Step 2 -->
+                    <tr>
+                        <td valign="top" width="28" style="padding-bottom: 15px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="24" height="24" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+                                <tr>
+                                    <td align="center" valign="middle" bgcolor="#0284c7" width="24" height="24" style="border-radius: 12px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #ffffff; line-height: 24px; text-align: center; display: block;">
+                                        2
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td valign="top" style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.5; color: #44403c; padding-left: 10px; padding-bottom: 15px;">
+                            Ký hợp đồng thuê xe, giao nhận giấy tờ liên quan (ví dụ: CCCD/Hộ chiếu, xe máy cọc nếu có).
+                        </td>
+                    </tr>
+                    <!-- Step 3 -->
+                    <tr>
+                        <td valign="top" width="28" style="padding-bottom: 0;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="24" height="24" style="border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+                                <tr>
+                                    <td align="center" valign="middle" bgcolor="#0284c7" width="24" height="24" style="border-radius: 12px; font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #ffffff; line-height: 24px; text-align: center; display: block;">
+                                        3
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td valign="top" style="font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.5; color: #44403c; padding-left: 10px; padding-bottom: 0;">
+                            Nhận bàn giao xe thực tế, kiểm tra tình trạng xe và bắt đầu hành trình của bạn!
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
         <div class="footer">
