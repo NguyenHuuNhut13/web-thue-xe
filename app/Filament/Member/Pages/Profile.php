@@ -139,10 +139,6 @@ class Profile extends Page implements HasForms
                 TextInput::make('issue_place')
                     ->label('Nơi cấp')
                     ->placeholder('Ví dụ: Cục Cảnh sát QLHC về TTXH'),
-
-                TextInput::make('address')
-                    ->label('Nơi thường trú')
-                    ->placeholder('Địa chỉ thường trú trên CCCD'),
             ])
             ->statePath('cccdData');
     }
@@ -253,7 +249,7 @@ class Profile extends Page implements HasForms
         $user->cccd        = $data['cccd'];
         $user->gender      = $data['gender'] ?? $user->gender;
         $user->dob         = $data['dob'] ?? $user->dob;
-        $user->address     = $data['address'];
+        $user->address     = $data['address'] ?? $user->address;
         $user->issue_date  = $data['issue_date'];
         $user->issue_place = $data['issue_place'] ?? null;
         $user->save();

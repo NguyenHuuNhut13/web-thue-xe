@@ -1316,6 +1316,49 @@
             }
         });
 
+        // Hàm làm sạch và hợp chuẩn Nơi cấp từ kết quả OCR quét mặt sau
+        function normalizeIssuePlace(text) {
+            if (!text) return "";
+            const lower = text.toLowerCase().trim();
+            
+            // Hợp chuẩn cho CCCD gắn chip (phổ biến nhất)
+            if (lower.includes("cục trưởng") || 
+                lower.includes("cục trưởng cục cảnh sát") || 
+                (lower.includes("cảnh sát") && lower.includes("quản lý") && lower.includes("trật tự")) ||
+                (lower.includes("cảnh sát") && lower.includes("hành chính")) ||
+                lower.includes("qlhc về ttxh") ||
+                lower.includes("qlhc ve ttxh") ||
+                lower.includes("social order") ||
+                lower.includes("administrative management")) {
+                return "Cục Cảnh sát quản lý hành chính về trật tự xã hội";
+            }
+            
+            // Hợp chuẩn cho CCCD mã vạch cũ (12 số)
+            if (lower.includes("đkql cư trú") || 
+                lower.includes("dkql cu tru") || 
+                lower.includes("dân cư") || 
+                lower.includes("dan cu") || 
+                lower.includes("dlqg")) {
+                return "Cục Cảnh sát ĐKQL cư trú và DLQG về dân cư";
+            }
+            
+            // Hợp chuẩn cho CMND 9 số cũ (Công an các tỉnh/thành)
+            if (lower.includes("công an") || lower.includes("cong an")) {
+                const match = text.match(/(công\s+an\s+(tỉnh|tp|thành\s+phố)\s+[a-zA-ZÀ-ỸđĐ\s]+)/i);
+                if (match) {
+                    return match[1].replace(/\s+/g, ' ').trim();
+                }
+                let cleaned = text.replace(/[\^\|~\*_«»\{\}\[\]\\:\.\-\,\/0-9]/g, "").trim();
+                cleaned = cleaned.replace(/\s+/g, ' ');
+                return cleaned;
+            }
+            
+            // Loại bỏ các ký tự nhiễu OCR thông thường ở dòng này
+            let cleaned = text.replace(/[\^\|~\*_«»\{\}\[\]\\:\.\-\,\/]/g, "").trim();
+            cleaned = cleaned.replace(/\s+/g, ' ');
+            return cleaned;
+        }
+
         // Hàm phân tích khối văn bản thô từ CCCD bằng Regex thông minh
         function parseTextFromCccd(text) {
             console.log("Raw text recognized by Tesseract:\n", text);
@@ -1683,7 +1726,7 @@
                                         }
                                     }
                                 }
-                                const finalIssuePlace = issuePlace || "Cục Cảnh sát QLHC về TTXH";
+                                const finalIssuePlace = normalizeIssuePlace(issuePlace) || "Cục Cảnh sát quản lý hành chính về trật tự xã hội";
                                 
                                 progressBar.style.width = '100%';
                                 percentageText.innerText = '100%';
@@ -1718,7 +1761,7 @@
                                     qrResult.address,
                                     frontBase64,
                                     backBase64,
-                                    'Cục Cảnh sát QLHC về TTXH'
+                                    'Cục Cảnh sát quản lý hành chính về trật tự xã hội'
                                 );
                                 
                                 setTimeout(() => {
@@ -1887,7 +1930,7 @@
                             }
                         }
                     }
-                    const finalIssuePlace = issuePlace || "Cục Cảnh sát QLHC về TTXH";
+                    const finalIssuePlace = normalizeIssuePlace(issuePlace) || "Cục Cảnh sát quản lý hành chính về trật tự xã hội";
 
                     console.log("OCR Final Extracted Fields:", {
                         cccd: finalCccd,
@@ -1933,7 +1976,7 @@
                         finalAddress = "{{ auth()->user()->address }}" || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
                     }
 
-                    @this.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress, frontBase64, backBase64, 'Cục Cảnh sát QLHC về TTXH');
+                    @this.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress, frontBase64, backBase64, 'Cục Cảnh sát quản lý hành chính về trật tự xã hội');
                     cleanUpScanner();
                 });
 
