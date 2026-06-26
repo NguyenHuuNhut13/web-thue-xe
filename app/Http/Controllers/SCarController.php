@@ -23,103 +23,103 @@ class SCarController extends Controller
         $brands = [
             'toyota' => [
                 'name' => 'Toyota',
-                'logo' => 'toyota.com'
+                'logo' => 'toyota.png'
             ],
             'vinfast' => [
                 'name' => 'VinFast',
-                'logo' => 'vinfastauto.com'
+                'logo' => 'vinfast.png'
             ],
             'hyundai' => [
                 'name' => 'Hyundai',
-                'logo' => 'hyundai.com'
+                'logo' => 'hyundai.png'
             ],
             'kia' => [
                 'name' => 'Kia',
-                'logo' => 'kia.com'
+                'logo' => 'kia.png'
             ],
             'mazda' => [
                 'name' => 'Mazda',
-                'logo' => 'mazda.com'
+                'logo' => 'mazda.png'
             ],
             'honda' => [
                 'name' => 'Honda',
-                'logo' => 'honda.com'
+                'logo' => 'honda.png'
             ],
             'ford' => [
                 'name' => 'Ford',
-                'logo' => 'ford.com'
+                'logo' => 'ford.png'
             ],
             'mitsubishi' => [
                 'name' => 'Mitsubishi',
-                'logo' => 'mitsubishi-motors.com'
+                'logo' => 'mitsubishi.png'
             ],
             'suzuki' => [
                 'name' => 'Suzuki',
-                'logo' => 'suzuki.co.jp'
+                'logo' => 'suzuki.png'
             ],
             'mercedes_benz' => [
                 'name' => 'Mercedes-Benz',
-                'logo' => 'mercedes-benz.com'
+                'logo' => 'mercedes-benz.png'
             ],
             'bmw' => [
                 'name' => 'BMW',
-                'logo' => 'bmw.com'
+                'logo' => 'bmw.png'
             ],
             'audi' => [
                 'name' => 'Audi',
-                'logo' => 'audi.com'
+                'logo' => 'audi.png'
             ],
             'lexus' => [
                 'name' => 'Lexus',
-                'logo' => 'lexus.com'
+                'logo' => 'lexus.png'
             ],
             'porsche' => [
                 'name' => 'Porsche',
-                'logo' => 'porsche.com'
+                'logo' => 'porsche.png'
             ],
             'byd' => [
                 'name' => 'BYD',
-                'logo' => 'byd.com'
+                'logo' => 'byd.png'
             ],
             'isuzu' => [
                 'name' => 'Isuzu',
-                'logo' => 'isuzu.co.jp'
+                'logo' => 'isuzu.png'
             ],
             'aion' => [
                 'name' => 'Aion',
-                'logo' => 'gac-aion.com'
+                'logo' => 'gac-group.png'
             ],
             'aston_martin' => [
                 'name' => 'Aston Martin',
-                'logo' => 'astonmartin.com'
+                'logo' => 'aston-martin.png'
             ],
             'bentley' => [
                 'name' => 'Bentley',
-                'logo' => 'bentleymotors.com'
+                'logo' => 'bentley.png'
             ],
             'dongfeng' => [
                 'name' => 'Dongfeng',
-                'logo' => 'dfm.com.cn'
+                'logo' => 'dongfeng.png'
             ],
             'gac' => [
                 'name' => 'GAC',
-                'logo' => 'gac-motor.com'
+                'logo' => 'gac-group.png'
             ],
             'geely' => [
                 'name' => 'Geely',
-                'logo' => 'geely.com'
+                'logo' => 'geely.png'
             ],
             'haima' => [
                 'name' => 'Haima',
-                'logo' => 'haima.com'
+                'logo' => 'haima.png'
             ],
             'haval' => [
                 'name' => 'Haval',
-                'logo' => 'haval-global.com'
+                'logo' => 'haval.png'
             ],
             'hongqi' => [
                 'name' => 'Hongqi',
-                'logo' => 'hongqi.com.cn'
+                'logo' => 'hongqi.png'
             ]
         ];
 

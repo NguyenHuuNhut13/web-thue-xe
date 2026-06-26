@@ -217,7 +217,7 @@
                             <!-- Brand logo container with fallback -->
                             <div class="w-10 h-10 rounded-xl bg-white border border-slate-150 shadow-sm flex items-center justify-center p-1.5 overflow-hidden"
                                  :class="activeBrand === '{{ $key }}' && 'border-indigo-200 bg-indigo-50'">
-                                <img src="https://logos.hunter.io/{{ $brand['logo'] }}" 
+                                <img src="https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/{{ $brand['logo'] }}" 
                                      alt="{{ $brand['name'] }}" 
                                      class="w-full h-full object-contain"
                                      onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($brand['name']) }}&background=f8fafc&color=334155&font-size=0.45&bold=true'">
@@ -329,7 +329,7 @@
                                 <td class="py-4 px-6 font-bold text-slate-800">
                                     <span class="inline-flex items-center gap-2.5">
                                         <div class="w-7 h-7 rounded-lg bg-white border border-slate-100 shadow-sm flex items-center justify-center p-1 overflow-hidden flex-shrink-0">
-                                            <img :src="'https://logos.hunter.io/' + car.logo" 
+                                            <img :src="'https://cdn.jsdelivr.net/gh/filippofilip95/car-logos-dataset@master/logos/thumb/' + car.logo" 
                                                  :alt="car.brand_name"
                                                  class="w-full h-full object-contain"
                                                  x-on:error="$el.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(car.brand_name) + '&background=f8fafc&color=334155&font-size=0.45&bold=true'">
