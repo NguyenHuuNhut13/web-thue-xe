@@ -21,22 +21,106 @@ class SCarController extends Controller
         }
 
         $brands = [
-            'aion' => 'Aion',
-            'aston_martin' => 'Aston Martin',
-            'audi' => 'Audi',
-            'bmw' => 'BMW',
-            'byd' => 'BYD',
-            'bentley' => 'Bentley',
-            'dongfeng' => 'Dongfeng',
-            'ford' => 'Ford',
-            'gac' => 'GAC',
-            'geely' => 'Geely',
-            'haima' => 'Haima',
-            'haval' => 'Haval',
-            'honda' => 'Honda',
-            'hongqi' => 'Hongqi',
-            'hyundai' => 'Hyundai',
-            'isuzu' => 'Isuzu'
+            'toyota' => [
+                'name' => 'Toyota',
+                'logo' => 'toyota.com'
+            ],
+            'vinfast' => [
+                'name' => 'VinFast',
+                'logo' => 'vinfastauto.com'
+            ],
+            'hyundai' => [
+                'name' => 'Hyundai',
+                'logo' => 'hyundai.com'
+            ],
+            'kia' => [
+                'name' => 'Kia',
+                'logo' => 'kia.com'
+            ],
+            'mazda' => [
+                'name' => 'Mazda',
+                'logo' => 'mazda.com'
+            ],
+            'honda' => [
+                'name' => 'Honda',
+                'logo' => 'honda.com'
+            ],
+            'ford' => [
+                'name' => 'Ford',
+                'logo' => 'ford.com'
+            ],
+            'mitsubishi' => [
+                'name' => 'Mitsubishi',
+                'logo' => 'mitsubishi-motors.com'
+            ],
+            'suzuki' => [
+                'name' => 'Suzuki',
+                'logo' => 'suzuki.co.jp'
+            ],
+            'mercedes_benz' => [
+                'name' => 'Mercedes-Benz',
+                'logo' => 'mercedes-benz.com'
+            ],
+            'bmw' => [
+                'name' => 'BMW',
+                'logo' => 'bmw.com'
+            ],
+            'audi' => [
+                'name' => 'Audi',
+                'logo' => 'audi.com'
+            ],
+            'lexus' => [
+                'name' => 'Lexus',
+                'logo' => 'lexus.com'
+            ],
+            'porsche' => [
+                'name' => 'Porsche',
+                'logo' => 'porsche.com'
+            ],
+            'byd' => [
+                'name' => 'BYD',
+                'logo' => 'byd.com'
+            ],
+            'isuzu' => [
+                'name' => 'Isuzu',
+                'logo' => 'isuzu.co.jp'
+            ],
+            'aion' => [
+                'name' => 'Aion',
+                'logo' => 'gac-aion.com'
+            ],
+            'aston_martin' => [
+                'name' => 'Aston Martin',
+                'logo' => 'astonmartin.com'
+            ],
+            'bentley' => [
+                'name' => 'Bentley',
+                'logo' => 'bentleymotors.com'
+            ],
+            'dongfeng' => [
+                'name' => 'Dongfeng',
+                'logo' => 'dfm.com.cn'
+            ],
+            'gac' => [
+                'name' => 'GAC',
+                'logo' => 'gac-motor.com'
+            ],
+            'geely' => [
+                'name' => 'Geely',
+                'logo' => 'geely.com'
+            ],
+            'haima' => [
+                'name' => 'Haima',
+                'logo' => 'haima.com'
+            ],
+            'haval' => [
+                'name' => 'Haval',
+                'logo' => 'haval-global.com'
+            ],
+            'hongqi' => [
+                'name' => 'Hongqi',
+                'logo' => 'hongqi.com.cn'
+            ]
         ];
 
         $categories = [

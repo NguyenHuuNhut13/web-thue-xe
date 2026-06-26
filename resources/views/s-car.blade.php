@@ -207,31 +207,22 @@
                     </button>
 
                     <!-- Dynamically Render Brands -->
-                    @foreach($brands as $key => $name)
+                    @foreach($brands as $key => $brand)
                         <button type="button" 
                                 @click="activeBrand = '{{ $key }}'; limit = 20;"
                                 x-show="showAllBrands || {{ $loop->index < 7 ? 'true' : 'false' }}"
                                 class="flex flex-col items-center justify-center py-4 px-3 rounded-2xl border-2 transition-all text-center gap-1.5"
                                 :class="activeBrand === '{{ $key }}' ? 'border-indigo-600 bg-indigo-50/50 text-indigo-600 font-bold' : 'border-slate-100 hover:border-slate-200 text-slate-600 bg-slate-50/30'">
                             
-                            <!-- Stylized typography placeholder logo -->
-                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-150 shadow-sm flex items-center justify-center font-black tracking-tight text-[11px] text-slate-800"
+                            <!-- Brand logo container with fallback -->
+                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-150 shadow-sm flex items-center justify-center p-1.5 overflow-hidden"
                                  :class="activeBrand === '{{ $key }}' && 'border-indigo-200 bg-indigo-50'">
-                                @if($key === 'aston_martin')
-                                    AM
-                                @elseif($key === 'dongfeng')
-                                    DF
-                                @elseif($key === 'gac')
-                                    GAC
-                                @elseif($key === 'byd')
-                                    BYD
-                                @elseif($key === 'bmw')
-                                    BMW
-                                @else
-                                    {{ strtoupper(substr($key, 0, 3)) }}
-                                @endif
+                                <img src="https://logo.clearbit.com/{{ $brand['logo'] }}" 
+                                     alt="{{ $brand['name'] }}" 
+                                     class="w-full h-full object-contain"
+                                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($brand['name']) }}&background=f8fafc&color=334155&font-size=0.45&bold=true'">
                             </div>
-                            <span class="text-xs truncate max-w-full">{{ $name }}</span>
+                            <span class="text-xs truncate max-w-full">{{ $brand['name'] }}</span>
                         </button>
                     @endforeach
                 </div>
@@ -336,8 +327,13 @@
                             <tr class="hover:bg-slate-50/50 transition-colors">
                                 <!-- Hãng xe -->
                                 <td class="py-4 px-6 font-bold text-slate-800">
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                                    <span class="inline-flex items-center gap-2.5">
+                                        <div class="w-7 h-7 rounded-lg bg-white border border-slate-100 shadow-sm flex items-center justify-center p-1 overflow-hidden flex-shrink-0">
+                                            <img :src="'https://logo.clearbit.com/' + car.logo" 
+                                                 :alt="car.brand_name"
+                                                 class="w-full h-full object-contain"
+                                                 @error="$el.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(car.brand_name) + '&background=f8fafc&color=334155&font-size=0.45&bold=true'">
+                                        </div>
                                         <span x-text="car.brand_name"></span>
                                     </span>
                                 </td>
@@ -414,7 +410,7 @@
                  x-transition:leave="ease-in duration-200"
                  x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-100">
+                 class="relative z-10 inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-slate-100">
                 
                 <!-- Modal Header -->
                 <div class="bg-gradient-to-r from-slate-900 to-indigo-950 px-6 py-5 text-white flex justify-between items-center">
