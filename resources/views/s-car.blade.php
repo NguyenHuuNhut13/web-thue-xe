@@ -332,7 +332,7 @@
                                             <img :src="'https://logo.clearbit.com/' + car.logo" 
                                                  :alt="car.brand_name"
                                                  class="w-full h-full object-contain"
-                                                 @error="$el.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(car.brand_name) + '&background=f8fafc&color=334155&font-size=0.45&bold=true'">
+                                                 x-on:error="$el.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(car.brand_name) + '&background=f8fafc&color=334155&font-size=0.45&bold=true'">
                                         </div>
                                         <span x-text="car.brand_name"></span>
                                     </span>
