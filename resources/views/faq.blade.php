@@ -171,7 +171,11 @@
                             <button type="button" 
                                     @click="toggleFaq(faq.id)"
                                     class="w-full px-6 py-5 flex items-start justify-between text-left focus:outline-none select-none">
-                                <span class="font-semibold text-slate-800 text-sm sm:text-base pr-4" x-text="faq.question"></span>
+                                <div class="pr-4">
+                                    <span class="font-semibold text-slate-800 text-sm sm:text-base block mb-1.5" x-text="faq.question"></span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500"
+                                          x-text="categoriesMap[faq.category]"></span>
+                                </div>
                                 <span class="text-slate-400 mt-1 flex-shrink-0">
                                     <i class="fa-solid fa-chevron-down text-sm transition-transform duration-200" 
                                        :class="openFaq === faq.id && 'transform rotate-180 text-indigo-500'"></i>
@@ -185,9 +189,8 @@
                                  x-transition:enter-end="opacity-100 max-h-[1000px]"
                                  class="px-6 pb-6 border-t border-slate-50 pt-5">
                                 
-                                <!-- Standard Fixed Answer -->
+                                <!-- Standard Answer -->
                                 <div class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
-                                    <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Câu trả lời cố định</h5>
                                     <p x-text="faq.answer"></p>
                                 </div>
 
@@ -222,9 +225,9 @@
                                         
                                         <div class="flex items-center gap-2 mb-3">
                                             <div class="bg-violet-600 text-white px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                                                <i class="fa-solid fa-robot"></i> Trí tuệ nhân tạo AI
+                                                <i class="fa-solid fa-robot"></i> Trợ lý AI NKS
                                             </div>
-                                            <span class="text-xs text-slate-400 font-medium">Lời khuyên bổ sung mở rộng</span>
+                                            <span class="text-xs text-slate-400 font-medium">Phân tích kỹ thuật chuyên sâu</span>
                                         </div>
 
                                         <!-- Rendered Markdown HTML -->
@@ -244,5 +247,6 @@
 <script>
     // Load faqs array statically from Controller
     const faqs = @json($faqs);
+    const categoriesMap = @json($categories);
 </script>
 @endsection
