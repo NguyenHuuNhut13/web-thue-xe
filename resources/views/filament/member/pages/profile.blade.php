@@ -701,41 +701,60 @@
 
                         @if(!$isEditing)
                             <!-- Card hiển thị dạng Thẻ E-Card Mockup -->
-                            <div class="cccd-card">
-                                <div style="position: absolute; right: 0; top: 0; opacity: 0.1; transform: translate(2rem, -2rem);">
+                            <div class="cccd-card" style="display: flex; gap: 1.25rem; align-items: center; max-width: 32rem; margin-bottom: 2rem;">
+                                <div style="position: absolute; right: 0; top: 0; opacity: 0.1; transform: translate(2rem, -2rem); pointer-events: none;">
                                     <svg style="width: 16rem; height: 16rem;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                                 </div>
                                 
-                                <div class="flex-between" style="margin-bottom: 1rem;">
-                                    <div>
-                                        <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.75;">THẺ THÀNH VIÊN ĐIỆN TỬ</span>
-                                        <h4 style="font-size: 0.875rem; font-weight: 700; opacity: 0.9; margin-top: 0.125rem;">NKS DIGITAL MEMBER CARD</h4>
-                                    </div>
-                                    <span class="cccd-logo">
-                                        NKS
-                                    </span>
+                                <!-- Cột Trái: Ảnh đại diện thành viên -->
+                                <div style="flex-shrink: 0; position: relative; z-index: 10;">
+                                    <img src="{{ auth()->user()->avatar_url }}" 
+                                         alt="Avatar" 
+                                         style="width: 5.5rem; height: 5.5rem; border-radius: 9999px; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.85); box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
                                 </div>
-
-                                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                    <div>
-                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Số thẻ / Card No.:</span>
-                                        <span class="cccd-number" style="font-size: 1.125rem; font-weight: 800; letter-spacing: 0.05em;">{{ auth()->user()->cccd ?: 'CHƯA CẬP NHẬT' }}</span>
+                                
+                                <!-- Cột Phải: Thông tin thành viên -->
+                                <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; position: relative; z-index: 10;">
+                                    <div class="flex-between" style="border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 0.375rem; margin-bottom: 0.25rem;">
+                                        <div>
+                                            <span style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.8;">THẺ THÀNH VIÊN ĐIỆN TỬ</span>
+                                            <h4 style="font-size: 0.875rem; font-weight: 700; opacity: 0.95; line-height: 1;">NKS DIGITAL MEMBER</h4>
+                                        </div>
+                                        <span class="cccd-logo" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;">
+                                            NKS
+                                        </span>
                                     </div>
                                     
-                                    <div style="display: grid; grid-template-columns: 2fr 1.5fr; gap: 0.75rem;">
-                                        <div>
-                                            <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Họ và tên / Full name:</span>
-                                            <span style="font-size: 0.875rem; font-weight: 700;">{{ auth()->user()->name }}</span>
-                                        </div>
-                                        <div>
-                                            <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Ngày cấp / Date of issue:</span>
-                                            <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->issue_date ?: 'N/A' }}</span>
-                                        </div>
+                                    <div>
+                                        <span style="font-size: 0.6rem; opacity: 0.75; display: block; text-transform: uppercase; line-height: 1;">Số thẻ / Card No.:</span>
+                                        <span class="cccd-number" style="font-size: 1.1rem; font-weight: 800; letter-spacing: 0.05em;">NKS-{{ str_pad(auth()->user()->id, 5, '0', STR_PAD_LEFT) }}</span>
                                     </div>
 
                                     <div>
-                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Nơi cấp thẻ / Place of issue:</span>
-                                        <span style="font-size: 0.75rem; font-weight: 500; display: block; line-height: 1.25;">{{ auth()->user()->issue_place ?: 'Chưa cập nhật' }}</span>
+                                        <span style="font-size: 0.6rem; opacity: 0.75; display: block; text-transform: uppercase; line-height: 1;">Họ và tên / Full name:</span>
+                                        <span style="font-size: 0.95rem; font-weight: 700; display: block;">{{ auth()->user()->name }}</span>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                        <div>
+                                            <span style="font-size: 0.6rem; opacity: 0.75; display: block; text-transform: uppercase; line-height: 1;">Hạng thẻ / Class:</span>
+                                            <span style="font-size: 0.8rem; font-weight: 600; display: block;">{{ auth()->user()->role === 'admin' ? 'Premium Admin' : 'Standard Member' }}</span>
+                                        </div>
+                                        <div>
+                                            <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase; line-height: 1;">Ngày tham gia / Joined:</span>
+                                            <span style="font-size: 0.8rem; font-weight: 600; display: block;">{{ auth()->user()->created_at ? auth()->user()->created_at->format('d/m/Y') : date('d/m/Y') }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 0.5rem;">
+                                        <div>
+                                            <span style="font-size: 0.6rem; opacity: 0.75; display: block; text-transform: uppercase; line-height: 1;">Điện thoại / Phone:</span>
+                                            <span style="font-size: 0.75rem; font-weight: 500; display: block;">{{ auth()->user()->phone ?: 'Chưa cập nhật' }}</span>
+                                        </div>
+                                        <div>
+                                            <span style="font-size: 0.6rem; opacity: 0.75; display: block; text-transform: uppercase; line-height: 1;">Email:</span>
+                                            <span style="font-size: 0.75rem; font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ auth()->user()->email }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
