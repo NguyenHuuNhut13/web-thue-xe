@@ -58,6 +58,7 @@ class Profile extends Page implements HasForms
             'dob' => $user->dob,
             'address' => $user->address,
             'issue_date' => $user->issue_date,
+            'issue_place' => $user->issue_place,
         ];
 
         $this->avatarData = [
@@ -121,7 +122,7 @@ class Profile extends Page implements HasForms
         return $schema
             ->components([
                 TextInput::make('cccd')
-                    ->label('Số thẻ E-Card')
+                    ->label('Số Căn cước công dân (CCCD)')
                     ->placeholder('Ví dụ: 079195000123')
                     ->maxLength(15)
                     ->required(),
@@ -135,9 +136,13 @@ class Profile extends Page implements HasForms
                     ->label('Ngày cấp')
                     ->placeholder('Ví dụ: 20/10/2021'),
 
+                TextInput::make('issue_place')
+                    ->label('Nơi cấp')
+                    ->placeholder('Ví dụ: Cục Cảnh sát QLHC về TTXH'),
+
                 TextInput::make('address')
-                    ->label('Nơi cấp thẻ')
-                    ->placeholder('Nơi cấp thẻ thành viên'),
+                    ->label('Nơi thường trú')
+                    ->placeholder('Địa chỉ thường trú trên CCCD'),
             ])
             ->statePath('cccdData');
     }
@@ -245,11 +250,12 @@ class Profile extends Page implements HasForms
             $this->profileData['name'] = $data['name'];
             $this->profileForm->fill($this->profileData);
         }
-        $user->cccd       = $data['cccd'];
-        $user->gender     = $data['gender'] ?? $user->gender;
-        $user->dob        = $data['dob'] ?? $user->dob;
-        $user->address    = $data['address'];
-        $user->issue_date = $data['issue_date'];
+        $user->cccd        = $data['cccd'];
+        $user->gender      = $data['gender'] ?? $user->gender;
+        $user->dob         = $data['dob'] ?? $user->dob;
+        $user->address     = $data['address'];
+        $user->issue_date  = $data['issue_date'];
+        $user->issue_place = $data['issue_place'] ?? null;
         $user->save();
 
         // Cập nhật tên lên API nếu có thay đổi (updateInfo hoạt động bình thường)
@@ -284,7 +290,7 @@ class Profile extends Page implements HasForms
             $cccdRes = CompanyApiService::updateCccd($token, [
                 'cccd' => $data['cccd'],
                 'issue_date' => $data['issue_date'],
-                'address' => 'Cục Cảnh sát QLHC về TTXH', // default or issuing authority
+                'address' => $data['issue_place'] ?? 'Cục Cảnh sát QLHC về TTXH', // default or issuing authority
                 'front_base64' => $frontBase64,
                 'back_base64' => $backBase64,
             ]);
@@ -401,7 +407,8 @@ class Profile extends Page implements HasForms
         ?string $dob = null,
         ?string $address = null,
         ?string $frontBase64 = null,
-        ?string $backBase64 = null
+        ?string $backBase64 = null,
+        ?string $issuePlace = null
     ): void {
         $user = auth()->user();
         $token = $this->getApiToken();
@@ -434,6 +441,7 @@ class Profile extends Page implements HasForms
             'dob' => $dob,
             'address' => $address,
             'issue_date' => $issueDate,
+            'issue_place' => $issuePlace,
         ];
         $this->cccdForm->fill($this->cccdData);
 
@@ -453,13 +461,14 @@ class Profile extends Page implements HasForms
         }
 
         // Lưu CCCD local
-        $user->cccd       = $cccd;
-        $user->gender     = $gender;
-        $user->dob        = $dob;
-        $user->address    = $address;
-        $user->issue_date = $issueDate;
-        $user->cccd_front = $frontPath;
-        $user->cccd_back  = $backPath;
+        $user->cccd        = $cccd;
+        $user->gender      = $gender;
+        $user->dob         = $dob;
+        $user->address     = $address;
+        $user->issue_date  = $issueDate;
+        $user->issue_place = $issuePlace;
+        $user->cccd_front  = $frontPath;
+        $user->cccd_back   = $backPath;
         $user->save();
 
         // Cập nhật CCCD lên API công ty nếu có token
@@ -467,7 +476,7 @@ class Profile extends Page implements HasForms
             $cccdRes = CompanyApiService::updateCccd($token, [
                 'cccd' => $cccd,
                 'issue_date' => $issueDate,
-                'address' => 'Cục Cảnh sát QLHC về TTXH', // default or issuing authority
+                'address' => $issuePlace ?: 'Cục Cảnh sát QLHC về TTXH', // default or issuing authority
                 'front_base64' => $frontBase64,
                 'back_base64' => $backBase64,
             ]);

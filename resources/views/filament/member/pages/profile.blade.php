@@ -656,7 +656,7 @@
                         <svg class="icon-svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
                         </svg>
-                        <span>Thẻ thành viên (E-Card)</span>
+                        <span>Căn cước công dân</span>
                     </button>
 
                     <!-- Tab Ảnh đại diện -->
@@ -700,6 +700,46 @@
                         </div>
 
                         @if(!$isEditing)
+                            <!-- Card hiển thị dạng Thẻ E-Card Mockup -->
+                            <div class="cccd-card">
+                                <div style="position: absolute; right: 0; top: 0; opacity: 0.1; transform: translate(2rem, -2rem);">
+                                    <svg style="width: 16rem; height: 16rem;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                </div>
+                                
+                                <div class="flex-between" style="margin-bottom: 1rem;">
+                                    <div>
+                                        <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.75;">THẺ THÀNH VIÊN ĐIỆN TỬ</span>
+                                        <h4 style="font-size: 0.875rem; font-weight: 700; opacity: 0.9; margin-top: 0.125rem;">NKS DIGITAL MEMBER CARD</h4>
+                                    </div>
+                                    <span class="cccd-logo">
+                                        NKS
+                                    </span>
+                                </div>
+
+                                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                    <div>
+                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Số thẻ / Card No.:</span>
+                                        <span class="cccd-number" style="font-size: 1.125rem; font-weight: 800; letter-spacing: 0.05em;">{{ auth()->user()->cccd ?: 'CHƯA CẬP NHẬT' }}</span>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 2fr 1.5fr; gap: 0.75rem;">
+                                        <div>
+                                            <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Họ và tên / Full name:</span>
+                                            <span style="font-size: 0.875rem; font-weight: 700;">{{ auth()->user()->name }}</span>
+                                        </div>
+                                        <div>
+                                            <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Ngày cấp / Date of issue:</span>
+                                            <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->issue_date ?: 'N/A' }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Nơi cấp thẻ / Place of issue:</span>
+                                        <span style="font-size: 0.75rem; font-weight: 500; display: block; line-height: 1.25;">{{ auth()->user()->issue_place ?: 'Chưa cập nhật' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Chế độ Chỉ xem (Read-only) -->
                             <div class="info-grid">
                                 <div style="display: flex; flex-direction: column; gap: 0.25rem;">
@@ -764,48 +804,8 @@
                 @if($activeTab === 'cccd')
                     <div>
                         <div class="border-b-thin padding-b-sm margin-b-med">
-                            <h2 style="font-size: 1.125rem; font-weight: 700; color: #1f2937;" class="dark:text-gray-200">Thẻ thành viên điện tử (E-Card)</h2>
-                            <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Thành viên kỹ thuật số của NKS Car Rental</p>
-                        </div>
-
-                        <!-- Card hiển thị dạng Thẻ E-Card Mockup -->
-                        <div class="cccd-card">
-                            <div style="position: absolute; right: 0; top: 0; opacity: 0.1; transform: translate(2rem, -2rem);">
-                                <svg style="width: 16rem; height: 16rem;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                            </div>
-                            
-                            <div class="flex-between" style="margin-bottom: 1rem;">
-                                <div>
-                                    <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.75;">THẺ THÀNH VIÊN ĐIỆN TỬ</span>
-                                    <h4 style="font-size: 0.875rem; font-weight: 700; opacity: 0.9; margin-top: 0.125rem;">NKS DIGITAL MEMBER CARD</h4>
-                                </div>
-                                <span class="cccd-logo">
-                                    NKS
-                                </span>
-                            </div>
-
-                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                <div>
-                                    <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Số thẻ / Card No.:</span>
-                                    <span class="cccd-number" style="font-size: 1.125rem; font-weight: 800; letter-spacing: 0.05em;">{{ auth()->user()->cccd ?: 'CHƯA CẬP NHẬT' }}</span>
-                                </div>
-                                
-                                <div style="display: grid; grid-template-columns: 2fr 1.5fr; gap: 0.75rem;">
-                                    <div>
-                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Họ và tên / Full name:</span>
-                                        <span style="font-size: 0.875rem; font-weight: 700;">{{ auth()->user()->name }}</span>
-                                    </div>
-                                    <div>
-                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Ngày cấp / Date of issue:</span>
-                                        <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->issue_date ?: 'N/A' }}</span>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Nơi cấp thẻ / Place of issue:</span>
-                                    <span style="font-size: 0.75rem; font-weight: 500; display: block; line-height: 1.25;">{{ auth()->user()->address ?: 'Chưa cập nhật' }}</span>
-                                </div>
-                            </div>
+                            <h2 style="font-size: 1.125rem; font-weight: 700; color: #1f2937;" class="dark:text-gray-200">Căn cước công dân (CCCD)</h2>
+                            <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Thông tin Căn cước công dân dùng để xác minh danh tính nhận xe</p>
                         </div>
 
                         <!-- Chức năng tải lên Mặt trước / Mặt sau & OCR -->
@@ -1628,23 +1628,104 @@
                         if (qrResult && qrResult.cccd) {
                             console.log("QR Extracted Fields:", qrResult);
                             
-                            // Gửi dữ liệu về Livewire lưu trữ kèm Base64 ảnh mặt trước + sau
-                            @this.call(
-                                'updateCccdFromScan',
-                                qrResult.cccd,
-                                qrResult.issueDate,
-                                qrResult.name,
-                                qrResult.gender,
-                                qrResult.dob,
-                                qrResult.address,
-                                frontBase64,
-                                backBase64
-                            );
+                            statusText.innerText = "Đang nhận diện nơi cấp từ mặt sau...";
+                            progressBar.style.width = '70%';
+                            percentageText.innerText = '70%';
                             
-                            setTimeout(() => {
-                                cleanUpScanner();
-                                qrScanInProgress = false;
-                            }, 1000);
+                            Tesseract.recognize(
+                                backFile,
+                                'vie',
+                                {
+                                    logger: m => {
+                                        if (m.status === 'recognizing text') {
+                                            const pct = Math.round(m.progress * 100);
+                                            statusText.innerText = "Đang quét mặt sau: " + pct + "%";
+                                        }
+                                    }
+                                }
+                            ).then(({ data: { text: backText } }) => {
+                                let issuePlace = "";
+                                const backLines = backText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                                const placeKeywords = /cục\s*trưởng|cục\s*cảnh\s*sát|cảnh\s*sát\s*qlhc|công\s*an|cục\s*đkql/i;
+                                for (let line of backLines) {
+                                    let normalizedLine = line.replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
+                                    if (normalizedLine.toLowerCase().includes('đặc điểm') || 
+                                        normalizedLine.toLowerCase().includes('nhận dạng') ||
+                                        normalizedLine.toLowerCase().includes('vân tay') ||
+                                        normalizedLine.toLowerCase().includes('nốt ruồi') ||
+                                        normalizedLine.toLowerCase().includes('ngày') ||
+                                        normalizedLine.toLowerCase().includes('tháng') ||
+                                        normalizedLine.toLowerCase().includes('năm') ||
+                                        normalizedLine.includes('<<<')) {
+                                        continue;
+                                    }
+                                    if (placeKeywords.test(normalizedLine) && normalizedLine.length > 8) {
+                                        issuePlace = normalizedLine;
+                                        break;
+                                    }
+                                }
+                                if (!issuePlace) {
+                                    let dateLineIdx = -1;
+                                    for (let i = 0; i < backLines.length; i++) {
+                                        let lower = backLines[i].toLowerCase();
+                                        if (lower.includes('ngày') && (lower.includes('tháng') || lower.includes('năm'))) {
+                                            dateLineIdx = i;
+                                            break;
+                                        }
+                                    }
+                                    if (dateLineIdx !== -1) {
+                                        for (let j = dateLineIdx + 1; j < backLines.length; j++) {
+                                            let line = backLines[j].replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
+                                            if (line.length > 8 && !line.includes('<<<') && !line.toLowerCase().includes('ký') && !line.toLowerCase().includes('ghi')) {
+                                                issuePlace = line;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                const finalIssuePlace = issuePlace || "Cục Cảnh sát QLHC về TTXH";
+                                
+                                progressBar.style.width = '100%';
+                                percentageText.innerText = '100%';
+                                statusText.innerText = "Đã nhận diện thành công!";
+                                
+                                @this.call(
+                                    'updateCccdFromScan',
+                                    qrResult.cccd,
+                                    qrResult.issueDate,
+                                    qrResult.name,
+                                    qrResult.gender,
+                                    qrResult.dob,
+                                    qrResult.address,
+                                    frontBase64,
+                                    backBase64,
+                                    finalIssuePlace
+                                );
+                                
+                                setTimeout(() => {
+                                    cleanUpScanner();
+                                    qrScanInProgress = false;
+                                }, 1000);
+                            }).catch(err => {
+                                console.error("Lỗi quét mặt sau trong QR flow: ", err);
+                                @this.call(
+                                    'updateCccdFromScan',
+                                    qrResult.cccd,
+                                    qrResult.issueDate,
+                                    qrResult.name,
+                                    qrResult.gender,
+                                    qrResult.dob,
+                                    qrResult.address,
+                                    frontBase64,
+                                    backBase64,
+                                    'Cục Cảnh sát QLHC về TTXH'
+                                );
+                                
+                                setTimeout(() => {
+                                    cleanUpScanner();
+                                    qrScanInProgress = false;
+                                }, 1000);
+                            });
                             return;
                         }
                     }
@@ -1767,13 +1848,55 @@
                         finalAddress = "{{ auth()->user()->address }}" || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
                     }
 
+                    // Tìm Nơi cấp ở mặt sau
+                    let issuePlace = "";
+                    const placeKeywords = /cục\s*trưởng|cục\s*cảnh\s*sát|cảnh\s*sát\s*qlhc|công\s*an|cục\s*đkql/i;
+                    for (let line of backLines) {
+                        let normalizedLine = line.replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
+                        if (normalizedLine.toLowerCase().includes('đặc điểm') || 
+                            normalizedLine.toLowerCase().includes('nhận dạng') ||
+                            normalizedLine.toLowerCase().includes('vân tay') ||
+                            normalizedLine.toLowerCase().includes('nốt ruồi') ||
+                            normalizedLine.toLowerCase().includes('ngày') ||
+                            normalizedLine.toLowerCase().includes('tháng') ||
+                            normalizedLine.toLowerCase().includes('năm') ||
+                            normalizedLine.includes('<<<')) {
+                            continue;
+                        }
+                        if (placeKeywords.test(normalizedLine) && normalizedLine.length > 8) {
+                            issuePlace = normalizedLine;
+                            break;
+                        }
+                    }
+                    if (!issuePlace) {
+                        let dateLineIdx = -1;
+                        for (let i = 0; i < backLines.length; i++) {
+                            let lower = backLines[i].toLowerCase();
+                            if (lower.includes('ngày') && (lower.includes('tháng') || lower.includes('năm'))) {
+                                dateLineIdx = i;
+                                break;
+                            }
+                        }
+                        if (dateLineIdx !== -1) {
+                            for (let j = dateLineIdx + 1; j < backLines.length; j++) {
+                                let line = backLines[j].replace(/[\^\|~\*_«»\{\}\[\]\\]/g, "").trim();
+                                if (line.length > 8 && !line.includes('<<<') && !line.toLowerCase().includes('ký') && !line.toLowerCase().includes('ghi')) {
+                                    issuePlace = line;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    const finalIssuePlace = issuePlace || "Cục Cảnh sát QLHC về TTXH";
+
                     console.log("OCR Final Extracted Fields:", {
                         cccd: finalCccd,
                         issueDate: finalIssueDate,
                         name: finalName,
                         gender: finalGender,
                         dob: finalDob,
-                        address: finalAddress
+                        address: finalAddress,
+                        issuePlace: finalIssuePlace
                     });
 
                     // Gửi dữ liệu về Livewire lưu trữ kèm Base64 ảnh
@@ -1786,7 +1909,8 @@
                         finalDob,
                         finalAddress,
                         frontBase64,
-                        backBase64
+                        backBase64,
+                        finalIssuePlace
                     );
 
                     cleanUpScanner();
@@ -1809,7 +1933,7 @@
                         finalAddress = "{{ auth()->user()->address }}" || "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh";
                     }
 
-                    @this.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress, frontBase64, backBase64);
+                    @this.call('updateCccdFromScan', finalCccd, '', finalName, finalGender, finalDob, finalAddress, frontBase64, backBase64, 'Cục Cảnh sát QLHC về TTXH');
                     cleanUpScanner();
                 });
 

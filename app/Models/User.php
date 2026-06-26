@@ -35,6 +35,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'dob',
         'address',
         'issue_date',
+        'issue_place',
         'cccd_front',
         'cccd_back',
         'company_api_token',
