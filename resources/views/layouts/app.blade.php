@@ -53,6 +53,9 @@
                     <a href="{{ route('faq') }}" class="text-slate-600 hover:text-brand transition-colors py-2 {{ request()->routeIs('faq') ? 'text-brand font-semibold border-b-2 border-brand' : '' }}">
                         Hỏi đáp bảo dưỡng
                     </a>
+                    <a href="{{ route('scar') }}" class="text-slate-600 hover:text-brand transition-colors py-2 {{ request()->routeIs('scar') ? 'text-brand font-semibold border-b-2 border-brand' : '' }}">
+                        Bảng giá S-Car
+                    </a>
                     <a href="{{ route('contact') }}" class="text-slate-600 hover:text-brand transition-colors py-2 {{ request()->routeIs('contact') ? 'text-brand font-semibold border-b-2 border-brand' : '' }}">
                         Liên hệ
                     </a>
@@ -159,6 +162,9 @@
             </a>
             <a href="{{ route('faq') }}" class="block px-4 py-2.5 rounded-xl text-base font-medium text-slate-600 hover:bg-slate-50 hover:text-brand transition-all">
                 Hỏi đáp bảo dưỡng
+            </a>
+            <a href="{{ route('scar') }}" class="block px-4 py-2.5 rounded-xl text-base font-medium text-slate-600 hover:bg-slate-50 hover:text-brand transition-all">
+                Bảng giá S-Car
             </a>
             <a href="{{ route('contact') }}" class="block px-4 py-2.5 rounded-xl text-base font-medium text-slate-600 hover:bg-slate-50 hover:text-brand transition-all">
                 Liên hệ

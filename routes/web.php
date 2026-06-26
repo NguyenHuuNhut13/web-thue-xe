@@ -30,6 +30,10 @@ Route::post('/contact', [ContactController::class, 'submit'])->name('contact.sub
 Route::get('/faq', [App\Http\Controllers\FaqController::class, 'index'])->name('faq');
 Route::post('/faq/ai-answer', [App\Http\Controllers\FaqController::class, 'getAiAnswer'])->name('faq.ai-answer');
 
+// S-Car routes
+Route::get('/s-car', [App\Http\Controllers\SCarController::class, 'index'])->name('scar');
+Route::post('/s-car/negotiate', [App\Http\Controllers\SCarController::class, 'negotiate'])->name('scar.negotiate');
+
 // Chatbot routes
 Route::post('/api/chatbot/message', [App\Http\Controllers\ChatbotController::class, 'message'])->name('chatbot.message');
 Route::post('/api/chatbot/clear', [App\Http\Controllers\ChatbotController::class, 'clearHistory'])->name('chatbot.clear');
