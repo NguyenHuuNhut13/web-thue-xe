@@ -121,7 +121,7 @@ class Profile extends Page implements HasForms
         return $schema
             ->components([
                 TextInput::make('cccd')
-                    ->label('Số Căn cước công dân (CCCD)')
+                    ->label('Số thẻ E-Card')
                     ->placeholder('Ví dụ: 079195000123')
                     ->maxLength(15)
                     ->required(),
@@ -131,28 +131,13 @@ class Profile extends Page implements HasForms
                     ->placeholder('Ví dụ: NGUYỄN VĂN A')
                     ->required(),
 
-                Grid::make(2)
-                    ->schema([
-                        Select::make('gender')
-                            ->label('Giới tính')
-                            ->options([
-                                'Nam' => 'Nam',
-                                'Nữ' => 'Nữ',
-                            ])
-                            ->placeholder('Chọn giới tính'),
-
-                        TextInput::make('dob')
-                            ->label('Ngày sinh')
-                            ->placeholder('Ví dụ: 15/08/1995'),
-                    ]),
-
                 TextInput::make('issue_date')
                     ->label('Ngày cấp')
                     ->placeholder('Ví dụ: 20/10/2021'),
 
                 TextInput::make('address')
-                    ->label('Nơi thường trú')
-                    ->placeholder('Địa chỉ thường trú trên CCCD'),
+                    ->label('Nơi cấp thẻ')
+                    ->placeholder('Nơi cấp thẻ thành viên'),
             ])
             ->statePath('cccdData');
     }
@@ -261,8 +246,8 @@ class Profile extends Page implements HasForms
             $this->profileForm->fill($this->profileData);
         }
         $user->cccd       = $data['cccd'];
-        $user->gender     = $data['gender'];
-        $user->dob        = $data['dob'];
+        $user->gender     = $data['gender'] ?? $user->gender;
+        $user->dob        = $data['dob'] ?? $user->dob;
         $user->address    = $data['address'];
         $user->issue_date = $data['issue_date'];
         $user->save();

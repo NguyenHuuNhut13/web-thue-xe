@@ -656,7 +656,7 @@
                         <svg class="icon-svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
                         </svg>
-                        <span>Căn cước công dân</span>
+                        <span>Thẻ thành viên (E-Card)</span>
                     </button>
 
                     <!-- Tab Ảnh đại diện -->
@@ -764,11 +764,11 @@
                 @if($activeTab === 'cccd')
                     <div>
                         <div class="border-b-thin padding-b-sm margin-b-med">
-                            <h2 style="font-size: 1.125rem; font-weight: 700; color: #1f2937;" class="dark:text-gray-200">Căn cước công dân (CCCD)</h2>
-                            <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Thông tin định danh người dùng trên hệ thống</p>
+                            <h2 style="font-size: 1.125rem; font-weight: 700; color: #1f2937;" class="dark:text-gray-200">Thẻ thành viên điện tử (E-Card)</h2>
+                            <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Thành viên kỹ thuật số của NKS Car Rental</p>
                         </div>
 
-                        <!-- Card hiển thị dạng Thẻ CCCD Mockup -->
+                        <!-- Card hiển thị dạng Thẻ E-Card Mockup -->
                         <div class="cccd-card">
                             <div style="position: absolute; right: 0; top: 0; opacity: 0.1; transform: translate(2rem, -2rem);">
                                 <svg style="width: 16rem; height: 16rem;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
@@ -776,8 +776,8 @@
                             
                             <div class="flex-between" style="margin-bottom: 1rem;">
                                 <div>
-                                    <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.75;">CĂN CƯỚC CÔNG DÂN</span>
-                                    <h4 style="font-size: 0.875rem; font-weight: 700; opacity: 0.9; margin-top: 0.125rem;">CITIZEN IDENTITY CARD</h4>
+                                    <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.75;">THẺ THÀNH VIÊN ĐIỆN TỬ</span>
+                                    <h4 style="font-size: 0.875rem; font-weight: 700; opacity: 0.9; margin-top: 0.125rem;">NKS DIGITAL MEMBER CARD</h4>
                                 </div>
                                 <span class="cccd-logo">
                                     NKS
@@ -786,7 +786,7 @@
 
                             <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                                 <div>
-                                    <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Số / No.:</span>
+                                    <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Số thẻ / Card No.:</span>
                                     <span class="cccd-number" style="font-size: 1.125rem; font-weight: 800; letter-spacing: 0.05em;">{{ auth()->user()->cccd ?: 'CHƯA CẬP NHẬT' }}</span>
                                 </div>
                                 
@@ -801,19 +801,8 @@
                                     </div>
                                 </div>
 
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                                    <div>
-                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Ngày sinh / Date of birth:</span>
-                                        <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->dob ?: 'Chưa cập nhật' }}</span>
-                                    </div>
-                                    <div>
-                                        <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Giới tính / Sex:</span>
-                                        <span style="font-size: 0.875rem; font-weight: 600;">{{ auth()->user()->gender ?: 'Chưa cập nhật' }}</span>
-                                    </div>
-                                </div>
-
                                 <div>
-                                    <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Nơi thường trú / Place of residence:</span>
+                                    <span style="font-size: 0.65rem; opacity: 0.75; display: block; text-transform: uppercase;">Nơi cấp thẻ / Place of issue:</span>
                                     <span style="font-size: 0.75rem; font-weight: 500; display: block; line-height: 1.25;">{{ auth()->user()->address ?: 'Chưa cập nhật' }}</span>
                                 </div>
                             </div>
@@ -821,7 +810,7 @@
 
                         <!-- Chức năng tải lên Mặt trước / Mặt sau & OCR -->
                         <div style="margin-bottom: 2rem;">
-                            <h3 style="font-size: 0.875rem; font-weight: 600; color: #4b5563; margin-bottom: 1rem;" class="dark:text-gray-300">Tải lên hoặc Chụp ảnh CCCD để tự động nhận dạng</h3>
+                            <h3 style="font-size: 0.875rem; font-weight: 600; color: #4b5563; margin-bottom: 1rem;" class="dark:text-gray-300">Tải lên hoặc Chụp ảnh thẻ định danh để tự động nhận dạng</h3>
                             
                             <div class="ocr-grid">
                                 <!-- Dropzone Mặt trước -->
@@ -831,11 +820,11 @@
                                         <svg class="icon-svg" style="color: #6366f1; width: 2.5rem !important; height: 2.5rem !important;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
-                                        <span class="ocr-dropzone-title">Mặt trước CCCD</span>
+                                        <span class="ocr-dropzone-title">Mặt trước ảnh thẻ</span>
                                         <span class="ocr-dropzone-subtitle">Nhấp để chụp/chọn hoặc kéo thả ảnh</span>
                                     </div>
                                     <div class="ocr-preview-container" id="preview-container-front" style="{{ auth()->user()->cccd_front ? 'display: block;' : 'display: none;' }}">
-                                        <img id="preview-front" src="{{ auth()->user()->cccd_front ? asset('storage/' . auth()->user()->cccd_front) : '' }}" alt="Mặt trước CCCD" class="ocr-preview-img">
+                                        <img id="preview-front" src="{{ auth()->user()->cccd_front ? asset('storage/' . auth()->user()->cccd_front) : '' }}" alt="Mặt trước thẻ" class="ocr-preview-img">
                                         <div class="laser-scanner" id="laser-front" style="display: none;"></div>
                                     </div>
                                 </div>
@@ -847,11 +836,11 @@
                                         <svg class="icon-svg" style="color: #9333ea; width: 2.5rem !important; height: 2.5rem !important;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
-                                        <span class="ocr-dropzone-title">Mặt sau CCCD</span>
+                                        <span class="ocr-dropzone-title">Mặt sau ảnh thẻ</span>
                                         <span class="ocr-dropzone-subtitle">Nhấp để chụp/chọn hoặc kéo thả ảnh</span>
                                     </div>
                                     <div class="ocr-preview-container" id="preview-container-back" style="{{ auth()->user()->cccd_back ? 'display: block;' : 'display: none;' }}">
-                                        <img id="preview-back" src="{{ auth()->user()->cccd_back ? asset('storage/' . auth()->user()->cccd_back) : '' }}" alt="Mặt sau CCCD" class="ocr-preview-img">
+                                        <img id="preview-back" src="{{ auth()->user()->cccd_back ? asset('storage/' . auth()->user()->cccd_back) : '' }}" alt="Mặt sau thẻ" class="ocr-preview-img">
                                         <div class="laser-scanner" id="laser-back" style="display: none;"></div>
                                     </div>
                                 </div>
@@ -875,7 +864,7 @@
                             
                             <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1rem;" class="border-t-thin">
                                 <x-filament::button type="submit">
-                                    Cập nhật CCCD
+                                    Cập nhật thông tin thẻ
                                 </x-filament::button>
                             </div>
                         </form>
