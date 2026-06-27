@@ -289,12 +289,6 @@
                               x-text="getFilteredFaqs = getFilteredCars().length + ' phiên bản'"></span>
                     </h2>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Liên kết nhanh:</span>
-                    <a href="https://giaxe.nks.vn/xe-may" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
-                        <i class="fa-solid fa-motorcycle"></i> Bảng giá xe máy
-                    </a>
-                </div>
             </div>
 
             <!-- Empty State for filtered results -->
